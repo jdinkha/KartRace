@@ -1,0 +1,5 @@
+# Studio creates this while the place is open
+*.rbxlx.lock
+*.rbxl.lock
+# The Rojo program itself (download it again from GitHub if needed)
+rojo.exe
