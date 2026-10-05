@@ -6,6 +6,9 @@ Roblox kart racing game written in Luau, synced into Roblox Studio with Rojo (`d
 - `src/RaceServer.server.luau` → Script in ServerScriptService. Builds the track/lobby procedurally from `TRACK.POINTS`, runs the race state machine (Waiting → Intermission → Countdown → Racing → Results), checkpoints, placements, respawns, DataStore wins leaderboard.
 - `src/RaceClient.client.luau` → LocalScript in StarterPlayerScripts. Arcade kart physics (client has network ownership of its kart after GO), drift/mini-turbo, chase camera, HUD.
 - Server ↔ client communication: attributes on `ReplicatedStorage.RaceState` and on each Player (`Racing`, `Finished`, `Place`), plus the `ReplicatedStorage.RaceEvent` RemoteEvent.
+- Track folders: `RaceTrack.Road` (driveable surfaces — the client's ground raycasts only hit this), `Walls`, `Decor` (non-collidable visuals), `Checkpoints`, `StartSlots`, `StartLights`. The road is built from WedgePart triangles that share exact edges (`buildTriangle`) — don't go back to overlapping boxes, that's what made collisions glitchy.
+- Kart physics: the kart hovers at its `RideHeight` attribute on raycast springs (`senseGround` / `driveStep`, run in `RunService.PreSimulation`); the hitbox only ever touches walls. Wall hits are detected from unexpected velocity changes and deflect the kart.
+- Lobby: server updates `StatusScreen` and `PodiumName1..3` labels; the client animates models with a `Spin` attribute and handles parts with a `BouncePower` attribute.
 
 ## Working rules
 - The owner is new to Roblox development. Explain changes in plain language and say what to test in Studio.

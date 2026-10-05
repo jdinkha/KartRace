@@ -3,8 +3,11 @@
 
 	Runs on each player's own device:
 	  • arcade kart driving (gas, brake, steer, drift + mini-turbo, boost pads, jumps)
+	    The kart floats just above the road on raycast "springs" instead of
+	    scraping along it, which keeps it smooth over seams, hills and banked turns.
 	  • chase camera
 	  • race HUD: status bar, countdown, position, timer, results
+	  • lobby fun: bounce pads and the spinning display karts
 
 	The server (RaceServer) owns the rules: who races, checkpoints, finishing, wins.
 	This script only drives *your* kart. The server hands your kart's physics to
@@ -44,7 +47,24 @@ local HANDLING = {
 	PAD_BOOST_TIME = 1.2,
 	AIR_GRAVITY = 0.55, -- fraction of normal gravity in the air (floatier jumps)
 	AIR_STEER = 0.35,
+	-- Suspension: the kart rides on invisible springs just above the road, so
+	-- seams, hills and banked corners feel smooth instead of bumpy.
+	HOVER_STIFFNESS = 14, -- how firmly the kart holds its ride height
+	STICK_DISTANCE = 1.75, -- how far the road can drop away before the kart counts as airborne
+	TILT_SPEED = 12, -- how quickly the kart leans to match slopes and banked corners
+	WALL_BOUNCE = 0.3, -- how much karts bounce off walls (0 = not at all)
+	WALL_SLIDE = 0.6, -- how much a wall hit turns the kart to slide along it (0 = none, 1 = fully)
 }
+
+-- Points under the kart (x = right, z = back) where it feels for the road,
+-- so it tilts to the average of the surface instead of jolting at every seam.
+local GROUND_PROBES = {
+	Vector3.new(-1.8, 0, -2.4), -- front left
+	Vector3.new(1.8, 0, -2.4), -- front right
+	Vector3.new(-1.8, 0, 2.4), -- back left
+	Vector3.new(1.8, 0, 2.4), -- back right
+}
+local WALL_HIT_MIN = 6 -- a sideways shove bigger than this (studs/s) in one frame counts as hitting a wall
 
 local CAMERA = {
 	DISTANCE = 17,
@@ -72,9 +92,18 @@ local FONT = Enum.Font.FredokaOne
 ------------------------------------------------------------------------
 -- Helpers
 ------------------------------------------------------------------------
+-- Which way a direction points around the vertical axis (the kart's "heading")
+local function headingOfDirection(dir: Vector3): number
+	return math.atan2(-dir.X, -dir.Z)
+end
+
 local function headingOf(cf: CFrame): number
-	local look = cf.LookVector
-	return math.atan2(-look.X, -look.Z)
+	return headingOfDirection(cf.LookVector)
+end
+
+-- Shortest signed difference between two angles, in radians
+local function angleDiff(a: number, b: number): number
+	return (a - b + math.pi) % (2 * math.pi) - math.pi
 end
 
 local function moveToward(value: number, target: number, step: number): number
@@ -345,14 +374,21 @@ type DriveState = {
 	sparks: { ParticleEmitter },
 	flame: ParticleEmitter?,
 	effects: { Instance },
+	rideHeight: number, -- how high the kart's centre floats above the road
+	groundUp: Vector3, -- smoothed "up" of the road under the kart
+	lastVelocity: Vector3?, -- the velocity we set last frame (to notice wall hits)
+	wasGrounded: boolean,
+	wallGrace: number, -- seconds before wall hits count (right after GO/respawn the server may still be moving the kart)
+	shake: number, -- camera shake after a wall hit, fades to 0
 }
 
 local drive: DriveState? = nil
 local driftHeld = false
 
+-- Only the road surface counts as ground (not walls or decorations)
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Include
-rayParams.FilterDescendantsInstances = { trackFolder }
+rayParams.FilterDescendantsInstances = { trackFolder:WaitForChild("Road", 5) or trackFolder }
 
 -- Local-only particle effects (only you see your sparks in this MVP)
 local function createEffects(hitbox: BasePart): ({ ParticleEmitter }, ParticleEmitter?, { Instance })
@@ -397,6 +433,58 @@ local function createEffects(hitbox: BasePart): ({ ParticleEmitter }, ParticleEm
 	return sparks, flame, effects
 end
 
+type Ground = {
+	normal: Vector3, -- which way is "up" on the road here
+	distance: number, -- from the kart's centre down to the road
+	boost: boolean, -- touching a boost pad?
+}
+
+-- Feels for the road under the kart. Returns nil when the kart is in the air.
+local function senseGround(d: DriveState): Ground?
+	local cf = d.hitbox.CFrame
+	local down = -cf.UpVector
+	local falling = math.max(0, d.hitbox.AssemblyLinearVelocity:Dot(down))
+	-- look a bit further when dropping fast, so landings get caught in time
+	local ray = down * (d.rideHeight + HANDLING.STICK_DISTANCE + falling * 0.05)
+
+	local center = workspace:Raycast(cf.Position, ray, rayParams)
+	local boost = center ~= nil and center.Instance:GetAttribute("BoostPad") == true
+	local corners: { RaycastResult } = {}
+	local cornerCount = 0
+	for i, offset in GROUND_PROBES do
+		local hit = workspace:Raycast(cf:PointToWorldSpace(offset), ray, rayParams)
+		if hit then
+			corners[i] = hit
+			cornerCount += 1
+			if hit.Instance:GetAttribute("BoostPad") then
+				boost = true
+			end
+		end
+	end
+
+	-- All four corners over the road: use the plane through them. This averages
+	-- out seams and creases, so the kart glides instead of twitching.
+	if cornerCount == 4 then
+		local fl, fr, bl, br = corners[1].Position, corners[2].Position, corners[3].Position, corners[4].Position
+		local normal = (fr - bl):Cross(fl - br)
+		if normal.Magnitude > 1e-3 then
+			normal = normal.Unit
+			if normal.Y < 0 then
+				normal = -normal
+			end
+			if normal.Y > 0.5 then
+				local middle = (fl + fr + bl + br) / 4
+				return { normal = normal, distance = (cf.Position - middle):Dot(normal), boost = boost }
+			end
+		end
+	end
+	-- Otherwise (e.g. right at the lip of the jump) trust the middle ray alone
+	if center and center.Normal.Y > 0.3 then
+		return { normal = center.Normal, distance = (cf.Position - center.Position):Dot(center.Normal), boost = boost }
+	end
+	return nil
+end
+
 local function driveStep(dt: number)
 	local d = drive
 	if not d then
@@ -409,26 +497,55 @@ local function driveStep(dt: number)
 		d.heading = headingOf(hitbox.CFrame)
 		d.boostTime = 0
 		d.drifting = false
+		d.lastVelocity = nil
+		d.wallGrace = 0.5
 		return
 	end
+	d.wallGrace = math.max(0, d.wallGrace - dt)
 
 	local canDrive = raceState:GetAttribute("Phase") == "Racing" and player:GetAttribute("Finished") ~= true
 	local throttle = if canDrive then d.seat.ThrottleFloat else 0
 	local steer = if canDrive then d.seat.SteerFloat else 0
 
 	-- What's under the kart?
-	local hit = workspace:Raycast(hitbox.Position, Vector3.new(0, -3, 0), rayParams)
-	local grounded = hit ~= nil
-	local groundUp = if hit then hit.Normal else Vector3.yAxis
-	if hit and hit.Instance:GetAttribute("BoostPad") then
+	local ground = senseGround(d)
+	local grounded = ground ~= nil
+	if ground and ground.boost then
 		d.boostTime = math.max(d.boostTime, HANDLING.PAD_BOOST_TIME)
 	end
-
-	local yaw = CFrame.Angles(0, d.heading, 0)
-	local forward, right = yaw.LookVector, yaw.RightVector
+	-- Ease the kart's "up" toward the road's tilt (or back to level in the air)
+	local targetUp = if ground then ground.normal else Vector3.yAxis
+	d.groundUp = d.groundUp:Lerp(targetUp, 1 - math.exp(-HANDLING.TILT_SPEED * dt)).Unit
+	local up = if grounded then d.groundUp else Vector3.yAxis
 	local velocity = hitbox.AssemblyLinearVelocity
+
+	-- Hit a wall? If something shoved the kart sideways since last frame, bounce
+	-- off a little and turn to slide along the wall instead of grinding into it.
+	if grounded and d.wasGrounded and d.lastVelocity and d.wallGrace <= 0 then
+		local shove = velocity - d.lastVelocity
+		shove -= up * shove:Dot(up) -- ignore up/down bumps
+		if shove.Magnitude > WALL_HIT_MIN then
+			local away = shove.Unit
+			local look = CFrame.Angles(0, d.heading, 0).LookVector
+			local into = look:Dot(away)
+			if into < -0.05 then
+				local along = look - away * into
+				if along.Magnitude > 0.05 then
+					d.heading += angleDiff(headingOfDirection(along), d.heading) * HANDLING.WALL_SLIDE
+				end
+			end
+			velocity += away * math.min(shove.Magnitude * HANDLING.WALL_BOUNCE, 12)
+			d.shake = math.clamp(shove.Magnitude / 40, 0.15, 1)
+		end
+	end
+
+	-- Forward / right along the road surface
+	local flatLook = CFrame.Angles(0, d.heading, 0).LookVector
+	local forward = (flatLook - up * flatLook:Dot(up)).Unit
+	local right = forward:Cross(up)
 	local forwardSpeed = velocity:Dot(forward)
 	local sideSpeed = velocity:Dot(right)
+	local upSpeed = velocity:Dot(up)
 
 	-- Drifting: hold the drift button while turning at speed.
 	-- The longer you hold it, the bigger the boost when you let go.
@@ -501,20 +618,29 @@ local function driveStep(dt: number)
 	end
 	d.heading -= turn * HANDLING.TURN_RATE * dt
 
-	-- Apply velocity (gravity still handles up/down; jumps are a bit floaty on purpose)
-	local horizontal = forward * forwardSpeed + right * sideSpeed
-	local verticalSpeed = velocity.Y
-	if not grounded then
-		verticalSpeed += workspace.Gravity * (1 - HANDLING.AIR_GRAVITY) * dt
+	-- Up/down: on the road, a spring holds the kart at its ride height (so it
+	-- follows hills and banks smoothly). In the air, gravity is softened so
+	-- jumps feel a bit floaty on purpose.
+	if ground then
+		upSpeed = math.clamp((d.rideHeight - ground.distance) * HANDLING.HOVER_STIFFNESS, -40, 40)
+	else
+		upSpeed += workspace.Gravity * (1 - HANDLING.AIR_GRAVITY) * dt
 	end
-	hitbox.AssemblyLinearVelocity = Vector3.new(horizontal.X, verticalSpeed, horizontal.Z)
+	local newVelocity = forward * forwardSpeed + right * sideSpeed + up * upSpeed
+	d.lastVelocity = newVelocity
+	d.wasGrounded = grounded
+	if grounded then
+		-- cancel the gravity physics is about to add; the spring does the holding up
+		newVelocity += Vector3.yAxis * (workspace.Gravity * dt)
+	end
+	hitbox.AssemblyLinearVelocity = newVelocity
 
 	-- Point the kart along the heading, tilted to match the ground
-	local up = if grounded then groundUp else Vector3.yAxis
+	local tiltUp = d.groundUp
 	local look = CFrame.Angles(0, d.heading, 0).LookVector
-	local alongGround = look - up * look:Dot(up)
+	local alongGround = look - tiltUp * look:Dot(tiltUp)
 	if alongGround.Magnitude > 1e-3 then
-		local target = CFrame.lookAt(Vector3.zero, alongGround.Unit, up)
+		local target = CFrame.lookAt(Vector3.zero, alongGround.Unit, tiltUp)
 		if d.drifting then
 			target *= CFrame.Angles(0, -d.driftDir * math.rad(HANDLING.DRIFT_BODY_ANGLE), 0)
 		end
@@ -559,7 +685,12 @@ local function cameraStep(dt: number)
 	local previous = d.camPos
 	local camPos: Vector3 = if previous then previous:Lerp(desired, 1 - math.exp(-CAMERA.SMOOTHING * dt)) else desired
 	d.camPos = camPos
-	camera.CFrame = CFrame.lookAt(camPos, pos + look * CAMERA.LOOK_AHEAD + Vector3.new(0, 2, 0))
+	local shake = Vector3.zero
+	if d.shake > 0 then -- little rattle after bumping a wall
+		d.shake = math.max(0, d.shake - dt * 3)
+		shake = Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * (d.shake * 1.2)
+	end
+	camera.CFrame = CFrame.lookAt(camPos + shake, pos + look * CAMERA.LOOK_AHEAD + Vector3.new(0, 2, 0))
 	local targetFov = if d.boostTime > 0 then CAMERA.BOOST_FOV else CAMERA.FOV
 	camera.FieldOfView += (targetFov - camera.FieldOfView) * (1 - math.exp(-6 * dt))
 end
@@ -619,6 +750,7 @@ local function startDriving(seat: VehicleSeat, humanoid: Humanoid)
 	end
 
 	local sparks, flame, effects = createEffects(hitbox)
+	local rideHeight = kart:GetAttribute("RideHeight")
 	drive = {
 		kart = kart,
 		hitbox = hitbox,
@@ -636,6 +768,12 @@ local function startDriving(seat: VehicleSeat, humanoid: Humanoid)
 		sparks = sparks,
 		flame = flame,
 		effects = effects,
+		rideHeight = if typeof(rideHeight) == "number" then rideHeight else 1.1,
+		groundUp = hitbox.CFrame.UpVector,
+		lastVelocity = nil,
+		wasGrounded = false,
+		wallGrace = 0.5,
+		shake = 0,
 	}
 
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
@@ -671,7 +809,8 @@ if player.Character then
 	task.spawn(watchCharacter, player.Character)
 end
 
-RunService.Heartbeat:Connect(function(dt)
+-- Runs right before each physics step, so the velocity we set is exactly what gets simulated
+RunService.PreSimulation:Connect(function(dt)
 	local d = drive
 	if d and not d.hitbox.Parent then
 		stopDriving()
@@ -679,6 +818,40 @@ RunService.Heartbeat:Connect(function(dt)
 		driveStep(dt)
 	end
 end)
+
+-- Confetti burst from your kart when you cross the finish line (only you see it)
+local function celebrate()
+	local d = drive
+	local attachment = d and d.hitbox:FindFirstChild("Center")
+	if not attachment then
+		return
+	end
+	local confetti = Instance.new("ParticleEmitter")
+	confetti.Name = "Confetti"
+	confetti.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 80, 80)),
+		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 220, 60)),
+		ColorSequenceKeypoint.new(0.5, Color3.fromRGB(80, 220, 120)),
+		ColorSequenceKeypoint.new(0.75, Color3.fromRGB(70, 160, 255)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 255)),
+	})
+	confetti.Lifetime = NumberRange.new(1.2, 2)
+	confetti.Speed = NumberRange.new(25, 45)
+	confetti.SpreadAngle = Vector2.new(50, 50)
+	confetti.EmissionDirection = Enum.NormalId.Top
+	confetti.Acceleration = Vector3.new(0, -40, 0)
+	confetti.Drag = 1.5
+	confetti.Size = NumberSequence.new(0.5)
+	confetti.Rotation = NumberRange.new(0, 360)
+	confetti.RotSpeed = NumberRange.new(-200, 200)
+	confetti.LightEmission = 0.3
+	confetti.Rate = 0
+	confetti.Parent = attachment
+	confetti:Emit(80)
+	task.delay(3, function()
+		confetti:Destroy()
+	end)
+end
 
 ------------------------------------------------------------------------
 -- RACE EVENTS
@@ -720,12 +893,17 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 			d.boostTime = 0
 			d.drifting = false
 			d.camPos = nil
+			d.groundUp = Vector3.yAxis
+			d.lastVelocity = nil
+			d.wasGrounded = false
+			d.wallGrace = 0.5
 		end
 	elseif action == "RacerFinished" then
 		local userId, name, place, finishTime = ...
 		if userId == player.UserId then
 			myFinishTime = finishTime
 			showBig("FINISH!  " .. ordinal(place), PLACE_COLORS[place] or WHITE, 1.6)
+			celebrate()
 		else
 			showFeed(string.format("%s finished %s!", tostring(name), ordinal(place)))
 		end
@@ -788,4 +966,51 @@ RunService.RenderStepped:Connect(function()
 		end
 		placeSubLabel.Text = "of " .. numberAttr(raceState, "RacerCount")
 	end
+end)
+
+------------------------------------------------------------------------
+-- LOBBY (bounce pads, spinning display karts)
+------------------------------------------------------------------------
+local lastBounce = 0
+local function hookBouncePad(pad: BasePart)
+	pad.Touched:Connect(function(hit)
+		local character = player.Character
+		if not character or not hit:IsDescendantOf(character) or os.clock() - lastBounce < 0.5 then
+			return
+		end
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		local root = character:FindFirstChild("HumanoidRootPart")
+		local power = pad:GetAttribute("BouncePower")
+		if not humanoid or humanoid.SeatPart or not root or not root:IsA("BasePart") or typeof(power) ~= "number" then
+			return
+		end
+		lastBounce = os.clock()
+		humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+		local v = root.AssemblyLinearVelocity
+		root.AssemblyLinearVelocity = Vector3.new(v.X, power, v.Z)
+	end)
+end
+
+task.spawn(function()
+	local lobby = workspace:WaitForChild("RaceLobby", 30)
+	if not lobby then
+		return
+	end
+	local spinners: { Model } = {}
+	for _, item in lobby:GetDescendants() do
+		if item:IsA("Model") and typeof(item:GetAttribute("Spin")) == "number" then
+			table.insert(spinners, item)
+		elseif item:IsA("BasePart") and item:GetAttribute("BouncePower") then
+			hookBouncePad(item)
+		end
+	end
+	-- Spinning them here (not on the server) keeps the motion perfectly smooth
+	RunService.RenderStepped:Connect(function(dt)
+		for _, model in spinners do
+			local speed = model:GetAttribute("Spin")
+			if model.Parent and typeof(speed) == "number" then
+				model:PivotTo(model:GetPivot() * CFrame.Angles(0, math.rad(speed) * dt, 0))
+			end
+		end
+	end)
 end)
