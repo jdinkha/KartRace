@@ -2,6 +2,22 @@
 
 Roblox kart racing game written in Luau. The scripts live in the place file (`KartRace.rbxlx`) and are edited in Studio through the Roblox Studio MCP (the Rojo `src/` files were removed).
 
+## Working rules
+- The owner is new to Roblox development. Explain changes in plain language and say what to test in Studio.
+- Edit scripts directly in Studio through the Roblox Studio MCP. There are no local script files.
+- Make small, focused changes. Before a big feature or refactor, write a short plan and wait for the owner's OK.
+- For open-ended design work (new track areas, shortcuts, items, rewards, UI), come up with 2–3 genuinely different ideas, say which you'd pick and why, and let the owner choose. For bug fixes and small tweaks, just do it.
+- Keep tunable values in the tables at the top of each script (SETTINGS, TRACK, HANDLING, BOTS, PICKUPS, SOUNDS, THEMES). If a value is copied between server and client, change both.
+- Validate anything the client sends to the server; clients can be exploited.
+- Audience is young players: keep content age-appropriate and follow Roblox monetization rules (e.g. disclose odds for random paid items).
+
+## Before saying a change is done
+1. Playtest through the MCP and check the Output for new errors (ignore the known Studio plugin errors listed under Testing).
+2. Track changes: run TrackCheck on that track. Grid/standings changes: run GridCheck.
+3. Visual changes: take a screenshot and look at it.
+4. Tell the owner what to try by hand. Only a person can judge if it's fun.
+5. If you changed a system described in this file, update this file to match.
+
 ## Track design: every track is a level, not a circuit
 The goal is for each track to feel like a level in a video game (think of driving through a 3D Zelda dungeon or a Mario Kart world). It should not feel like a real-world circuit (NASCAR/F1: one line of constant width with a few turns). It's still a race from the start line to one finish line, but the trip goes through distinct places.
 - **A string of named areas.** Split each track into about 4–6 areas. Each gets its own name (on a `Banner`), its own look and its own challenge. Change the pace between them: open arena → tight cliff road → cave → big jump.
@@ -13,21 +29,22 @@ The goal is for each track to feel like a level in a video game (think of drivin
   - an icy rail-less slide (Frosty)
   - a grass cut that's only fast if you hit the boost pad first (Skyway)
   - a risky geyser tube (Magma)
+  - a windy, rail-less cliff ledge with one sharp 90° corner and a boost pad right before it as a trap: boost into the corner and you fly off (Frosty's Windy Ledge)
 
   A good shortcut saves a few seconds but costs something: risk of falling, slow off-road, hazards, or needing a boost.
-- **Off-road instead of bare walls.** Roads have slow off-road strips (grass, ash, snow, mud) between the road and the walls (`OFFROAD`); the walls sit at their outer edge. Boosting ignores off-road, so a boost pad before an off-road cut makes it a real shortcut.
+- **Off-road instead of bare walls.** Roads have slow off-road strips (grass, ash, snow, mud) between the road and the walls (`OFFROAD`); the walls sit at their outer edge. Boosting ignores off-road, so a boost pad before an off-road cut makes it a real shortcut. Make the non-drivable parts feel like you're driving in a real world rather than driving on a NASCAR track.
 - **Race length.** A race should take about 1.5–2 minutes: around 7000–8500 studs of main road, with several distinct areas.
 - **Hazards that fit the theme, with patterns players can learn.** Timed things warn before they fire (geysers bubble first). Moving things move steadily (fire bars, snowballs). Always leave a clear line through, and never place an unavoidable hit.
 - **Height and landmarks.** Climb and drop, cross over or under other parts of the track, and give players something big to head for (the volcano, the sky rink).
-- **Kid-friendly punishment.** Hazards slow you, spin you out, or send you back a little ("TOO HOT!", "WHOOPS!"). Nothing scary or violent.
+- **Kid-friendly punishment.** Hazards slow you, spin you out, or send you back a little ("TOO HOT!", "WHOOPS!"). Nothing violent, but something a little mature, like a haunted house, is OK.
 - **Room for a dozen karts.** Races have up to 12 racers (`MAX_RACERS`). The main road is never narrower than `ROAD_WIDTH` (46, about eight karts side by side). Only branches can be narrower (~26–32), because only part of the pack takes them.
 
-**The one exception is Rainbow Skyway: the "vanilla" track** (like Mario Circuit). It's deliberately plain: wide (54), gentle and nearly straight, with walls everywhere and no hazards. Its extras stay simple: grass verges, a few cloud pillars to weave between, boost pads and one grass cut. It should still be the prettiest track. New tracks should follow the level style above, not copy Skyway.
+**The one exception is Rainbow Skyway: the "vanilla" track** (like Mario Circuit). It's deliberately plain: wide (54), gentle and nearly straight, with walls everywhere and no hazards. Its extras stay simple: grass verges, a few cloud pillars to weave between, boost pads and one grass cut. It should still be a pretty track. New tracks should follow the level style above, not copy Skyway.
 
 Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vote offers 3 of them at random (`VOTE_CHOICES`):
 - **Rainbow Skyway** (Sky, vanilla, ~8600 studs): Into the Clouds (sweeping climb under a giant rainbow) → boost straight → Sunrise Curve → Cloud Bridge → Starlight Bend/Straight (cloud pillars) → Meadow Corner (Meadow Cut grass shortcut) → Sunset Sweep → Home Stretch. The grid is four karts wide.
 - **Magma Mountain** (Lava, ~8400): Ember Fields → fork: Cinder Ridge or Lava Tube shortcut → Crater Hall inside the hollow volcano → Magma Depths → Sulfur Flats → Obsidian Bridges (no rails, fire bar) → Basalt Forest → Ashfall Canyon → Lava River Jump. Drop through the jump's hole to land on the Lava Falls Loop below, skipping most of it. Then Fire Temple → Temple Gate finish.
-- **Frosty Peaks** (Snow, ~6900): Avalanche Pass → Pass Gate fork: Crystal Cave or Windy Ledge → Sky Rink → Frozen Bridge → Ski Jump → Snowy Lodge → Forest Clearing fork: Pine Forest or Ice Slide (icy, rail-less) → Snowman Village → Glacier Canyon → Frostbite Hills → finish.
+- **Frosty Peaks** (Snow, ~7070): Avalanche Pass → Pass Gate fork: Crystal Cave (a long winding cavern) or Windy Ledge (strong gusts, then a sharp 90° left with a trap boost pad before it; the corner itself isn't icy) → Sky Rink → Frozen Bridge → Ski Jump → Snowy Lodge → Forest Clearing fork: Pine Forest or Ice Slide (icy, rail-less) → Snowman Village → Glacier Canyon → Frostbite Hills → finish.
 - **Jungle Ruins** (Jungle, ~6800): River Crossing (rope bridges) → Boulder Steps → The Waterfall fork: Cliff Road or the Secret Cave hidden behind the waterfall → Temple of the Sun (a hall inside the hollow pyramid, water geysers) → Temple Stairs (boulders) → The Ravine: long rope bridge, or the Ravine Leap (needs a boost) → Mud Flats (all mud, with a line of boost pads) → Vine Tunnel → Crocodile Creek → finish.
 
 ## Layout
@@ -46,7 +63,7 @@ Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vot
   - `Burn`: lava, sends you back to your respawn point.
   - `Bonk`: fire bars, snowballs and boulders, knock you aside and spin you out.
   - `Launch`: geysers (lava, or water in the jungle), throw you up.
-  - `Wind`: pushes you sideways during gusts.
+  - `Wind`: pushes you sideways during gusts (`push` studs/s², applied once per frame even where two wind zones overlap). A few snow streaks warn 1 s before each gust; during it the streaks thicken, the wind howls and the camera rattles. Windy Ledge uses `push` 90, enough to blow an unsteered kart off in about a second.
 
   The server builds hazards static and never moves them. Each client animates the moving ones in step with `workspace:GetServerTimeNow()` (attributes `Origin`/`Speed`, `From`/`To`/`Period`/`Offset`, `Period`/`Active`/`Offset`/`Height`), so everyone sees the same thing.
 - Checkpoints vs respawn points: checkpoints (must be passed in order) only go on road every route shares. There are none on main road that a branch or a `Skippable` drop shortcut skips, none in a gap-jump run-up (`JUMP_RUNWAY`), and none next to a hazard that reaches the middle of the road (`HAZARD_CLEARANCE`). `RespawnPoints` are optional gates on every route, branches included. You respawn at whichever gate you went through last.
@@ -64,9 +81,13 @@ Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vot
   - Items: one held at a time; a box gives a random one of `ITEMS`, all equally likely, whatever your place. `Boost` starts on the client the moment you press E (it owns its kart); the server just takes the item away. `TripleCoin` adds 3 coins on the server. Bots use theirs 1–4 s after grabbing it.
   - Payout (`payCoins`): finishers are paid as they cross the line, everyone else when the race ends. Amount = coins × 2 / 1.5 / 1.25 for 1st / 2nd / 3rd, rounded up; everyone else ×1. Totals are saved with `IncrementAsync` in the `Coins_v1` DataStore (key = user id) and shown as leaderstats `Coins`. Players who leave mid-race still get theirs saved. Spending coins later (a shop) should use `UpdateAsync` on the same key and refuse to go below 0.
 - Controls while driving: W/S gas and brake, A/D steer, Space drift, E use item, Q look back (hold), R respawn. Gamepad: RB drift, X item, LB look back, Y respawn. On touch screens, ContextActionService adds DRIFT/ITEM/BACK/RESET buttons.
+- Karts and characters:
+  - `buildKart` makes the "default" kart (rounded nose and sides, racing stripe, headlights, chunky tyres with hubcaps in the kart's colour, spoiler, twin exhausts). Players' karts and the lobby showroom use it too. Later kart customisation should add other shapes next to it, keeping the hitbox and seat where they are.
+  - The `Mascots` ModuleScript inside RaceServer holds the 14 characters as simple shape lists (rounded "Egg" parts are Parts with a Sphere `SpecialMesh`), plus `Mascots.build`, which makes both bot drivers and grandstand fans. Keep new characters friendly and original: the frog and cat were redesigned once because they looked too much like a meme and a famous brand.
+  - Grandstand fans are the theme's characters (`Crowd` in `THEMES`) in random team colours, arms up. Their parts are anchored; the fan model's `Cheer` attribute sets when it hops. The client makes them hop with `workspace:BulkMoveTo`, only when the camera is within 250 studs.
 - Kart physics: the kart hovers at its `RideHeight` attribute on raycast springs (`senseGround` / `driveStep`, run in `RunService.PreSimulation`); the hitbox only ever touches walls. Wall hits are detected from unexpected velocity changes and deflect the kart. On off-road the top speed drops to `OFFROAD_SPEED` (unless boosting) and dust in the ground's colour flies off the wheels.
 - CPU racers (bots): every race has 12 karts, so there are `MAX_RACERS` − (number of players) bots. Settings are in the `BOTS` table at the top of `RaceServer`.
-  - Bots have no Player or Humanoid. The server owns their karts and drives them in its own `RunService.PreSimulation` loop (`driveBot`) with the same hover physics as players. Their karts carry a `Bot` attribute, and the driver is welded parts with a name tag (`addBotDriver`).
+  - Bots have no Player or Humanoid. The server owns their karts and drives them in its own `RunService.PreSimulation` loop (`driveBot`) with the same hover physics as players. Their karts carry a `Bot` attribute. Each bot drives as its own cartoon character (`BOTS.MASCOTS`: Pickle the frog, Comet the penguin, Bolt the robot…), welded into the kart with a name tag (`addBotDriver`), and its kart is the character's colour.
   - A bot keeps its name ("Blaze (CPU)"), `skill` (top-speed multiplier) and favourite lane from race to race.
   - Bots follow the main road only (`currentPath` = the main route that `buildTrack` returns) and never take branches. They pick a lane clear of obstacles (`scanForBots` collects rocks, posts and lava, plus fire bars, rollers and geysers as moving hazards). They slow for tight corners, use boost pads, and boost by themselves before gap jumps.
   - Hazards hit bots too. Clients animate the moving hazards, so the server works out where they are from the same attributes and the server clock. Wind and bumping work the same way.
@@ -84,7 +105,7 @@ Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vot
 - Lobby: server updates `StatusScreen` and `PodiumName1..3` labels; the client animates models with a `Spin` attribute and handles parts with a `BouncePower` attribute.
 - Audio is all client-side, in `RaceClient`. Every sound's id, volume and optional `stretch` is in the `SOUNDS` table at the top; `playSound` / `loopSound` play them. `stretch` makes a sound last longer at the same pitch: it slows the sound down and raises the pitch back with a `PitchShiftSoundEffect`.
   - Every kart gets a looping engine sound whose pitch follows its speed (other players' karts too). Engines are quieter when idling, and other karts' engines are quieter and fade with distance sooner (`RollOffMinDistance` 6). Otherwise 12 engines on the grid are deafening.
-  - Your own kart also gets: tyre squeal while drifting, a whoosh on boosts, a thump when landing, wall/obstacle hits, a boing when bumping karts, and hazard sounds.
+  - Your own kart also gets: tyre squeal while drifting, howling wind during gusts, a whoosh on boosts, a thump when landing, wall/obstacle hits, a boing when bumping karts, and hazard sounds.
   - Race sounds: countdown beeps (higher pitch for GO), a warpy whoosh on respawn, a coin blip (higher with every coin), a crystal shatter for item boxes (other racers' grabs play from where they happen), a jingle when you get an item, a victory fanfare when you finish, and a sad trombone on time up.
   - In the lobby, material-matched footsteps replace Roblox's default `Running` sound, which is muted.
   - Only use sounds that are free and public in the Creator Store. Prefer the licensed ProSoundEffects/APM uploads or `rbxasset://sounds/...` built-ins. Check a new id loads in Studio (`IsLoaded`, `TimeLength > 0`) before using it.
@@ -97,11 +118,3 @@ Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vot
 - The place is published, so Studio prints DataStore "API access" messages for the leaderboard (`StudioAccessToApisNotAllowed`). That's expected unless "Enable Studio Access to API Services" is turned on (Game Settings → Security). With the place opened from the `.rbxlx` file instead of the published place, DataStores are off entirely ("You must publish this place"), so wins and coins aren't saved.
 - Studio also prints errors from its own built-in plugins, such as `GameSettingsPlugin … Failed to parse secrets` and `builtin_ViewSelector … attempt to index nil with 'Parent'`. They don't come from the game; ignore them.
 - `loadstring` only works in Edit mode (the game stopped), not on the Play server.
-
-## Working rules
-- The owner is new to Roblox development. Explain changes in plain language and say what to test in Studio.
-- Edit scripts directly in Studio through the Roblox Studio MCP. There are no local script files. Remind the owner to save the place (Ctrl+S) so `KartRace.rbxlx` gets the changes before committing.
-- Keep tunable values in the SETTINGS / TRACK / HANDLING tables at the top of each script.
-- Validate anything the client sends to the server; clients can be exploited.
-- Audience is young players: keep content age-appropriate and follow Roblox monetization rules (e.g. disclose odds for random paid items).
-- Make the tracks truly unique. Give each one a specific name and theme, make it fun and wide enough for 12 players (see "Track design" above).
