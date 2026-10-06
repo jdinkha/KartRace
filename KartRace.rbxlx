@@ -1004,7 +1004,9 @@ local SOUNDS = {
 	Fire = { "rbxassetid://9066038215", 0.6 }, -- lava and fire bars (a sizzle)
 	Snowball = { "rbxasset://sounds/splat.wav", 0.9 },
 	Geyser = { "rbxasset://sounds/Launching rocket.wav", 0.6 },
-	Gust = { "rbxasset://sounds/action_falling.mp3", 0.7 }, -- wind howling while a gust blows you sideways
+	Ribbit = { "rbxassetid://9113859723", 0.6 }, -- a hopping frog leaps (and when one bonks you)
+	Croak = { "rbxassetid://9113857965", 1 }, -- a frog idol's warning, just before its tongue lashes out
+	Gust = { "rbxasset://sounds/action_falling.mp3", 1.4 }, -- wind howling while a gust blows you sideways (and around every windy stretch)
 	Respawn = { "rbxassetid://76613566776682", 0.6 }, -- a warpy whoosh as you're put back on the track
 	CountdownBeep = { "rbxassetid://124455167265111", 0.6, 1.5 }, -- 3, 2, 1 (and higher for GO!)
 	Victory = { "rbxassetid://1836473422", 0.6 }, -- you crossed the finish line!
@@ -1013,7 +1015,7 @@ local SOUNDS = {
 	StepStone = { "rbxassetid://87061775498714", 1.1 }, -- walking on anything else
 	Coin = { "rbxassetid://93529351909119", 0.5 }, -- grabbing a coin (a little higher with every coin)
 	ItemGet = { "rbxassetid://17780130154", 0.7 }, -- the item you got from a box
-	BoxBreak = { "rbxassetid://9114592252", 0.4 }, -- an item box shattering (played higher, so it sounds like crystal)
+	BoxBreak = { "rbxassetid://9120801590", 1 }, -- an item box cracking open (a wooden snap and splinter)
 }
 -- Floors that get the soft grassy footstep
 local GRASSY = {
@@ -1469,6 +1471,7 @@ type DriveState = {
 	lastHitSound: number, -- when a wall hit last made a sound (so scraping isn't a machine gun)
 	slide: number, -- seconds of slippery tyres left after bumping another kart
 	lookingBack: boolean, -- is the camera looking behind the kart?
+	lastCrash: number, -- when we last told the server we crashed into something
 }
 
 local drive: DriveState? = nil
@@ -1555,7 +1558,7 @@ end
 type Ground = {
 	normal: Vector3, -- which way is "up" on the road here
 	distance: number, -- from the kart's centre down to the road
-	boost: boolean, -- touching a boost pad?
+	boost: number, -- seconds of boost from the pad you're on (0 = not on one)
 	grip: number, -- 1 = normal road, lower = slippery (ice)
 	offRoad: boolean, -- on slow grass / ash / snow / mud?
 	color: Color3?, -- colour of the surface (for the dust)
@@ -1575,8 +1578,16 @@ local function senseGround(d: DriveState): Ground?
 	-- look a bit further when dropping fast, so landings get caught in time
 	local ray = down * (d.rideHeight + HANDLING.STICK_DISTANCE + falling * 0.05)
 
+	-- How long a boost pad under one of the rays gives (most give PAD_BOOST_TIME)
+	local function padTime(hit: RaycastResult?): number
+		if not hit or not hit.Instance:GetAttribute("BoostPad") then
+			return 0
+		end
+		local time = hit.Instance:GetAttribute("BoostTime")
+		return if typeof(time) == "number" then time else HANDLING.PAD_BOOST_TIME
+	end
 	local center = workspace:Raycast(cf.Position, ray, rayParams)
-	local boost = center ~= nil and center.Instance:GetAttribute("BoostPad") == true
+	local boost = padTime(center)
 	local grip = if center then gripOf(center.Instance) else 1
 	local offRoad = center ~= nil and center.Instance:GetAttribute("OffRoad") == true
 	local color = if center then (center.Instance :: BasePart).Color else nil
@@ -1587,9 +1598,7 @@ local function senseGround(d: DriveState): Ground?
 		if hit then
 			corners[i] = hit
 			cornerCount += 1
-			if hit.Instance:GetAttribute("BoostPad") then
-				boost = true
-			end
+			boost = math.max(boost, padTime(hit))
 		end
 	end
 
@@ -1651,6 +1660,33 @@ local function knockBack(d: DriveState, velocity: Vector3, from: Vector3, power:
 	return Vector3.new(velocity.X, 0, velocity.Z) * 0.35 + away.Unit * power + Vector3.yAxis * lift
 end
 
+-- Solid obstacles (rocks, crystals, snowmen...) carry an "Obstacle" attribute
+local obstacleParams = OverlapParams.new()
+obstacleParams.FilterType = Enum.RaycastFilterType.Include
+
+-- Is the kart up against an obstacle (not just a wall)?
+local function touchingObstacle(d: DriveState): boolean
+	local walls = if d.track then d.track:FindFirstChild("Walls") else nil
+	if not walls then
+		return false
+	end
+	obstacleParams.FilterDescendantsInstances = { walls }
+	for _, part in workspace:GetPartBoundsInBox(d.hitbox.CFrame, d.hitbox.Size + Vector3.new(3, 2, 3), obstacleParams) do
+		if part:GetAttribute("Obstacle") then
+			return true
+		end
+	end
+	return false
+end
+
+-- Crashed into an obstacle or hazard: the server takes some coins (and everyone sees them spill)
+local function reportCrash(d: DriveState)
+	if os.clock() - d.lastCrash > 1 then
+		d.lastCrash = os.clock()
+		raceEvent:FireServer("Crash")
+	end
+end
+
 -- Whatever hazards the kart is touching right now act on its velocity
 local function touchHazards(d: DriveState, velocity: Vector3, dt: number): Vector3
 	local hazards = if d.track then d.track:FindFirstChild("Hazards") else nil
@@ -1681,9 +1717,12 @@ local function touchHazards(d: DriveState, velocity: Vector3, dt: number): Vecto
 			end
 		elseif kind == "Bonk" then
 			velocity = knockBack(d, velocity, part.Position, HANDLING.BONK_SPEED, 15)
-			playSound(if part.Name == "Snowball" then "Snowball" elseif part.Name == "Boulder" then "WallHit" else "Fire", d.hitbox, 1.2)
+			reportCrash(d)
+			local sound = if part.Name == "Snowball" then "Snowball" elseif part.Name == "Boulder" then "WallHit" elseif part.Name == "Frog" then "Ribbit" elseif part.Name == "Lash" then "KartBump" else "Fire"
+			playSound(sound, d.hitbox, 1.2)
 		elseif kind == "Launch" then
 			velocity = knockBack(d, velocity, part.Position, HANDLING.BONK_SPEED * 0.4, HANDLING.LAUNCH_SPEED)
+			reportCrash(d)
 			playSound("Geyser", d.hitbox)
 		end
 	end
@@ -1696,7 +1735,7 @@ local function touchHazards(d: DriveState, velocity: Vector3, dt: number): Vecto
 		end
 	end
 	if gust then
-		d.shake = math.max(d.shake, 0.3)
+		d.shake = math.max(d.shake, 0.5)
 	end
 	return velocity
 end
@@ -1776,11 +1815,11 @@ local function driveStep(dt: number)
 	else
 		d.airTime += dt
 	end
-	if ground and ground.boost then
+	if ground and ground.boost > 0 then
 		if d.boostTime < 0.2 then
 			playSound("Boost", hitbox)
 		end
-		d.boostTime = math.max(d.boostTime, HANDLING.PAD_BOOST_TIME)
+		d.boostTime = math.max(d.boostTime, ground.boost)
 	end
 	-- Ease the kart's "up" toward the road's tilt (or back to level in the air)
 	local targetUp = if ground then ground.normal else Vector3.yAxis
@@ -1804,6 +1843,9 @@ local function driveStep(dt: number)
 				end
 			end
 			velocity += away * math.min(shove.Magnitude * HANDLING.WALL_BOUNCE, 12)
+			if touchingObstacle(d) then -- (scraping a wall is free; crashing into a rock isn't)
+				reportCrash(d)
+			end
 			d.shake = math.clamp(shove.Magnitude / 40, 0.15, 1)
 			if os.clock() - d.lastHitSound > 0.15 then
 				d.lastHitSound = os.clock()
@@ -1828,12 +1870,18 @@ local function driveStep(dt: number)
 	local upSpeed = velocity:Dot(up)
 
 	-- Drifting: hold the drift button while turning at speed.
-	-- The longer you hold it, the bigger the boost when you let go.
+	-- The longer you hold it, the bigger the boost when you let go. On
+	-- off-road (mud, grass, snow) you can still drift (from a lower speed, as
+	-- it's slow going there), but it charges no boost: that would skip the slow-down.
+	local onOffRoad = ground ~= nil and ground.offRoad
+	local driftMin = HANDLING.DRIFT_MIN_SPEED * (if onOffRoad then HANDLING.OFFROAD_SPEED else 1)
 	if d.drifting then
-		if grounded then
+		if onOffRoad then
+			d.driftTime = 0
+		elseif grounded then
 			d.driftTime += dt
 		end
-		if not canDrive or forwardSpeed < HANDLING.DRIFT_MIN_SPEED * 0.6 then
+		if not canDrive or forwardSpeed < driftMin * 0.6 then
 			d.drifting = false -- lost too much speed (e.g. hit a wall): no boost
 		elseif not driftHeld then
 			if d.driftTime >= HANDLING.MINI_TURBO_2 then
@@ -1845,7 +1893,7 @@ local function driveStep(dt: number)
 			end
 			d.drifting = false
 		end
-	elseif driftHeld and canDrive and grounded and forwardSpeed > HANDLING.DRIFT_MIN_SPEED and math.abs(steer) > 0.3 then
+	elseif driftHeld and canDrive and grounded and forwardSpeed > driftMin and math.abs(steer) > 0.3 then
 		d.drifting = true
 		d.driftDir = if steer > 0 then 1 else -1
 		d.driftTime = 0
@@ -2149,6 +2197,7 @@ local function startDriving(seat: VehicleSeat, humanoid: Humanoid)
 		lastHitSound = 0,
 		slide = 0,
 		lookingBack = false,
+		lastCrash = 0,
 	}
 
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
@@ -2200,10 +2249,39 @@ local moverConnection: RBXScriptConnection? = nil
 local function addMover(item: Instance)
 	if item:GetAttribute("Origin") or item:GetAttribute("From") or item:FindFirstChildOfClass("ParticleEmitter") then
 		table.insert(movers, item)
+		if item:GetAttribute("Howl") and not item:FindFirstChild("Howl") then
+			local howl = loopSound("Gust", item, true) -- the wind howling round this windy stretch (louder in gusts)
+			howl.Name = "Howl"
+			howl.Volume = 0.2
+			howl.RollOffMaxDistance = 150
+		end
 	end
 end
 
 local STAND_UP = CFrame.Angles(0, 0, math.rad(90)) -- turns a cylinder upright
+local hopping: { [Instance]: boolean } = {} -- frogs in the middle of a leap (so each leap ribbits once)
+local croaking: { [Instance]: boolean } = {} -- frog idols warning that they're about to lash
+local throatSize: { [Instance]: Vector3 } = {}
+local THROAT_CALM, THROAT_ANGRY = Color3.fromRGB(245, 245, 245), Color3.fromRGB(255, 30, 30) -- a frog idol's throat, resting and about to lash
+
+-- Where a hopping frog is right now (same as hopAt in RaceServer, which bots
+-- use): it crosses From -> To in `Hops` hops, then hops back. Each hop it
+-- crouches for a moment first, then leaps. Also returns how far through its leap it is.
+local function hopAt(item: Instance, now: number): (Vector3, boolean, number)
+	local from, to = item:GetAttribute("From") :: Vector3, item:GetAttribute("To") :: Vector3
+	local period = math.max(numberAttr(item, "Period"), 0.5)
+	local hops = math.max(numberAttr(item, "Hops"), 1)
+	local phase = ((now + numberAttr(item, "Offset")) % period) / period
+	local going = phase < 0.5
+	local slot = (phase % 0.5) * 2 * hops
+	local hop = math.floor(slot)
+	local air = math.clamp((slot - hop - 0.35) / 0.65, 0, 1)
+	local along = (hop + air) / hops
+	if not going then
+		along = 1 - along
+	end
+	return from:Lerp(to, along) + Vector3.yAxis * math.sin(air * math.pi) * numberAttr(item, "Height"), going, air
+end
 
 local function animateHazards()
 	-- The track gets replaced when a new one wins the vote: pick up its hazards
@@ -2215,6 +2293,9 @@ local function animateHazards()
 		end
 		hazardTrack = track
 		table.clear(movers)
+		table.clear(hopping)
+		table.clear(croaking)
+		table.clear(throatSize)
 		if moverConnection then
 			moverConnection:Disconnect()
 			moverConnection = nil
@@ -2234,6 +2315,47 @@ local function animateHazards()
 		if item:IsA("Model") and typeof(origin) == "CFrame" and item:GetAttribute("Speed") then
 			-- Fire bar: spin around its post
 			item:PivotTo(origin * CFrame.Angles(0, math.rad((numberAttr(item, "Speed") * now) % 360), 0))
+		elseif item:IsA("Model") and typeof(origin) == "CFrame" and item:GetAttribute("Reach") then
+			-- Frog idol: its throat swells and glows and it croaks (a warning), then its tongue lashes across the road
+			local active, t = hazardCycle(item, now)
+			local warning = not active and t > numberAttr(item, "Period") - 1
+			local lash = item:FindFirstChild("Lash")
+			if lash and lash:IsA("BasePart") then
+				lash.CanQuery = active
+				lash.Transparency = if active then 0 else 1
+				if active then
+					local grow = math.clamp(math.min(t / 0.12, (numberAttr(item, "Active") - t) / 0.2), 0.05, 1)
+					local length = numberAttr(item, "Reach") * grow
+					lash.Size = Vector3.new(lash.Size.X, lash.Size.Y, length)
+					lash.CFrame = origin * CFrame.new(0, 0, -length / 2)
+				end
+			end
+			local throat = item:FindFirstChild("Throat")
+			if throat and throat:IsA("BasePart") then
+				throatSize[throat] = throatSize[throat] or throat.Size
+				-- it swells up and goes from white to angry red over the last second... then BAM!
+				local build = if warning then t - (numberAttr(item, "Period") - 1) elseif active then 1 else 0
+				throat.Size = throatSize[throat] * (1 + build * 0.9)
+				throat.Color = THROAT_CALM:Lerp(THROAT_ANGRY, build)
+				throat.Material = if warning or active then Enum.Material.Neon else Enum.Material.SmoothPlastic
+				if warning and not croaking[item] then
+					playSound("Croak", throat)
+				end
+			end
+			croaking[item] = warning
+		elseif item:IsA("Model") and typeof(from) == "Vector3" and typeof(to) == "Vector3" then
+			-- Hopping frog: crouch... leap... crouch... across the road and back
+			local pos, going, air = hopAt(item, now)
+			local dir = if going then to - from else from - to
+			local facing = CFrame.lookAt(pos, pos + Vector3.new(dir.X, 0, dir.Z))
+			if air <= 0 then
+				facing *= CFrame.Angles(math.rad(-15), 0, 0) -- crouched, about to spring
+			end
+			item:PivotTo(facing)
+			if air > 0 and not hopping[item] and item.PrimaryPart then
+				playSound("Ribbit", item.PrimaryPart, 0.9 + math.random() * 0.3, 0.7)
+			end
+			hopping[item] = air > 0
 		elseif item:IsA("Model") and typeof(origin) == "CFrame" then
 			-- Geyser: bubble as a warning, then shoot up a column of lava
 			local column = item:FindFirstChild("Column") :: BasePart?
@@ -2262,12 +2384,22 @@ local function animateHazards()
 			local axis = if path.Magnitude > 0.1 then Vector3.yAxis:Cross(path.Unit) else Vector3.xAxis
 			item.CFrame = CFrame.new(from:Lerp(to, s)) * CFrame.fromAxisAngle(axis, s * path.Magnitude / (item.Size.X / 2))
 		elseif item:IsA("BasePart") then
-			-- Wind: a few snow streaks for a second as a warning, then lots while a gust blows
-			local streaks = item:FindFirstChildOfClass("ParticleEmitter")
-			if streaks then
-				local active, t = hazardCycle(item, now)
-				streaks.Enabled = active or t > numberAttr(item, "Period") - 1
-				streaks.Rate = if active then 60 else 10
+			-- Wind: a few streaks drift past all the time, more for a second as a
+			-- warning, then a storm of streaks and puffs (and a howl) while a gust blows
+			local active, t = hazardCycle(item, now)
+			local warning = not active and t > numberAttr(item, "Period") - 1
+			local streaks = item:FindFirstChild("Gust")
+			if streaks and streaks:IsA("ParticleEmitter") then
+				streaks.Rate = if active then 110 elseif warning then 30 else 3
+			end
+			local puffs = item:FindFirstChild("Flurry")
+			if puffs and puffs:IsA("ParticleEmitter") then
+				puffs.Rate = if active then 22 elseif warning then 5 else 0
+			end
+			local howl = item:FindFirstChild("Howl")
+			if howl and howl:IsA("Sound") then
+				howl.Volume += ((if active then 2 elseif warning then 0.8 else 0.2) - howl.Volume) * 0.15
+				howl.PlaybackSpeed = if active then 1.15 else 0.85
 			end
 		end
 	end
@@ -2369,6 +2501,55 @@ end
 ------------------------------------------------------------------------
 -- RACE EVENTS
 ------------------------------------------------------------------------
+-- Coins spilling out of a kart that crashed or was put back on the track
+-- (the server has taken them away). Shown for every kart, not just yours.
+local LOST_COLOR = Color3.fromRGB(255, 80, 80)
+local coinFlashUntil = 0 -- your coin count shows red until then
+local function spillCoins(kart: Instance, lost: number)
+	local box = if kart:IsA("Model") then kart.PrimaryPart else nil
+	if not box then
+		return
+	end
+	local mine = drive ~= nil and drive.kart == kart
+	if mine then
+		coinFlashUntil = os.clock() + 1
+	end
+	local origin = box.Position + Vector3.new(0, 2, 0)
+	for k = 1, lost do
+		local coin = Instance.new("Part")
+		coin.Shape = Enum.PartType.Cylinder
+		coin.Size = Vector3.new(0.35, 2, 2)
+		coin.Color = COIN_COLOR
+		coin.Material = Enum.Material.Neon
+		coin.Anchored = true
+		coin.CanCollide = false
+		coin.CanQuery = false
+		coin.CanTouch = false
+		coin.CFrame = CFrame.new(origin)
+		coin.Parent = workspace
+		-- up and out in a ring, then tumbling down and fading away
+		local angle = (k / lost + math.random() * 0.1) * math.pi * 2
+		local out = Vector3.new(math.cos(angle), 0, math.sin(angle)) * (6 + math.random() * 3)
+		local spin = CFrame.Angles(math.random() * 6, math.random() * 6, 0)
+		TweenService:Create(coin, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = CFrame.new(origin + out * 0.5 + Vector3.new(0, 3.5, 0)) * spin }):Play()
+		task.delay(0.3, function()
+			TweenService:Create(coin, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { CFrame = CFrame.new(origin + out - Vector3.new(0, 3, 0)) * spin * spin, Transparency = 1 }):Play()
+		end)
+		task.delay(k * 0.06, playSound, "Coin", if mine then nil else coin, 0.95 - k * 0.08) -- ching-ching, going down
+		task.delay(1, coin.Destroy, coin)
+	end
+	-- "-5" floating up over the kart
+	local tag = Instance.new("BillboardGui")
+	tag.Size = UDim2.fromOffset(140, 64)
+	tag.StudsOffsetWorldSpace = Vector3.new(0, 6, 0)
+	tag.MaxDistance = 150
+	local label = textLabel({ Size = UDim2.fromScale(1, 1), Text = "-" .. lost, TextColor3 = LOST_COLOR, TextScaled = true }, tag)
+	tag.Parent = box
+	TweenService:Create(tag, TweenInfo.new(0.9), { StudsOffsetWorldSpace = Vector3.new(0, 10, 0) }):Play()
+	TweenService:Create(label, TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+	task.delay(1, tag.Destroy, tag)
+end
+
 local myFinishTime: number? = nil
 
 raceState:GetAttributeChangedSignal("Phase"):Connect(function()
@@ -2442,6 +2623,11 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 		local list = ...
 		if typeof(list) == "table" then
 			showResults(list)
+		end
+	elseif action == "CoinsLost" then
+		local kart, lost = ...
+		if typeof(kart) == "Instance" and typeof(lost) == "number" then
+			spillCoins(kart, lost)
 		end
 	elseif action == "CoinsEarned" then
 		local amount, collected, bonus = ...
@@ -2632,7 +2818,7 @@ RunService.RenderStepped:Connect(function()
 		placeSubLabel.Text = "of " .. numberAttr(raceState, "RacerCount")
 		local coins = shownCoins()
 		coinLabel.Text = coins .. " / " .. HANDLING.MAX_COINS
-		coinLabel.TextColor3 = if coins >= HANDLING.MAX_COINS then COIN_COLOR else WHITE
+		coinLabel.TextColor3 = if os.clock() < coinFlashUntil then LOST_COLOR elseif coins >= HANDLING.MAX_COINS then COIN_COLOR else WHITE
 	end
 	coinFrame.Visible = showRaceHud
 	local itemId = player:GetAttribute("Item")
@@ -2688,7 +2874,7 @@ local function burst(part: BasePart, mine: boolean)
 	if coin then
 		playSound("Coin", if mine then nil else copy, if mine then 1 + shownCoins() * 0.015 else 1)
 	else
-		playSound("BoxBreak", if mine then nil else copy, 1.3)
+		playSound("BoxBreak", if mine then nil else copy, 1.1)
 	end
 	make("ParticleEmitter", {
 		Color = ColorSequence.new(part.Color),
@@ -3448,20 +3634,6 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001843</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ServiceVisibilityService" referent="RBXC6ACF548AF5447F9BD99BFC9F6503F79">
-		<Properties>
-			<BinaryString name="HiddenServices">AAAAAA==</BinaryString>
-			<BinaryString name="VisibleServices">AQAAAAIQAAAAVm9pY2VDaGF0U2VydmljZQ==</BinaryString>
-			<BinaryString name="AttributesSerialize"></BinaryString>
-			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-			<bool name="DefinesCapabilities">false</bool>
-			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-			<string name="Name">ServiceVisibilityService</string>
-			<int64 name="SourceAssetId">-1</int64>
-			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001863</UniqueId>
-		</Properties>
-	</Item>
 	<Item class="LuaWebService" referent="RBXFB74A3C0383144058F8B8A63CE1A2540">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -3567,7 +3739,7 @@ local BOTS = {
 	SKILL = { 0.93, 1.01 }, -- each bot's top speed, as a share of a kart's top speed (random in this range)
 	CATCH_UP = 0.08, -- bots far behind the leading player speed up by up to this much; far-ahead bots slow down
 	LOOK_AHEAD = 22, -- studs ahead on the road a bot aims for (plus more the faster it goes)
-	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty" },
+	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred" },
 	-- The character each one drives as (see the Mascots module inside this script). Their kart is the character's colour.
 	MASCOTS = {
 		Blaze = "Fox",
@@ -3584,6 +3756,7 @@ local BOTS = {
 		Dash = "Dog",
 		Mochi = "Cat",
 		Rusty = "Bear",
+		Fred = "Fred", -- Feelsgood Fred, king of Croaker Swamp
 	},
 	-- How karts handle. Keep these the same as HANDLING in RaceClient!
 	MAX_SPEED = 80,
@@ -3621,6 +3794,8 @@ local PICKUPS = {
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts. Keep the same as HANDLING in RaceClient!
 	RESPAWN_TIME = 1.5, -- seconds before a grabbed coin or box comes back
 	REACH = 5.5, -- how close (studs) a kart's middle has to pass to grab one
+	CRASH_COINS = 3, -- coins dropped for hitting an obstacle or hazard, or being put back on the track (not for bumping karts)
+	CRASH_COOLDOWN = 1.5, -- seconds before you can drop coins again (so one crash only costs once)
 }
 
 ------------------------------------------------------------------------
@@ -3851,6 +4026,40 @@ local THEMES = {
 		ClockTime = 16.2,
 		Atmosphere = { Density = 0.35, Offset = 0.15, Color = Color3.fromRGB(200, 235, 190), Decay = Color3.fromRGB(90, 130, 90), Glare = 0.3, Haze = 1.8 },
 		Clouds = { Cover = 0.5, Density = 0.5, Color = Color3.fromRGB(255, 255, 255) },
+	},
+	Swamp = {
+		Road = Color3.fromRGB(105, 108, 88), -- an old mossy stone causeway
+		RoadMaterial = Enum.Material.Slate,
+		CurbA = Color3.fromRGB(120, 180, 60),
+		CurbB = Color3.fromRGB(70, 58, 42),
+		Wall = Color3.fromRGB(100, 74, 48), -- rickety wooden fences
+		WallStripe = Color3.fromRGB(74, 54, 36),
+		WallMaterial = Enum.Material.Wood,
+		Pillar = Color3.fromRGB(85, 65, 45), -- wooden stilts
+		PillarMaterial = Enum.Material.Wood,
+		OffRoad = Color3.fromRGB(78, 62, 40), -- sticky bog mud
+		OffRoadMaterial = Enum.Material.Mud,
+		Gates = { Color3.fromRGB(150, 255, 90), Color3.fromRGB(255, 200, 90), Color3.fromRGB(120, 220, 255) },
+		Crowd = { "Fred", "Frog", "Turtle", "Owl" },
+		Ground = Color3.fromRGB(52, 72, 44), -- murky swamp water, just under the road
+		GroundMaterial = Enum.Material.Glass,
+		Hazard = Color3.fromRGB(175, 125, 70), -- open edges get wooden posts
+		HazardDark = Color3.fromRGB(110, 75, 40),
+		EdgePostMaterial = Enum.Material.Wood,
+		Rock = Color3.fromRGB(90, 100, 75),
+		RockMaterial = Enum.Material.Slate,
+		Tunnel = Color3.fromRGB(70, 80, 62),
+		TunnelMaterial = Enum.Material.Slate,
+		TunnelLight = Color3.fromRGB(200, 120, 255), -- glowing purple mushrooms...
+		CaveMushrooms = true, -- ...growing along cave walls
+		Torch = Color3.fromRGB(150, 255, 110), -- spooky green flames
+		TorchFire = true,
+		GeyserColor = Color3.fromRGB(120, 190, 100), -- bubbling swamp water
+		GeyserVent = Color3.fromRGB(70, 110, 55),
+		Weather = "Fireflies",
+		ClockTime = 17.7, -- sunset
+		Atmosphere = { Density = 0.45, Offset = 0.3, Color = Color3.fromRGB(190, 210, 170), Decay = Color3.fromRGB(80, 100, 70), Glare = 0.2, Haze = 2.6 }, -- thick swamp mist
+		Clouds = { Cover = 0.7, Density = 0.6, Color = Color3.fromRGB(215, 205, 190) },
 	},
 }
 
@@ -4137,7 +4346,8 @@ local function buildGate(cfg, cf: CFrame, color: Color3, parent: Instance, roadW
 	}), parent)
 end
 
-local function buildBoostPad(cf: CFrame, road: Instance, decor: Instance)
+-- `time` (optional) = seconds of boost it gives, if not the usual (the client's PAD_BOOST_TIME)
+local function buildBoostPad(cf: CFrame, road: Instance, decor: Instance, time: number?)
 	local pad = newPart("Part", {
 		Name = "BoostPad",
 		Size = Vector3.new(10, 0.1, 16),
@@ -4147,6 +4357,7 @@ local function buildBoostPad(cf: CFrame, road: Instance, decor: Instance)
 		CanCollide = false, -- karts drive over it; the client detects it with a raycast
 	}, road)
 	pad:SetAttribute("BoostPad", true)
+	pad:SetAttribute("BoostTime", time)
 	-- three yellow arrows pointing the way to go
 	for _, z in { -5.5, -1, 3.5 } do
 		for _, side in { -1, 1 } do
@@ -4485,6 +4696,100 @@ local function buildSnowball(frame: CFrame, halfWidth: number, feature, hazards:
 	}, hazards)
 end
 
+-- A frog that hops across the road and back: it crouches for a moment before
+-- every hop (watch for it!), then leaps. Bumping into it knocks you aside.
+-- Each player's device moves it, timed by the server clock (see hopAt).
+local function buildHopper(frame: CFrame, halfWidth: number, feature, hazards: Instance)
+	local radius = 3.2
+	local span = feature.span or math.max(0, halfWidth - 4)
+	local side = if feature.reverse then -1 else 1 -- `reverse` starts it on the right
+	local from = frame:PointToWorldSpace(Vector3.new(-span * side, radius, 0))
+	local to = frame:PointToWorldSpace(Vector3.new(span * side, radius, 0))
+	local frog = Instance.new("Model")
+	frog.Name = "Frog"
+	local body = newPart("Part", {
+		Name = "Frog",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.one * radius * 2,
+		CFrame = CFrame.lookAt(from, to),
+		Transparency = 1,
+		CanCollide = false,
+		CanTouch = false,
+		Attributes = { Hazard = "Bonk" },
+	}, frog)
+	frog.PrimaryPart = body
+	Mascots.build("Frog", body.CFrame * CFrame.new(0, -2.4, 0), { parent = frog, scale = 1.6, cheer = true })
+	frog:SetAttribute("From", from)
+	frog:SetAttribute("To", to)
+	frog:SetAttribute("Period", feature.period or 5)
+	frog:SetAttribute("Hops", feature.hops or 4)
+	frog:SetAttribute("Height", feature.height or 7)
+	frog:SetAttribute("Offset", feature.offset or 0)
+	frog.Parent = hazards
+end
+
+-- A stone frog-head idol beside the road. Every few seconds its throat swells
+-- and glows and it croaks (a warning)... then its tongue lashes `reach` studs
+-- across the road. It never reaches all the way, so there's always a way past.
+local function buildTongue(frame: CFrame, half: number, outer: number, feature, style, hazards: Instance, walls: Instance, decor: Instance)
+	local side = if feature.side == "left" then -1 else 1
+	local spot = frame:PointToWorldSpace(Vector3.new(side * (half + (outer - half) / 2 + 2), 0, 0))
+	local base = CFrame.lookAt(spot, spot - frame.RightVector * side) -- facing across the road
+	local stone, mossy = Color3.fromRGB(110, 118, 92), Color3.fromRGB(90, 120, 70)
+	local function egg(name: string, size: Vector3, at: Vector3, color: Color3, material: Enum.Material?, parent: Instance): BasePart
+		local part = newPart("Part", ghost({ Name = name, Size = size, CFrame = base * CFrame.new(at), Color = color, Material = material or Enum.Material.Slate }), parent)
+		local mesh = Instance.new("SpecialMesh")
+		mesh.MeshType = Enum.MeshType.Sphere
+		mesh.Parent = part
+		return part
+	end
+	newPart("Part", { -- the solid bit karts bump into
+		Name = "Idol",
+		Size = Vector3.new(9, 8, 9),
+		CFrame = base * CFrame.new(0, 3, 0),
+		Transparency = 1,
+		Attributes = { Obstacle = true },
+	}, walls)
+	egg("IdolHead", Vector3.new(13, 9, 11), Vector3.new(0, 4, 0), stone, nil, decor)
+	egg("IdolMoss", Vector3.new(13.4, 2.5, 11.4), Vector3.new(0, 1, 0), mossy, Enum.Material.Grass, decor)
+	for _, x in { -3.4, 3.4 } do
+		egg("IdolEye", Vector3.new(4, 4, 4), Vector3.new(x, 8.2, -1.2), stone, nil, decor)
+		egg("IdolEyeGlow", Vector3.new(1.6, 1.6, 1.6), Vector3.new(x, 8.4, -3.1), Color3.fromRGB(150, 255, 110), Enum.Material.Neon, decor)
+	end
+	newPart("Part", ghost({ Name = "IdolMouth", Size = Vector3.new(9, 0.8, 1), CFrame = base * CFrame.new(0, 2.6, -5.2), Color = Color3.fromRGB(35, 30, 30) }), decor)
+	newPart("Part", ghost({
+		Name = "IdolCrown",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(2, 6, 6),
+		CFrame = upright(base * CFrame.new(0, 9.2, 1.5)),
+		Color = COLORS.Gold,
+		Material = Enum.Material.Metal,
+	}), decor)
+
+	local mouth = base * CFrame.new(0, 2.2, -5.4)
+	local reach = feature.reach or half
+	local idol = Instance.new("Model")
+	idol.Name = "Tongue"
+	idol:SetAttribute("Origin", mouth)
+	idol:SetAttribute("Reach", reach)
+	idol:SetAttribute("Period", feature.period or 4)
+	idol:SetAttribute("Active", feature.active or 1)
+	idol:SetAttribute("Offset", feature.offset or 0)
+	egg("Throat", Vector3.new(5, 2.6, 3), Vector3.new(0, 1.3, -4.6), COLORS.White, Enum.Material.SmoothPlastic, idol) -- swells up and goes red before each lash
+	newPart("Part", {
+		Name = "Lash",
+		Size = Vector3.new(2.6, 1.4, reach),
+		CFrame = mouth * CFrame.new(0, 0, -reach / 2),
+		Color = Color3.fromRGB(255, 110, 140),
+		Transparency = 1,
+		CanCollide = false,
+		CanQuery = false, -- the client switches this on while it lashes
+		CanTouch = false,
+		Attributes = { Hazard = "Bonk" },
+	}, idol)
+	idol.Parent = hazards
+end
+
 -- A curtain of water right across the road. It's not solid: drive straight
 -- through it (there might be a secret path behind!). `frame` = the middle of
 -- the road, facing along it.
@@ -4533,6 +4838,7 @@ local function buildObstacle(kind: string, cf: CFrame, size: number, style, wall
 		local scale = size / 5 -- a snowman's bottom ball is 5 studs across at scale 1
 		newPart("Part", { -- the invisible solid bit karts bump into
 			Name = "SnowmanBlock",
+			Attributes = { Obstacle = true }, -- (hitting one of these costs coins)
 			Shape = Enum.PartType.Cylinder,
 			Size = Vector3.new(10 * scale, 4.6 * scale, 4.6 * scale),
 			CFrame = upright(cf * CFrame.new(0, 5 * scale - 1, 0)),
@@ -4543,6 +4849,7 @@ local function buildObstacle(kind: string, cf: CFrame, size: number, style, wall
 	elseif kind == "Crystal" then
 		newPart("Part", {
 			Name = "Crystal",
+			Attributes = { Obstacle = true },
 			Size = Vector3.new(size * 0.7, size * 2.2, size * 0.7),
 			CFrame = cf * CFrame.new(0, size * 1.1 - 1, 0) * CFrame.Angles(0, math.rad(30), math.rad(5)),
 			Color = Color3.fromRGB(160, 225, 255),
@@ -4558,10 +4865,31 @@ local function buildObstacle(kind: string, cf: CFrame, size: number, style, wall
 				Material = Enum.Material.Neon,
 			}), decor)
 		end
+	elseif kind == "Tree" then
+		-- A big swampy tree: a solid trunk, a leafy top and moss hanging down
+		local scale = size / 3
+		newPart("Part", { -- the invisible solid bit karts bump into (like a wall: it doesn't cost coins)
+			Name = "Tree",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(7 * scale, 1.6 * scale, 1.6 * scale),
+			CFrame = upright(cf * CFrame.new(0, 3.5 * scale - 1, 0)),
+			Transparency = 1,
+		}, walls)
+		buildTree(cf.Position - Vector3.new(0, 1, 0), scale, LEAF_COLORS[math.random(1, 3)], decor, false)
+		for _, side in { -1, 1 } do
+			newPart("Part", ghost({
+				Name = "Moss",
+				Size = Vector3.new(0.4, 3 * scale, 0.4),
+				CFrame = cf * CFrame.new(side * 2.2 * scale, 6.2 * scale, side * scale),
+				Color = Color3.fromRGB(120, 140, 80),
+				Material = Enum.Material.Grass,
+			}), decor)
+		end
 	else -- Rock
 		local height = size * 1.5
 		newPart("Part", {
 			Name = "Rock",
+			Attributes = { Obstacle = true },
 			Size = Vector3.new(size, height, size),
 			CFrame = cf * CFrame.new(0, height / 2 - 1, 0) * CFrame.Angles(0, math.rad(45), 0),
 			Color = style.Rock or COLORS.Rock,
@@ -4616,10 +4944,170 @@ local function buildTorch(pos: Vector3, style, parent: Instance)
 	end
 end
 
+-- SWAMP SCENERY --------------------------------------------------------
+
+-- A giant mushroom with a glowing cap (Swamp: in the Mushroom Glade cave and out in the swamp)
+local function buildMushroom(base: Vector3, scale: number, color: Color3, parent: Instance)
+	newPart("Part", ghost({
+		Name = "MushroomStem",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(5, 1.3, 1.3) * scale,
+		CFrame = upright(CFrame.new(base + Vector3.new(0, 2.5 * scale, 0))),
+		Color = Color3.fromRGB(235, 225, 200),
+	}), parent)
+	local cap = newPart("Part", ghost({
+		Name = "MushroomCap",
+		Size = Vector3.new(6, 2.6, 6) * scale,
+		CFrame = CFrame.new(base + Vector3.new(0, 5.2 * scale, 0)),
+		Color = color,
+		Material = Enum.Material.Neon,
+	}), parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = cap
+	for k = 1, 4 do -- pale spots
+		local a = k / 4 * math.pi * 2
+		newPart("Part", ghost({
+			Name = "MushroomSpot",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.one * 0.9 * scale,
+			CFrame = CFrame.new(base + Vector3.new(math.cos(a) * 1.7 * scale, 6.1 * scale, math.sin(a) * 1.7 * scale)),
+			Color = COLORS.White,
+		}), parent)
+	end
+end
+
+-- A lily pad floating on the water (some have a pink flower)
+local function buildLilyPad(pos: Vector3, radius: number, rng: Random, parent: Instance)
+	newPart("Part", ghost({
+		Name = "LilyPad",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.3, radius * 2, radius * 2),
+		CFrame = upright(CFrame.new(pos)),
+		Color = Color3.fromRGB(70, 140, 55):Lerp(Color3.fromRGB(120, 175, 70), rng:NextNumber()),
+	}), parent)
+	if rng:NextNumber() < 0.3 then
+		for k = 1, 3 do
+			local a = k / 3 * math.pi * 2
+			newPart("Part", ghost({
+				Name = "LilyFlower",
+				Shape = Enum.PartType.Ball,
+				Size = Vector3.one * 1.2,
+				CFrame = CFrame.new(pos + Vector3.new(math.cos(a) * 0.6, 0.6, math.sin(a) * 0.6)),
+				Color = Color3.fromRGB(255, 160, 200),
+			}), parent)
+		end
+	end
+end
+
+-- A clump of tall reeds with brown cattails, poking up out of the water
+local function buildReeds(base: Vector3, rng: Random, parent: Instance)
+	for _ = 1, rng:NextInteger(4, 7) do
+		local height = rng:NextNumber(6, 11)
+		local cf = CFrame.new(base + Vector3.new(rng:NextNumber(-3, 3), 0, rng:NextNumber(-3, 3)))
+			* CFrame.Angles(math.rad(rng:NextNumber(-8, 8)), 0, math.rad(rng:NextNumber(-8, 8)))
+		newPart("Part", ghost({
+			Name = "Reed",
+			Size = Vector3.new(0.35, height, 0.35),
+			CFrame = cf * CFrame.new(0, height / 2, 0),
+			Color = Color3.fromRGB(95, 130, 60),
+			Material = Enum.Material.Grass,
+		}), parent)
+		newPart("Part", ghost({
+			Name = "Cattail",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(1.8, 0.8, 0.8),
+			CFrame = upright(cf * CFrame.new(0, height - 1.2, 0)),
+			Color = Color3.fromRGB(105, 70, 40),
+			Material = Enum.Material.Fabric,
+		}), parent)
+	end
+end
+
+-- A mangrove tree standing up out of the water on arching roots
+local function buildMangrove(base: Vector3, scale: number, leafColor: Color3, rng: Random, parent: Instance)
+	local lift = 3 * scale
+	buildTree(base + Vector3.new(0, lift, 0), scale, leafColor, parent, false)
+	local top = base + Vector3.new(0, lift + 0.5 * scale, 0)
+	for k = 1, 5 do
+		local a = k / 5 * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
+		local foot = base + Vector3.new(math.cos(a), 0, math.sin(a)) * 2.8 * scale
+		newPart("Part", ghost({
+			Name = "Root",
+			Size = Vector3.new(0.5, 0.5, (top - foot).Magnitude) * Vector3.new(scale, scale, 1),
+			CFrame = CFrame.lookAt((top + foot) / 2, top),
+			Color = COLORS.Trunk,
+			Material = Enum.Material.Wood,
+		}), parent)
+	end
+	for _, side in { -1, 1 } do -- moss hanging from the branches
+		newPart("Part", ghost({
+			Name = "Moss",
+			Size = Vector3.new(0.4, 3 * scale, 0.4),
+			CFrame = CFrame.new(base + Vector3.new(side * 2.4 * scale, lift + 6.2 * scale, side * scale)),
+			Color = Color3.fromRGB(120, 140, 80),
+			Material = Enum.Material.Grass,
+		}), parent)
+	end
+end
+
+-- Feelsgood Fred (see the Mascots module), giant and wearing his crown: he's the king of the swamp
+local function buildFred(cf: CFrame, scale: number, parent: Instance)
+	Mascots.build("Fred", cf, { parent = parent, scale = scale, cheer = true })
+	local crown = cf * CFrame.new(0, 4.05 * scale, 0.4 * scale)
+	newPart("Part", ghost({
+		Name = "Crown",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.7, 1.7, 1.7) * scale,
+		CFrame = upright(crown),
+		Color = COLORS.Gold,
+		Material = Enum.Material.Metal,
+	}), parent)
+	for k = 0, 4 do
+		local a = k / 5 * math.pi * 2
+		newPart("Part", ghost({
+			Name = "CrownPoint",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.one * 0.38 * scale,
+			CFrame = crown * CFrame.new(math.cos(a) * 0.75 * scale, 0.42 * scale, math.sin(a) * 0.75 * scale),
+			Color = if k == 0 then Color3.fromRGB(255, 70, 90) else COLORS.Gold,
+			Material = if k == 0 then Enum.Material.Neon else Enum.Material.Metal,
+		}), parent)
+	end
+end
+
+-- A big billboard on stilts at `pos`, facing `toward`: Feelsgood Fred welcoming everyone to the swamp
+local function buildFredBillboard(pos: Vector3, toward: Vector3, groundY: number, parent: Instance)
+	local face = CFrame.lookAt(pos, Vector3.new(toward.X, pos.Y, toward.Z))
+	local boardY, bottom = 24, groundY - pos.Y
+	for _, x in { -17, 17 } do
+		newPart("Part", ghost({
+			Name = "BillboardPost",
+			Size = Vector3.new(1.6, boardY - bottom, 1.6),
+			CFrame = face * CFrame.new(x, (boardY + bottom) / 2, 1),
+			Color = COLORS.Trunk,
+			Material = Enum.Material.Wood,
+		}), parent)
+	end
+	local board = newPart("Part", ghost({
+		Name = "Billboard",
+		Size = Vector3.new(44, 18, 1),
+		CFrame = face * CFrame.new(0, boardY, 0),
+		Color = Color3.fromRGB(40, 70, 40),
+		Material = Enum.Material.WoodPlanks,
+	}), parent)
+	local gui = newSurfaceGui(board, Enum.NormalId.Front)
+	gui.PixelsPerStud = 10 -- (big letters: scaled text can't go above 100 pixels tall)
+	newLabel({ Size = UDim2.fromScale(1, 0.55), Text = "CROAKER SWAMP", TextColor3 = COLORS.Gold }, gui)
+	newLabel({ Position = UDim2.fromScale(0.05, 0.55), Size = UDim2.fromScale(0.9, 0.38), Text = "Feelsgood Fred says: feels good to race!" }, gui)
+	buildFred(face * CFrame.new(-13, boardY + 9, 0), 4, parent) -- sitting on top, waving
+	Mascots.build("Frog", face * CFrame.new(14, boardY + 9, 0), { parent = parent, scale = 2.5, cheer = true })
+end
+
 -- Feature kinds that cover a stretch of road (`from` / `to`), and the ones
 -- that respawn points must keep clear of
 local SECTION_KINDS = { Room = true, Ice = true, NoWalls = true, Tunnel = true, Wind = true, Rough = true, Bridge = true, Skippable = true }
-local HAZARD_KINDS = { LavaPool = true, Geyser = true, FireBar = true, Snowball = true, Boulder = true, Rock = true, Crystal = true, Snowman = true }
+local HAZARD_KINDS = { LavaPool = true, Geyser = true, FireBar = true, Snowball = true, Boulder = true, Rock = true, Crystal = true, Snowman = true, Tree = true, Frog = true, Tongue = true }
 
 -- Works out the shape of one road (the main road, or a branch): evenly spaced
 -- samples along it, how wide it is and how it leans at each one, and which
@@ -4676,8 +5164,8 @@ local function planRoute(cfg, points: { Vector3 }, features: { any }, roadWidth:
 			-- Respawned karts appear in the middle of the road, so only hazards that
 			-- reach the middle matter (snowballs roll right across it)
 			local d = route.spotDist(feature)
-			local reach = feature.radius or feature.size or (if feature.length then feature.length / 2 else 10)
-			if d and (kind == "Snowball" or kind == "Boulder" or math.abs(feature.lane or 0) - reach < 8) then
+			local reach = feature.radius or feature.size or feature.reach or (if feature.length then feature.length / 2 else 10)
+			if d and (kind == "Snowball" or kind == "Boulder" or kind == "Frog" or kind == "Tongue" or math.abs(feature.lane or 0) - reach < 8) then
 				table.insert(route.hazardZones, { d - reach - cfg.HAZARD_CLEARANCE, d + reach + cfg.HAZARD_CLEARANCE })
 			end
 		end
@@ -5067,7 +5555,7 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 		local spot = frame * CFrame.new(lane, 0, 0)
 		local kind = feature.kind
 		if kind == "Boost" then
-			buildBoostPad(spot, road, decor)
+			buildBoostPad(spot, road, decor, feature.time)
 		elseif kind == "Ramp" then
 			buildRamp(cfg, spot, feature.angle or cfg.RAMP_ANGLE, feature.length or cfg.RAMP_LENGTH, road, walls, (feature.width or outer * 2))
 			table.insert(route.busy, d)
@@ -5087,7 +5575,11 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 			buildFireBar(spot, feature, hazards, walls)
 		elseif kind == "Snowball" or kind == "Boulder" then
 			buildSnowball(frame, outer, feature, hazards)
-		elseif kind == "Rock" or kind == "Crystal" or kind == "Snowman" then
+		elseif kind == "Frog" then
+			buildHopper(frame, half, feature, hazards)
+		elseif kind == "Tongue" then
+			buildTongue(frame, half, outer, feature, style, hazards, walls, decor)
+		elseif kind == "Rock" or kind == "Crystal" or kind == "Snowman" or kind == "Tree" then
 			buildObstacle(kind, spot, feature.size or 8, style, walls, decor)
 		end
 	end
@@ -5148,7 +5640,9 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 				Color = style.Tunnel,
 				Material = caveMaterial,
 			}), decor)
-			if i % 3 == 0 then
+			if i % 3 == 0 and style.CaveMushrooms then -- glowing mushrooms growing by the cave walls
+				buildMushroom((cf * CFrame.new(side * (caveSide - 1.5), -1, 0)).Position, 0.9 + (i % 4) * 0.15, style.TunnelLight, decor)
+			elseif i % 3 == 0 then
 				newPart("Part", ghost({
 					Name = "CaveCrystal",
 					Size = Vector3.new(1.2, 4, 1.6),
@@ -5173,7 +5667,8 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 	end
 
 	-- "Wind" sections: invisible boxes the karts feel (the client pushes them
-	-- sideways during each gust), with snow streaks that show when it blows
+	-- sideways during each gust), full of streaks and swirling puffs that the
+	-- client turns up when it blows, plus a howl on every 4th one (`Howl`)
 	for i = 1, count - 1 do
 		local wind = route.section("Wind", route.middle(i))
 		if not wind then
@@ -5196,24 +5691,37 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 				Period = feature.period or 4,
 				Active = feature.active or 1.5,
 				Offset = feature.offset or 0,
+				Howl = i % 4 == 0,
 			},
 		}, hazards)
-		if i % 3 == 0 then
-			local streaks = Instance.new("ParticleEmitter")
-			streaks.Name = "Gust"
-			streaks.Color = ColorSequence.new(COLORS.White)
-			streaks.LightEmission = 0.3
-			streaks.Size = NumberSequence.new(0.35)
-			streaks.Transparency = NumberSequence.new(0.2, 1)
-			streaks.Lifetime = NumberRange.new(0.4, 0.7)
-			streaks.Rate = 35
-			streaks.Speed = NumberRange.new(70, 90)
-			streaks.Orientation = Enum.ParticleOrientation.VelocityParallel
-			streaks.Squash = NumberSequence.new(2.5) -- long thin streaks
-			streaks.EmissionDirection = if push >= 0 then Enum.NormalId.Right else Enum.NormalId.Left
-			streaks.Enabled = false -- the client switches it on during gusts
-			streaks.Parent = zone
-		end
+		local blowing = if push >= 0 then Enum.NormalId.Right else Enum.NormalId.Left
+		local streaks = Instance.new("ParticleEmitter")
+		streaks.Name = "Gust"
+		streaks.Color = ColorSequence.new(Color3.fromRGB(215, 235, 255))
+		streaks.LightEmission = 0.5
+		streaks.Size = NumberSequence.new(0.9)
+		streaks.Transparency = NumberSequence.new(0, 1)
+		streaks.Lifetime = NumberRange.new(0.5, 0.9)
+		streaks.Speed = NumberRange.new(90, 120)
+		streaks.Orientation = Enum.ParticleOrientation.VelocityParallel
+		streaks.Squash = NumberSequence.new(-3) -- long thin streaks (with VelocityParallel, minus stretches them along the way they fly)
+		streaks.EmissionDirection = blowing
+		streaks.Rate = 0 -- the client sets how many (a few always, lots during gusts)
+		streaks.Parent = zone
+		local puffs = Instance.new("ParticleEmitter")
+		puffs.Name = "Flurry"
+		puffs.Texture = "rbxasset://textures/particles/smoke_main.dds"
+		puffs.Color = ColorSequence.new(Color3.fromRGB(190, 215, 240)) -- (a little blue, so it shows up against snow)
+		puffs.Size = NumberSequence.new(3, 8)
+		puffs.Transparency = NumberSequence.new(0.2, 1)
+		puffs.Lifetime = NumberRange.new(0.8, 1.4)
+		puffs.Speed = NumberRange.new(45, 65)
+		puffs.SpreadAngle = Vector2.new(10, 20)
+		puffs.Rotation = NumberRange.new(0, 360)
+		puffs.RotSpeed = NumberRange.new(-120, 120)
+		puffs.EmissionDirection = blowing
+		puffs.Rate = 0
+		puffs.Parent = zone
 	end
 end
 
@@ -5345,7 +5853,69 @@ local function buildPickups(main, branches: { any }, startDist: number, finishDi
 	end
 end
 
-local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any)
+-- Where a branch meets the main road, its road is laid right on the main
+-- road's surface (same height, same lean and slope), then eases back to its
+-- own shape over ROOM_EASE studs once it's clear. Without this, the slightest
+-- lean or slope in the main road leaves a lip at the junction, and a lip half
+-- a stud high stops karts like a wall.
+local function fitBranchEnds(cfg, branch, main)
+	-- The main road's surface frame nearest `pos`, and whether `pos` is on that road (or its off-road)
+	local function mainSurface(pos: Vector3): (CFrame, boolean)
+		local j = main.nearest(pos)
+		local d = main.dist[j] - main.frames[j]:PointToObjectSpace(pos).Z
+		local frame = main.frameAt(d)
+		local rel = frame:PointToObjectSpace(pos)
+		return frame, math.abs(rel.X) <= main.edgeAt(d) + 2 and math.abs(rel.Y) < 6 and math.abs(rel.Z) < cfg.STEP / 2
+	end
+	-- `pos` moved straight up or down onto the main road's surface
+	local function onMain(pos: Vector3): Vector3
+		local frame = mainSurface(pos)
+		return pos + Vector3.yAxis * ((frame.Position - pos):Dot(frame.UpVector) / frame.UpVector.Y)
+	end
+	local count = branch.count
+	for _, from in { 1, count } do
+		local inward = if from == 1 then 1 else -1
+		local _, joins = mainSurface(branch.samples[from])
+		if not joins then
+			warn("[RaceServer] " .. branch.name .. ": its " .. (if from == 1 then "first" else "last") .. " point isn't on the main road")
+			continue
+		end
+		-- How far in from this end the branch still overlaps the main road
+		local overlap = 0
+		for i = from, count + 1 - from, inward do
+			local f = branch.frames[i]
+			local _, middle = mainSurface(f.Position)
+			local _, left = mainSurface(f * Vector3.new(-branch.edge[i], 0, 0))
+			local _, right = mainSurface(f * Vector3.new(branch.edge[i], 0, 0))
+			if not (middle or left or right) then
+				break
+			end
+			overlap = math.abs(branch.dist[i] - branch.dist[from])
+		end
+		for i = from, count + 1 - from, inward do
+			local t = math.clamp((math.abs(branch.dist[i] - branch.dist[from]) - overlap) / cfg.ROOM_EASE, 0, 1)
+			local w = 1 - t * t * (3 - 2 * t) -- 1 on the main road, easing to 0
+			if w <= 0 then
+				break
+			end
+			-- Put both edges of the road on the main road's surface (its lean and
+			-- slope can change between them), blended with the branch's own shape
+			local f = branch.frames[i]
+			local half = branch.halfWidth[i]
+			local leftEdge = onMain(f * Vector3.new(-half, 0, 0))
+			local rightEdge = onMain(f * Vector3.new(half, 0, 0))
+			local across = (rightEdge - leftEdge).Unit
+			local mainUp = mainSurface(f.Position).UpVector
+			local up = f.UpVector:Lerp((mainUp - across * mainUp:Dot(across)).Unit, w).Unit
+			local right = f.RightVector:Lerp(across, w)
+			local pos = f.Position:Lerp((leftEdge + rightEdge) / 2, w)
+			branch.frames[i] = CFrame.fromMatrix(pos, (right - up * right:Dot(up)).Unit, up)
+			branch.samples[i] = pos
+		end
+	end
+end
+
+local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 	local style = cfg.style
 	local track = Instance.new("Folder")
 	track.Name = "RaceTrack"
@@ -5363,10 +5933,14 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any)
 	local slotFolder = newFolder("StartSlots", track)
 
 	local main = planRoute(cfg, cfg.POINTS, cfg.FEATURES, cfg.ROAD_WIDTH)
+	main.name = "main road"
 	local branches = {}
 	for _, branch in cfg.BRANCHES or {} do
 		local route = planRoute(cfg, branch.POINTS, branch.FEATURES or {}, branch.width or cfg.BRANCH_WIDTH)
 		route.isBranch = true
+		route.name = branch.name or "a branch"
+		route.noRespawns = branch.respawns == false
+		fitBranchEnds(cfg, route, main)
 		table.insert(branches, route)
 	end
 	local everyRoute = { main }
@@ -5535,6 +6109,9 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any)
 	-- that's a safe place to land.
 	local respawnFolder = newFolder("RespawnPoints", track)
 	for _, route in everyRoute do
+		if route.noRespawns then
+			continue -- (a branch with `respawns = false`: fall off it and you go back to where it started)
+		end
 		local last = if route.isBranch then route.total else finishDist
 		local d = if route.isBranch then cfg.RESPAWN_SPACING / 2 else startDist + cfg.RESPAWN_SPACING
 		while d < last do
@@ -5592,7 +6169,7 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any)
 		end
 	end
 	track:SetAttribute("KillY", minY - cfg.FALL_DEPTH) -- fall below this = put back at your last checkpoint
-	return track, allSamples, allHalfWidths, main
+	return track, allSamples, allHalfWidths, main, everyRoute
 end
 
 ------------------------------------------------------------------------
@@ -6468,51 +7045,99 @@ end
 -- Jungle theme: a huge stepped temple pyramid, overgrown with moss. It's
 -- hollow, and leaves a doorway wherever a road goes through it (put a Tunnel
 -- and a Room there, so it feels like a great hall inside).
-local function buildPyramid(base: Vector3, size: number, height: number, roads: { Vector3 }, roadHalf: { number }, parent: Instance)
+local function buildPyramid(base: Vector3, size: number, height: number, roads: { Vector3 }, roadHalf: { number }, parent: Instance, gem: boolean)
 	local tiers = 7
 	local tierHeight = height / tiers
-	local segments = 8 -- pieces along each side of a step, so doorways can be left out
+	local segments = 8 -- blocks along each side of a step (alternating colours)
+	-- Each step is a ring of four thick walls; the inside is hollow, and roads
+	-- through it run in caves. Where a road passes through a wall, only a
+	-- doorway just big enough for the road and its cave is cut out.
+	local sides = {
+		{ along = Vector3.xAxis, out = -Vector3.zAxis },
+		{ along = Vector3.xAxis, out = Vector3.zAxis },
+		{ along = Vector3.zAxis, out = -Vector3.xAxis },
+		{ along = Vector3.zAxis, out = Vector3.xAxis },
+	}
 	for k = 0, tiers - 1 do
 		local width = size * (1 - 0.8 * k / tiers)
-		local y = base.Y + tierHeight * (k + 0.5)
+		local bottom, top = base.Y + tierHeight * k, base.Y + tierHeight * (k + 1)
 		local wall = math.min(30, width / 2)
-		local piece = width / segments
-		local inset = width / 2 - wall / 2
-		for s = 0, segments - 1 do
-			local along = -width / 2 + piece * (s + 0.5)
-			-- { x, z, size x, size z } for the four sides
-			for _, side in { { along, -inset, piece, wall }, { along, inset, piece, wall }, { -inset, along, wall, piece }, { inset, along, wall, piece } } do
-				local pos = Vector3.new(base.X + side[1], y, base.Z + side[2])
-				local open = false
-				for i, p in roads do
-					-- (doorways reach from just below the road to above a cave's roof)
-					local overlaps = y - tierHeight / 2 < p.Y + 36 and y + tierHeight / 2 > p.Y - 4
-					if overlaps and math.abs(p.X - pos.X) < side[3] / 2 + roadHalf[i] + 6 and math.abs(p.Z - pos.Z) < side[4] / 2 + roadHalf[i] + 6 then
-						open = true
-						break
+		for _, side in sides do
+			local middle = base + side.out * (width / 2 - wall / 2)
+			-- The doorways in this wall: { from, to (along it), sill, top (heights) }
+			local doors = {}
+			for i, p in roads do
+				local rel = Vector3.new(p.X - middle.X, 0, p.Z - middle.Z)
+				local along, across = rel:Dot(side.along), rel:Dot(side.out)
+				local half = roadHalf[i] + 5 -- the road, its walls and its cave
+				local headroom = 22 + math.max(0, roadHalf[i] - 33) * 0.4 -- (wider caves have higher roofs)
+				if math.abs(across) < wall / 2 + 4 and math.abs(along) < width / 2 + half and p.Y - 1 < top and p.Y + headroom > bottom then
+					table.insert(doors, { along - half, along + half, math.max(bottom, p.Y - 1), math.min(top, p.Y + headroom) })
+				end
+			end
+			for s = 0, segments - 1 do
+				local color = if (k + s) % 2 == 0 then Color3.fromRGB(150, 140, 110) else Color3.fromRGB(132, 126, 100)
+				-- One block of the wall, from `a` to `b` along it and `y0` to `y1` high
+				local function block(a: number, b: number, y0: number, y1: number)
+					if b - a < 0.1 or y1 - y0 < 0.1 then
+						return
+					end
+					local spot = middle + side.along * ((a + b) / 2)
+					local long = b - a
+					local dims = if side.along.X ~= 0 then Vector3.new(long, y1 - y0 + 0.2, wall) else Vector3.new(wall, y1 - y0 + 0.2, long)
+					newPart("Part", ghost({
+						Name = "Temple",
+						Size = dims,
+						CFrame = CFrame.new(spot.X, (y0 + y1) / 2, spot.Z),
+						Color = color,
+						Material = Enum.Material.Slate,
+					}), parent)
+					if y1 >= top then
+						newPart("Part", ghost({ -- moss growing over the edge of the step
+							Name = "Moss",
+							Size = Vector3.new(dims.X + 1, 1.2, dims.Z + 1),
+							CFrame = CFrame.new(spot.X, top - 0.4, spot.Z),
+							Color = Color3.fromRGB(80, 140, 60),
+							Material = Enum.Material.Grass,
+						}), parent)
 					end
 				end
-				if open then
-					continue -- a doorway
+				-- Slice this block where doorways start and end, then build each
+				-- slice up from the bottom, skipping the heights its doorways need
+				local a0 = -width / 2 + width / segments * s
+				local a1 = a0 + width / segments
+				local cuts = { a0, a1 }
+				for _, door in doors do
+					for _, x in { door[1], door[2] } do
+						if x > a0 and x < a1 then
+							table.insert(cuts, x)
+						end
+					end
 				end
-				newPart("Part", ghost({
-					Name = "Temple",
-					Size = Vector3.new(side[3], tierHeight + 0.2, side[4]),
-					CFrame = CFrame.new(pos),
-					Color = if (k + s) % 2 == 0 then Color3.fromRGB(150, 140, 110) else Color3.fromRGB(132, 126, 100),
-					Material = Enum.Material.Slate,
-				}), parent)
-				newPart("Part", ghost({ -- moss growing over the edge of the step
-					Name = "Moss",
-					Size = Vector3.new(side[3] + 1, 1.2, side[4] + 1),
-					CFrame = CFrame.new(pos + Vector3.new(0, tierHeight / 2 - 0.4, 0)),
-					Color = Color3.fromRGB(80, 140, 60),
-					Material = Enum.Material.Grass,
-				}), parent)
+				table.sort(cuts)
+				for c = 1, #cuts - 1 do
+					local from, to = cuts[c], cuts[c + 1]
+					local mid = (from + to) / 2
+					local gaps = {}
+					for _, door in doors do
+						if door[1] < mid and door[2] > mid then
+							table.insert(gaps, door)
+						end
+					end
+					table.sort(gaps, function(x, y)
+						return x[3] < y[3]
+					end)
+					local y = bottom
+					for _, gap in gaps do
+						block(from, to, y, gap[3]) -- (under the road)
+						y = math.max(y, gap[4])
+					end
+					block(from, to, y, top) -- (over the doorway)
+				end
 			end
 		end
 	end
-	-- A shrine on top with a glowing green gem
+	-- A shrine on top (with a glowing green gem, unless something else sits there)
 	local shrine = size * 0.12
 	local top = base + Vector3.new(0, height, 0)
 	newPart("Part", ghost({
@@ -6522,6 +7147,9 @@ local function buildPyramid(base: Vector3, size: number, height: number, roads: 
 		Color = Color3.fromRGB(150, 140, 110),
 		Material = Enum.Material.Slate,
 	}), parent)
+	if not gem then
+		return
+	end
 	newPart("Part", ghost({
 		Name = "Gem",
 		Shape = Enum.PartType.Ball,
@@ -6540,6 +7168,13 @@ local function buildScenery(cfg, track: Instance, samples: { Vector3 }, halfWidt
 	local scatter = newScatter(samples, halfWidths, rng)
 	if style.Ground then
 		buildGround(samples, groundY, style, parent)
+	end
+	-- A giant step-temple the road drives right through (Jungle, Swamp)
+	local temple = cfg.TEMPLE
+	if temple then
+		local base = Vector3.new(cfg.ORIGIN.X + temple.center.X, groundY, cfg.ORIGIN.Z + temple.center.Z)
+		scatter.reserve(base, temple.size * 0.75)
+		buildPyramid(base, temple.size, cfg.ORIGIN.Y + temple.top - groundY, samples, halfWidths, parent, cfg.theme ~= "Swamp")
 	end
 
 	if cfg.theme == "Lava" then
@@ -6579,13 +7214,53 @@ local function buildScenery(cfg, track: Instance, samples: { Vector3 }, halfWidt
 				buildPine(Vector3.new(spot.X, groundY, spot.Z), scale, parent)
 			end
 		end
-	elseif cfg.theme == "Jungle" then
-		local temple = cfg.TEMPLE
+	elseif cfg.theme == "Swamp" then
+		-- Feelsgood Fred, king of the swamp, sitting on top of his temple facing the courtyard
 		if temple then
-			local base = Vector3.new(cfg.ORIGIN.X + temple.center.X, groundY, cfg.ORIGIN.Z + temple.center.Z)
-			scatter.reserve(base, temple.size * 0.75)
-			buildPyramid(base, temple.size, cfg.ORIGIN.Y + temple.top - groundY, samples, halfWidths, parent)
+			local seat = Vector3.new(cfg.ORIGIN.X + temple.center.X, cfg.ORIGIN.Y + temple.top + temple.size * 0.096, cfg.ORIGIN.Z + temple.center.Z)
+			buildFred(CFrame.lookAt(seat, seat - Vector3.zAxis), 14, parent)
 		end
+		-- ...and on his billboard, facing the nearest road
+		if cfg.FRED_BILLBOARD then
+			local pos = cfg.ORIGIN + cfg.FRED_BILLBOARD
+			local nearest = samples[1]
+			for _, p in samples do
+				if (p - pos).Magnitude < (nearest - pos).Magnitude then
+					nearest = p
+				end
+			end
+			scatter.reserve(pos, 30)
+			buildFredBillboard(pos, nearest, groundY, parent)
+		end
+		local leaves = { Color3.fromRGB(60, 110, 50), Color3.fromRGB(85, 125, 55), Color3.fromRGB(100, 120, 60) }
+		for _ = 1, 45 do -- mangrove trees standing in the water
+			local scale = rng:NextNumber(2.2, 3.6)
+			local spot = scatter.find(4 * scale, 18, 260)
+			if spot then
+				buildMangrove(Vector3.new(spot.X, groundY, spot.Z), scale, leaves[rng:NextInteger(1, #leaves)], rng, parent)
+			end
+		end
+		for _ = 1, 14 do -- giant glowing mushrooms
+			local spot = scatter.find(10, 25, 220)
+			if spot then
+				local color = if rng:NextNumber() < 0.5 then Color3.fromRGB(200, 120, 255) else Color3.fromRGB(90, 220, 200)
+				buildMushroom(Vector3.new(spot.X, groundY, spot.Z), rng:NextNumber(2, 3.5), color, parent)
+			end
+		end
+		for _ = 1, 50 do -- reeds and cattails
+			local spot = scatter.find(4, 5, 140)
+			if spot then
+				buildReeds(Vector3.new(spot.X, groundY, spot.Z), rng, parent)
+			end
+		end
+		for _ = 1, 160 do -- lily pads floating everywhere
+			local radius = rng:NextNumber(2.5, 7)
+			local spot = scatter.find(radius, 2, 160)
+			if spot then
+				buildLilyPad(Vector3.new(spot.X, groundY + 0.15, spot.Z), radius, rng, parent)
+			end
+		end
+	elseif cfg.theme == "Jungle" then
 		for _ = 1, 30 do -- little jungle islands in the river
 			local radius = rng:NextNumber(20, 45)
 			local spot = scatter.find(radius, 30, 300)
@@ -6649,13 +7324,130 @@ local trackFolder: Instance = nil :: any
 local currentPath: any = nil -- the track's main road, which the bots follow
 local currentTrackDef = nil
 
+-- Studio only: runs a probe up every lane of every road (every 1.5 studs
+-- along it, 3 across) and warns about holes and steps in the surface. The
+-- kart's hitbox rides 0.5 studs above the road, so a step of more than about
+-- that stops karts like a wall. Positions are in the track's POINTS numbers.
+local NUDGES = { Vector3.zero, Vector3.new(0.15, 0, 0), Vector3.new(-0.15, 0, 0), Vector3.new(0, 0, 0.15), Vector3.new(0, 0, -0.15) }
+local function checkRoads(cfg, trackName: string, routes: { any }, road: Instance)
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { road }
+	params.RespectCanCollide = true -- boost pads are flat stickers karts can't bump into
+	-- The road's height at `spot` (nil over a hole). A ray can slip through the
+	-- hairline seam between two pieces (to the off-road below, or nothing), so
+	-- it also feels a hair to each side and keeps the highest.
+	local function heightAt(spot: Vector3): number?
+		local top = nil
+		for _, nudge in NUDGES do
+			local hit = workspace:Raycast(spot + nudge + Vector3.new(0, 5, 0), Vector3.new(0, -10, 0), params)
+			if hit then
+				top = math.max(top or -math.huge, hit.Position.Y)
+			end
+		end
+		return top
+	end
+	-- The biggest jump in height going from `a` to `b`, felt every 0.1 studs: a
+	-- crease where the road changes slope is smooth, a step jumps all at once
+	-- and stays there (a ray slipping through a hairline seam only dips for one
+	-- feel, so that doesn't count). Steps up count positive (`both`: down too).
+	local function jump(a: Vector3, b: Vector3, both: boolean): number
+		local n = math.ceil((b - a).Magnitude / 0.1)
+		local heights: { number } = {}
+		for k = 0, n do
+			heights[k + 1] = heightAt(a:Lerp(b, k / n)) or heights[k] or 0
+		end
+		local biggest = 0
+		for k = 2, n do
+			local rise, stays = heights[k] - heights[k - 1], heights[k + 1] - heights[k - 1]
+			if both then
+				rise, stays = math.abs(rise), if rise * stays > 0 then math.abs(stays) else 0
+			end
+			biggest = math.max(biggest, math.min(rise, stays))
+		end
+		return biggest
+	end
+	local found: { { pos: Vector3, text: string } } = {}
+	local function report(routeName: string, pos: Vector3, problem: string)
+		for _, other in found do
+			if (other.pos - pos).Magnitude < 30 then
+				return -- already reported nearby
+			end
+		end
+		local p = pos - cfg.ORIGIN
+		table.insert(found, { pos = pos, text = string.format("%s: %s at (%.0f, %.0f, %.0f)", routeName, problem, p.X, p.Y, p.Z) })
+	end
+	-- How far `hit` sits above (+) or below the surface that `from` is on
+	local function step(from: RaycastResult, hit: RaycastResult): number
+		local offset = hit.Position - from.Position
+		local n = from.Normal
+		return if n.Y > 0.5 then offset.Y + (n.X * offset.X + n.Z * offset.Z) / n.Y else offset.Y
+	end
+	for _, route in routes do
+		local behind: { [number]: RaycastResult } = {} -- the last row of hits, by lane
+		local behindSpots: { [number]: Vector3 } = {}
+		for i = 1, route.count - 1 do
+			local length = route.dist[i + 1] - route.dist[i]
+			local rows = math.max(1, math.ceil(length / 1.5))
+			for k = 0, rows - 1 do
+				local d = route.dist[i] + length * k / rows
+				if route.section("Gap", d, 2) or route.section("Gap", route.middle(i)) then
+					table.clear(behind)
+					continue -- the hole a jump flies over (whole pieces are left out)
+				end
+				local spots: { [number]: Vector3 } = {}
+				local frame = route.frames[i]:Lerp(route.frames[i + 1], k / rows)
+				local lanes = math.floor((route.halfWidthAt(d) - 1) / 3)
+				local row: { [number]: RaycastResult } = {}
+				local left: RaycastResult? = nil
+				for lane = -lanes, lanes do
+					local spot = frame:PointToWorldSpace(Vector3.new(lane * 3, 0, 0))
+					spots[lane] = spot
+					local hit = workspace:Raycast(spot + Vector3.new(0, 5, 0), Vector3.new(0, -10, 0), params)
+					if not hit then
+						if not heightAt(spot) then
+							report(route.name, spot, "a hole in the road")
+						end
+					elseif hit.Instance.Name == "Ramp" then
+						left = nil -- a jump ramp's lip is meant to drop away
+						continue
+					else
+						-- quick look first; only suspicious spots get felt properly
+						local back = behind[lane]
+						local up = if back and step(back, hit) > 0.3 then jump(behindSpots[lane], spot, false) else 0
+						local across = if left and math.abs(step(left, hit)) > 0.3 then jump(spots[lane - 1], spot, true) else 0
+						if up > 0.3 then
+							report(route.name, hit.Position, string.format("a %.1f-stud step up", up))
+						elseif across > 0.3 then
+							report(route.name, hit.Position, string.format("a %.1f-stud step across the road", across))
+						end
+						row[lane] = hit
+					end
+					left = hit
+				end
+				behind, behindSpots = row, spots
+			end
+		end
+	end
+	if #found == 0 then
+		print("[RoadCheck] " .. trackName .. ": no steps or holes in the road")
+	end
+	for k, problem in found do
+		if k > 12 then
+			warn("[RoadCheck] " .. trackName .. ": ...and " .. (#found - 12) .. " more")
+			break
+		end
+		warn("[RoadCheck] " .. trackName .. ", " .. problem.text)
+	end
+end
+
 -- Builds a track with its scenery and sky, replacing the old one
 local function loadTrack(def)
 	local cfg = makeConfig(def)
-	local ok, result, path = pcall(function()
-		local track, samples, halfWidths, main = buildTrack(cfg)
+	local ok, result, path, routes = pcall(function()
+		local track, samples, halfWidths, main, everyRoute = buildTrack(cfg)
 		buildScenery(cfg, track, samples, halfWidths, (track:GetAttribute("KillY") :: number) + 6)
-		return track, main
+		return track, main, everyRoute
 	end)
 	if not ok then
 		warn("[RaceServer] Couldn't build " .. tostring(def.name) .. ":", result)
@@ -6671,6 +7463,9 @@ local function loadTrack(def)
 	trackFolder = result
 	currentPath = path
 	result.Parent = workspace
+	if RunService:IsStudio() then
+		checkRoads(cfg, def.name, routes, result.Road)
+	end
 	currentTrackDef = def
 	applyLighting(cfg.style)
 	raceState:SetAttribute("TrackId", def.id)
@@ -6943,6 +7738,7 @@ type Racer = {
 	item: string?, -- the item they're holding
 	paid: boolean, -- got their coins for this race yet?
 	lastPos: Vector3?, -- where they were last frame (to find the coins they drove through)
+	lastCrash: number?, -- when they last dropped coins
 }
 
 local racers: { [any]: Racer } = {} -- keyed by Player, or by a bot's entry
@@ -7025,6 +7821,29 @@ end
 
 -- Puts a racer back at their last checkpoint. `reason`: "Fell" (off the track),
 -- "Lava" (drove into lava) or nil (they pressed the respawn button, or a bot got stuck).
+-- How many coins a racer has this race (never more than MAX_COINS)
+local function setCoins(racer: Racer, coins: number)
+	racer.coins = math.min(coins, PICKUPS.MAX_COINS)
+	if racer.player then
+		racer.player:SetAttribute("RaceCoins", racer.coins)
+	end
+end
+
+-- Hitting an obstacle or hazard, or being put back on the track, drops a few
+-- coins (at most once per CRASH_COOLDOWN). Everyone sees them spill out.
+local function loseCoins(racer: Racer)
+	local now = os.clock()
+	if racer.finished or now - (racer.lastCrash or -math.huge) < PICKUPS.CRASH_COOLDOWN then
+		return
+	end
+	racer.lastCrash = now
+	local lost = math.min(racer.coins, PICKUPS.CRASH_COINS)
+	if lost > 0 then
+		setCoins(racer, racer.coins - lost)
+		raceEvent:FireAllClients("CoinsLost", racer.kart, lost)
+	end
+end
+
 local function respawnRacer(racer: Racer, reason: string?)
 	if racer.finished or racer.returned or raceState:GetAttribute("Phase") ~= "Racing" then
 		return
@@ -7035,6 +7854,7 @@ local function respawnRacer(racer: Racer, reason: string?)
 		return
 	end
 	racer.lastRespawn = now
+	loseCoins(racer)
 	local target = racer.respawnCFrame + Vector3.new(0, 2.5, 0)
 	racer.kart:PivotTo(target)
 	racer.hitbox.AssemblyLinearVelocity = Vector3.zero
@@ -7049,14 +7869,6 @@ local function respawnRacer(racer: Racer, reason: string?)
 		ai.speed = 0
 		ai.push = Vector3.zero
 		ai.grace = 1.2
-	end
-end
-
--- How many coins a racer has this race (never more than MAX_COINS)
-local function setCoins(racer: Racer, coins: number)
-	racer.coins = math.min(coins, PICKUPS.MAX_COINS)
-	if racer.player then
-		racer.player:SetAttribute("RaceCoins", racer.coins)
 	end
 end
 
@@ -7320,7 +8132,7 @@ local function scanForBots(track: Instance)
 	botHazardParams.FilterDescendantsInstances = { track:FindFirstChild("Hazards") }
 	local walls, hazards = track:FindFirstChild("Walls"), track:FindFirstChild("Hazards")
 	for _, part in if walls then walls:GetChildren() else {} do
-		if part:IsA("Part") and (part.Name == "Rock" or part.Name == "Crystal" or part.Name == "SnowmanBlock" or part.Name == "FireBarPost") then
+		if part:IsA("Part") and (part:GetAttribute("Obstacle") or part.Name == "Tree" or part.Name == "FireBarPost") then
 			local across = if part.Shape == Enum.PartType.Cylinder then part.Size.Y else math.max(part.Size.X, part.Size.Z)
 			table.insert(botAvoid, { pos = part.Position, radius = across * 0.7 + 3 })
 		end
@@ -7337,6 +8149,10 @@ local function scanForBots(track: Instance)
 				end
 			end
 			table.insert(botMovers, { kind = "FireBar", item = item, origin = origin, balls = balls })
+		elseif item:IsA("Model") and typeof(origin) == "CFrame" and item:GetAttribute("Reach") then
+			table.insert(botMovers, { kind = "Tongue", item = item, origin = origin, reach = tonumber(item:GetAttribute("Reach")) or 20 })
+		elseif item:IsA("Model") and item:GetAttribute("From") then
+			table.insert(botMovers, { kind = "Hopper", item = item })
 		elseif item:IsA("Model") and typeof(origin) == "CFrame" then
 			local column = item:FindFirstChild("Column")
 			local radius = if column and column:IsA("BasePart") then column.Size.Y / 2 else 6
@@ -7374,8 +8190,30 @@ local function hazardActive(item: Instance, now: number): boolean
 	return (now + (tonumber(item:GetAttribute("Offset")) or 0)) % period < (tonumber(item:GetAttribute("Active")) or 0)
 end
 
--- Knocks a bot away from `from` (and `lift` upwards) and spins it out
-local function knockBot(ai: any, pos: Vector3, from: Vector3, power: number, lift: number)
+-- Where a hopping frog is right now (the client works it out the same way): it
+-- crosses From -> To in `Hops` hops, then hops back. Each hop it crouches for
+-- a moment first, then leaps. Also returns how far through its leap it is (0 = crouching).
+local function hopAt(item: Instance, now: number): (Vector3, boolean, number)
+	local from, to = item:GetAttribute("From") :: Vector3, item:GetAttribute("To") :: Vector3
+	local period = math.max(tonumber(item:GetAttribute("Period")) or 5, 0.5)
+	local hops = math.max(tonumber(item:GetAttribute("Hops")) or 4, 1)
+	local phase = ((now + (tonumber(item:GetAttribute("Offset")) or 0)) % period) / period
+	local going = phase < 0.5
+	local slot = (phase % 0.5) * 2 * hops
+	local hop = math.floor(slot)
+	local air = math.clamp((slot - hop - 0.35) / 0.65, 0, 1)
+	local along = (hop + air) / hops
+	if not going then
+		along = 1 - along
+	end
+	local height = math.sin(air * math.pi) * (tonumber(item:GetAttribute("Height")) or 7)
+	return from:Lerp(to, along) + Vector3.yAxis * height, going, air
+end
+
+-- Knocks a bot away from `from` (and `lift` upwards), spins it out, and drops some of its coins
+local function knockBot(racer: Racer, pos: Vector3, from: Vector3, power: number, lift: number)
+	local ai = racer.ai
+	loseCoins(racer)
 	local away = flat(pos - from)
 	if away.Magnitude < 0.1 then
 		away = -CFrame.Angles(0, ai.heading, 0).LookVector
@@ -7430,11 +8268,18 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	ai.laneTimer -= dt
 	if ai.laneTimer <= 0 then
 		ai.laneTimer = 0.2
-		local far = aheadIndex(70)
-		for _, offset in { 0, 0.35, -0.35, 0.7, -0.7 } do
-			local lane = math.clamp(bot.lane + offset, -0.8, 0.8)
-			if laneClear(pos, path.roadPoint(far, lane * path.halfWidth[far])) then
-				ai.lane = lane
+		-- a clear lane a good way ahead, or failing that (in a thick forest) just past the next obstacle
+		for _, reach in { 60, 26 } do
+			local far = aheadIndex(reach)
+			local found = false
+			for _, offset in { 0, 0.2, -0.2, 0.4, -0.4, 0.6, -0.6, 0.8, -0.8 } do
+				local lane = math.clamp(bot.lane + offset, -0.8, 0.8)
+				if laneClear(pos, path.roadPoint(far, lane * path.halfWidth[far])) then
+					ai.lane, found = lane, true
+					break
+				end
+			end
+			if found then
 				break
 			end
 		end
@@ -7447,7 +8292,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	local ground = if hit and hit.Normal.Y > 0.3 then hit else nil
 	local surface = if ground then ground.Instance else nil
 	if surface and surface:GetAttribute("BoostPad") then
-		ai.boost = math.max(ai.boost, 1.2)
+		ai.boost = math.max(ai.boost, tonumber(surface:GetAttribute("BoostTime")) or 1.2)
 	end
 
 	-- Steer (much less in the air)
@@ -7516,7 +8361,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 					for _, offset in mover.balls do
 						local ball = spun:PointToWorldSpace(offset)
 						if (ball - pos).Magnitude < 5.5 then
-							knockBot(ai, pos, ball, 45, 15)
+							knockBot(racer, pos, ball, 45, 15)
 							break
 						end
 					end
@@ -7527,13 +8372,25 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 					if typeof(a) == "Vector3" and typeof(b) == "Vector3" then
 						local ball = a:Lerp(b, (1 - math.cos(phase * math.pi * 2)) / 2)
 						if (ball - pos).Magnitude < mover.radius + 3.5 then
-							knockBot(ai, pos, ball, 45, 15)
+							knockBot(racer, pos, ball, 45, 15)
 						end
+					end
+				elseif mover.kind == "Hopper" then
+					local frog = hopAt(item, now)
+					if (frog - pos).Magnitude < 3.2 + 3.5 then
+						knockBot(racer, pos, frog, 45, 15)
+					end
+				elseif mover.kind == "Tongue" and hazardActive(item, now) then
+					local mouth = mover.origin.Position
+					local along = math.clamp((pos - mouth):Dot(mover.origin.LookVector), 0, mover.reach)
+					local lick = mouth + mover.origin.LookVector * along
+					if (lick - pos).Magnitude < 4.5 then
+						knockBot(racer, pos, lick, 45, 10)
 					end
 				elseif mover.kind == "Geyser" and hazardActive(item, now) then
 					local vent = mover.origin.Position
 					if flat(vent - pos).Magnitude < mover.radius + 2.5 and math.abs(pos.Y - vent.Y) < 20 then
-						knockBot(ai, pos, vent, 18, 55)
+						knockBot(racer, pos, vent, 18, 55)
 					end
 				end
 			end
@@ -8127,6 +8984,13 @@ raceEvent.OnServerEvent:Connect(function(player, action, choice)
 		if racer and raceState:GetAttribute("Phase") == "Racing" then
 			useItem(racer) -- (does nothing unless they're really holding an item)
 		end
+	elseif action == "Crash" then
+		-- Their kart hit an obstacle or hazard. This only ever costs the sender
+		-- coins, so there's nothing to cheat (and loseCoins limits how often).
+		local racer = racers[player]
+		if racer and not racer.returned and raceState:GetAttribute("Phase") == "Racing" then
+			loseCoins(racer)
+		end
 	end
 end)
 
@@ -8209,14 +9073,20 @@ end
 
 	POINTS: the main road is a smooth curve through these, in order. X/Z move
 	it around the map, Y makes hills. Keep neighbouring points roughly 100-160
-	apart. Every track starts at (0, 0, -80) heading the same way, so its
+	apart. A tight corner needs closer points (~20-30 apart, evenly spaced, like
+	Windy Ledge's 90-degree turn): a short gap right next to a long one makes
+	the curve bulge, and a corner tighter than the road is wide folds the road
+	over itself. Every track starts at (0, 0, -80) heading the same way, so its
 	start line is next to the lobby. Everyone finishes at the end of it.
 
 	BRANCHES: side routes that split off the main road and join it again
 	(a risky shortcut, a secret cave...). A branch has its own POINTS, optional
 	`width` and its own FEATURES (their `point` numbers count along the branch).
-	Its first and last points must sit inside a main-road Room, on flat road at
-	the same height, so there's space for the junction. Walls open up by
+	`respawns = false` leaves out its respawn points: fall off it and you're put
+	back where you last were on the main road (before the branch started).
+	Its first and last points must sit inside a main-road Room, at about the
+	same height, so there's space for the junction. The builder lays the
+	branch's ends right onto the main road's surface, and walls open up by
 	themselves where the roads meet.
 
 	Every road has slow OFF-ROAD strips (grass, ash, snow, mud) between the
@@ -8228,13 +9098,13 @@ end
 	FEATURES are things placed on a road. Single spots use `point` (which POINT),
 	`ahead` (studs further along the road from that point; negative = before it)
 	and `lane` (sideways from the middle of the road; negative = left):
-	  "Boost"     speed pad
+	  "Boost"     speed pad. Optional `time` (seconds of boost, if longer than usual)
 	  "Ramp"      jump. Optional `angle` and `length`, plus `gap` = studs of
 	              missing road after the lip. Too slow and you fall through!
 	  "Banner"    arch over the road with `text` on it (name each area!)
 	  "Sign"      signpost with `text`, just outside the wall on `side` ("left"/"right")
 	  "Waterfall" a curtain of water right across the road (drive through it)
-	  "Rock" / "Crystal" / "Snowman"   solid obstacle to steer around. `size`
+	  "Rock" / "Crystal" / "Snowman" / "Tree"   solid obstacle to steer around. `size`
 	  "LavaPool"  touch it and you're back at your last checkpoint. `radius`
 	  "Geyser"    vent (lava, or water in the jungle) that erupts every few
 	              seconds and throws karts in the air. `radius`, `height`,
@@ -8244,6 +9114,15 @@ end
 	              `length`, `speed` (degrees per second, negative = other way)
 	  "Snowball" / "Boulder"   rolls from side to side across the road.
 	              `radius`, `period`, `offset`, optional `span` (how far it rolls)
+	  "Frog"      hops across the road and back, crouching before each hop.
+	              `period` (seconds there and back), `hops` (each way),
+	              `height`, `offset`, optional `span`. `reverse = true` starts
+	              it on the right: put one a few studs after a normal one, with
+	              the same timing, and they pass each other in the middle
+	  "Tongue"    a frog-head idol beside the road (`side`) whose tongue lashes
+	              `reach` studs across it every few seconds; its throat swells
+	              and it croaks first. `period`, `active`, `offset`. Keep
+	              `reach` short of the far side so there's always a way past
 	Sections of road use `from` and `to` points instead:
 	  "Room"      the road opens out to `width`: an arena, plaza or cavern
 	  "NoWalls"   no barriers (or off-road), so you can drive or get pushed off
@@ -8256,6 +9135,22 @@ end
 	  "Skippable" main road that a drop or jump shortcut lets racers skip, so
 	              no checkpoints go there (branches do this by themselves)
 ]]
+
+-- Adds a thick forest to a list of FEATURES: `rows` rows of trees across the
+-- road, `spacing` studs apart starting at `point`, with trees `gap` studs
+-- apart across it (out to `reach` either side). Every other row is shifted
+-- half a gap, so there's no straight line through: you have to weave.
+local function forest(features, point: number, rows: number, spacing: number, gap: number, reach: number)
+	for row = 0, rows - 1 do
+		local k = 0
+		for lane = -reach + (row % 2) * gap / 2, reach, gap do
+			k += 1
+			local wobble = ((row * 7 + k * 5) % 5 - 2) * 1.5 -- (so it isn't a perfect grid)
+			table.insert(features, { kind = "Tree", point = point, ahead = row * spacing + wobble, lane = lane - wobble, size = 6 + (row + k) % 3 })
+		end
+	end
+	return features
+end
 
 return {
 	--------------------------------------------------------------------
@@ -8741,24 +9636,32 @@ return {
 				POINTS = {
 					Vector3.new(470, 40, 605), -- 1 leaves Pass Gate
 					Vector3.new(400, 40, 610), -- 2 out along the cliff
-					Vector3.new(320, 43, 620), -- 3
-					Vector3.new(250, 46, 628), -- 4 a boost pad (a trap!) just before...
-					Vector3.new(215, 47, 632), -- 5 ...a sharp 90-degree left turn
-					Vector3.new(212, 48, 668), -- 6
-					Vector3.new(214, 52, 780), -- 7
-					Vector3.new(215, 56, 900), -- 8
-					Vector3.new(215, 60, 1040), -- 9 comes out on the Sky Rink
+					Vector3.new(330, 42, 621), -- 3
+					Vector3.new(295, 44, 626), -- 4 a boost pad (a trap!) just before...
+					Vector3.new(265, 45, 629), -- 5
+					-- ...a sharp 90-degree left turn: a 30-stud circle around (242, 660). A tight
+					-- corner needs points this close and evenly spaced, or the inside edge of the
+					-- road folds over itself and leaves lips that stop karts.
+					Vector3.new(242, 46, 630), -- 6
+					Vector3.new(221, 47, 639), -- 7
+					Vector3.new(212, 48, 660), -- 8
+					Vector3.new(212, 49, 684), -- 9
+					Vector3.new(213, 51, 715), -- 10
+					Vector3.new(214, 53, 755), -- 11
+					Vector3.new(215, 55, 820), -- 12
+					Vector3.new(215, 57, 920), -- 13
+					Vector3.new(215, 60, 1040), -- 14 comes out on the Sky Rink
 				},
 				FEATURES = {
 					{ kind = "Banner", point = 2, text = "WINDY LEDGE" },
-					{ kind = "NoWalls", from = 2, to = 9 },
-					{ kind = "Ice", from = 2, to = 4, grip = 0.35 }, -- (the corner itself grips, so you can make it if you slow down)
-					{ kind = "Ice", from = 6, to = 9, grip = 0.35 },
-					{ kind = "Wind", from = 2, to = 4, push = 90, period = 4, active = 1.5 },
-					{ kind = "Wind", from = 6, to = 8, push = -90, period = 4, active = 1.5, offset = 2 },
-					-- The trap: boost into the corner and you fly straight off the edge. It's off the
-					-- middle so you can steer round it (and a kart put back in the middle misses it).
-					{ kind = "Boost", point = 4, ahead = -40, lane = -8 },
+					{ kind = "NoWalls", from = 2, to = 14 },
+					{ kind = "Ice", from = 2, to = 5, grip = 0.35 }, -- (the corner itself grips, so you can make it if you slow down)
+					{ kind = "Ice", from = 8, to = 14, grip = 0.35 },
+					{ kind = "Wind", from = 2, to = 5, push = 90, period = 4, active = 1.5 },
+					{ kind = "Wind", from = 8, to = 13, push = -90, period = 4, active = 1.5, offset = 2 },
+					-- The trap: boost into the corner and you fly straight off the edge. It sits in the
+					-- middle of the road, so you have to steer round it on the ice.
+					{ kind = "Boost", point = 5, ahead = -25, lane = 0 },
 				},
 			},
 			{
@@ -8776,6 +9679,7 @@ return {
 					{ kind = "Banner", point = 2, text = "ICE SLIDE" },
 					{ kind = "NoWalls", from = 2, to = 5 },
 					{ kind = "Ice", from = 2, to = 6, grip = 0.15 },
+					{ kind = "Snowman", point = 3, ahead = 80, lane = 0, size = 10 }, -- right in the middle: slide round it!
 				},
 			},
 		},
@@ -8889,6 +9793,7 @@ return {
 			{ kind = "Sign", point = 29, ahead = -40, side = "left", text = "< RAVINE LEAP\nboost first!" },
 			{ kind = "Bridge", from = 30, to = 33 },
 			{ kind = "NoWalls", from = 30, to = 33 },
+			{ kind = "Wind", from = 30, to = 32, push = 60, period = 5, active = 1.5 }, -- gusts across the long rope bridge
 			{ kind = "Room", from = 34, to = 35, width = 90 },
 			-- Mud Flats
 			{ kind = "Banner", point = 36, text = "MUD FLATS" },
@@ -8939,6 +9844,199 @@ return {
 					{ kind = "Boost", point = 1, ahead = 15, lane = 0 },
 					{ kind = "NoWalls", from = 2, to = 3 },
 					{ kind = "Ramp", point = 2, lane = 0, angle = 22, length = 34, gap = 70 },
+				},
+			},
+		},
+	},
+
+	--------------------------------------------------------------------
+	-- CROAKER SWAMP: a misty swamp at dusk, ruled by frogs
+	--------------------------------------------------------------------
+	{
+		id = "Swamp",
+		name = "Croaker Swamp",
+		blurb = "Splash through the bog, dodge the Frog King's tongues, then weave through the overgrown forest!",
+		theme = "Swamp",
+		color = Color3.fromRGB(120, 190, 70),
+		FALL_DEPTH = 8, -- the swamp water is just under the road: fall in and you're put back
+		-- The Frog King's step-temple, half sunk in the swamp. The road drives through its hall.
+		TEMPLE = { center = Vector3.new(1070, 0, 1830), size = 360, top = 120 }, -- Feelsgood Fred sits on top
+		FRED_BILLBOARD = Vector3.new(-95, 0, 300), -- his billboard beside the start straight
+		POINTS = {
+			Vector3.new(0, 0, -80), --  1 back of the starting grid
+			Vector3.new(0, 0, 60), --  2 start: LILY PAD LANDING, a dock village on stilts
+			Vector3.new(0, 0, 200), --  3
+			Vector3.new(10, 0, 390), --  4
+			Vector3.new(80, 0, 540), --  5
+			Vector3.new(205, 0, 645), --  6
+			Vector3.new(370, 0, 690), --  7 THE BOG: deep mud (or the Boardwalk shortcut, right)
+			Vector3.new(530, 0, 700), --  8
+			Vector3.new(690, 0, 645), --  9
+			Vector3.new(850, 0, 680), -- 10
+			Vector3.new(965, 0, 795), -- 11
+			Vector3.new(1000, 0, 955), -- 12
+			Vector3.new(945, 0, 1105), -- 13
+			Vector3.new(965, 0, 1265), -- 14
+			Vector3.new(1035, 0, 1405), -- 15 TEMPLE COURTYARD (or the Temple Roof shortcut, left)
+			Vector3.new(1050, 0, 1530), -- 16
+			Vector3.new(1070, 0, 1655), -- 17 FROG KING'S TEMPLE: the great hall, frog idols lash their tongues
+			Vector3.new(1060, 0, 1770), -- 18
+			Vector3.new(1000, 0, 1870), -- 19
+			Vector3.new(900, 0, 1910), -- 20 out the side door...
+			Vector3.new(815, 0, 1980), -- 21 ...and round the moat
+			Vector3.new(850, 0, 2075), -- 22
+			Vector3.new(960, 0, 2090), -- 23 behind the temple (the Temple Roof leap lands here)
+			Vector3.new(1090, 0, 2090), -- 24
+			Vector3.new(1195, 0, 2200), -- 25
+			Vector3.new(1135, 0, 2330), -- 26
+			Vector3.new(980, 0, 2400), -- 27 THE OVERGROWTH: a rainforest so thick you weave between the trees
+			Vector3.new(830, 0, 2480), -- 28
+			Vector3.new(660, 0, 2530), -- 29
+			Vector3.new(480, 0, 2510), -- 30
+			Vector3.new(330, 0, 2420), -- 31
+			Vector3.new(220, 0, 2290), -- 32
+			Vector3.new(170, 0, 2120), -- 33
+			Vector3.new(125, 0, 1920), -- 34 MUSHROOM GLADE: a winding cave of glowing giant mushrooms
+			Vector3.new(45, 0, 1770), -- 35
+			Vector3.new(-80, 0, 1665), -- 36
+			Vector3.new(-230, 0, 1610), -- 37
+			Vector3.new(-380, 0, 1530), -- 38
+			Vector3.new(-485, 0, 1405), -- 39
+			Vector3.new(-530, 0, 1240), -- 40
+			Vector3.new(-520, 0, 1070), -- 41
+			Vector3.new(-470, 0, 895), -- 42 LILY PAD SPRINT: open water, a line of boost pads
+			Vector3.new(-450, 0, 725), -- 43
+			Vector3.new(-485, 0, 550), -- 44
+			Vector3.new(-550, 0, 400), -- 45
+			Vector3.new(-575, 0, 230), -- 46
+			Vector3.new(-530, 0, 70), -- 47
+			Vector3.new(-425, 0, -55), -- 48 back to the landing
+			Vector3.new(-290, 0, -150), -- 49 finish straight
+			Vector3.new(-125, 0, -195), -- 50
+			Vector3.new(35, 0, -220), -- 51
+			Vector3.new(195, 0, -230), -- 52 end of the run-off
+		},
+		FEATURES = forest({
+			{ kind = "Boost", point = 2, ahead = 40, lane = 0 },
+			{ kind = "Banner", point = 4, text = "LILY PAD LANDING" },
+			-- The Bog
+			{ kind = "Banner", point = 7, ahead = -40, text = "THE BOG" },
+			{ kind = "Room", from = 7, to = 8, width = 100 },
+			{ kind = "Sign", point = 8, ahead = -40, side = "right", text = "BOARDWALK >\nshortcut" },
+			{ kind = "Rough", from = 9, to = 13 }, -- deep mud: everyone slows down...
+			{ kind = "Boost", point = 9, ahead = -40, lane = -12, time = 2.4 }, -- ...but one long boost, just before it, carries you into it
+			-- a pair of frogs before the boost and a pair after: one hops left, middle,
+			-- right while the other hops right, middle, left, passing in the middle
+			{ kind = "Frog", point = 9, ahead = -95, hops = 2, period = 4 },
+			{ kind = "Frog", point = 9, ahead = -87, hops = 2, period = 4, reverse = true },
+			{ kind = "Frog", point = 9, ahead = 15, hops = 2, period = 4, offset = 2 },
+			{ kind = "Frog", point = 9, ahead = 23, hops = 2, period = 4, offset = 2, reverse = true },
+			-- Frog King's Temple
+			{ kind = "Room", from = 15, to = 16, width = 100 },
+			{ kind = "Sign", point = 16, ahead = -40, side = "left", text = "< HIGH PASSAGE\nboost to leap!" },
+			{ kind = "Banner", point = 16, ahead = 40, text = "FROG KING'S TEMPLE" },
+			{ kind = "Room", from = 17, to = 20, width = 90 },
+			{ kind = "Tunnel", from = 17, to = 20 },
+			-- 8 frog idols, on alternate sides, take turns lashing their tongues halfway across the hall
+			{ kind = "Tongue", point = 17, ahead = 20, side = "left", reach = 45, period = 4, offset = 0 },
+			{ kind = "Tongue", point = 17, ahead = 60, side = "right", reach = 45, period = 4, offset = 0.5 },
+			{ kind = "Tongue", point = 17, ahead = 100, side = "left", reach = 45, period = 4, offset = 1 },
+			{ kind = "Tongue", point = 17, ahead = 140, side = "right", reach = 45, period = 4, offset = 1.5 },
+			{ kind = "Tongue", point = 17, ahead = 180, side = "left", reach = 45, period = 4, offset = 2 },
+			{ kind = "Tongue", point = 17, ahead = 220, side = "right", reach = 45, period = 4, offset = 2.5 },
+			{ kind = "Tongue", point = 17, ahead = 260, side = "left", reach = 45, period = 4, offset = 3 },
+			{ kind = "Tongue", point = 17, ahead = 300, side = "right", reach = 45, period = 4, offset = 3.5 },
+			{ kind = "Room", from = 23, to = 24, width = 100 },
+			-- The Overgrowth
+			{ kind = "Banner", point = 27, ahead = -30, text = "THE OVERGROWTH" },
+			{ kind = "Room", from = 28, to = 31, width = 88 }, -- just wide enough for the trees: the outermost ones stand right on the edge...
+			{ kind = "NoWalls", from = 28, to = 31 }, -- ...with no barriers, so you can't sneak round them
+			-- (the trees themselves are added by forest() at the end of this list)
+			-- frogs hopping along the gaps between the rows of trees
+			{ kind = "Frog", point = 28, ahead = 60, span = 38, period = 5, hops = 4, offset = 0 },
+			{ kind = "Frog", point = 28, ahead = 108, span = 38, period = 5, hops = 4, offset = 2.5, reverse = true },
+			{ kind = "Frog", point = 28, ahead = 156, span = 38, period = 5, hops = 4, offset = 1.2, reverse = true },
+			{ kind = "Frog", point = 28, ahead = 252, span = 38, period = 5, hops = 4, offset = 2.4 },
+			{ kind = "Frog", point = 28, ahead = 300, span = 38, period = 5, hops = 4, offset = 4.2 },
+			{ kind = "Frog", point = 28, ahead = 348, span = 38, period = 5, hops = 4, offset = 3.6, reverse = true },
+			{ kind = "Frog", point = 28, ahead = 444, span = 38, period = 5, hops = 4, offset = 0.6 },
+			-- Mushroom Glade
+			{ kind = "Banner", point = 34, ahead = -30, text = "MUSHROOM GLADE" },
+			{ kind = "Tunnel", from = 34, to = 41 },
+			{ kind = "Frog", point = 36, period = 4.5, offset = 1 },
+			{ kind = "Frog", point = 39, period = 4.5, offset = 3 },
+			-- Lily Pad Sprint and the finish
+			{ kind = "Banner", point = 42, ahead = 20, text = "LILY PAD SPRINT" },
+			{ kind = "Bridge", from = 42, to = 47 },
+			{ kind = "NoWalls", from = 42, to = 47 },
+			{ kind = "Frog", point = 44, period = 5, offset = 0 },
+			{ kind = "Frog", point = 46, period = 5, offset = 2.5 },
+			{ kind = "Boost", point = 43, lane = 0 },
+			{ kind = "Boost", point = 45, lane = 0 },
+			{ kind = "Boost", point = 50, lane = 0 },
+		}, 28, 22, 24, 28, 42), -- THE OVERGROWTH: 22 rows of trees from point 28, 24 studs apart, out to 42 either side
+		BRANCHES = {
+			{
+				name = "Boardwalk", -- rickety planks straight across the open water: no mud, but no rails either
+				width = 28,
+				POINTS = {
+					Vector3.new(505, 0, 735), -- 1 leaves the Bog
+					Vector3.new(550, 0, 875), -- 2
+					Vector3.new(645, 0, 1010), -- 3
+					Vector3.new(735, 0, 1150), -- 4
+					Vector3.new(840, 0, 1290), -- 5
+					Vector3.new(990, 0, 1425), -- 6 comes out in the Temple Courtyard
+				},
+				FEATURES = {
+					{ kind = "Banner", point = 2, text = "BOARDWALK" },
+					{ kind = "Bridge", from = 1, to = 6 },
+					{ kind = "NoWalls", from = 2, to = 5 },
+					-- 6 pairs of frogs hopping across the planks (left, middle, right and back,
+					-- passing in the middle): get bonked and you're in the water
+					{ kind = "Frog", point = 2, ahead = 40, hops = 2, period = 5, offset = 0 },
+					{ kind = "Frog", point = 2, ahead = 48, hops = 2, period = 5, offset = 0, reverse = true },
+					{ kind = "Frog", point = 2, ahead = 150, hops = 2, period = 5, offset = 1.25 },
+					{ kind = "Frog", point = 2, ahead = 158, hops = 2, period = 5, offset = 1.25, reverse = true },
+					{ kind = "Frog", point = 3, ahead = 90, hops = 2, period = 5, offset = 2.5 },
+					{ kind = "Frog", point = 3, ahead = 98, hops = 2, period = 5, offset = 2.5, reverse = true },
+					{ kind = "Frog", point = 4, ahead = 30, hops = 2, period = 5, offset = 3.75 },
+					{ kind = "Frog", point = 4, ahead = 38, hops = 2, period = 5, offset = 3.75, reverse = true },
+					{ kind = "Frog", point = 4, ahead = 140, hops = 2, period = 5, offset = 0.6 },
+					{ kind = "Frog", point = 4, ahead = 148, hops = 2, period = 5, offset = 0.6, reverse = true },
+					{ kind = "Frog", point = 5, ahead = 90, hops = 2, period = 5, offset = 1.9 },
+					{ kind = "Frog", point = 5, ahead = 98, hops = 2, period = 5, offset = 1.9, reverse = true },
+				},
+			},
+			{
+				name = "High Passage", -- up the temple's front steps, through a passage high inside it, then boost and leap off the back across the moat
+				width = 28,
+				respawns = false, -- fall off before making the leap and you're back at the temple entrance
+				POINTS = {
+					Vector3.new(1085, 0, 1470), -- 1 leaves the Temple Courtyard
+					Vector3.new(1165, 0, 1520), -- 2 (flat until it's clear of the main road)
+					Vector3.new(1160, 13, 1580), -- 3 up the temple's steps, one steady climb
+					Vector3.new(1150, 27, 1640), -- 4
+					Vector3.new(1135, 40, 1705), -- 5 into the temple, through a small doorway
+					Vector3.new(1120, 40, 1830), -- 6 high above the great hall
+					Vector3.new(1120, 40, 1950), -- 7 out the back: the leap! Miss it and you're in the moat
+					Vector3.new(1125, 4, 2040), -- 8
+					Vector3.new(1100, 0, 2090), -- 9 lands on the road behind the temple
+				},
+				FEATURES = {
+					{ kind = "Banner", point = 2, text = "HIGH PASSAGE" },
+					{ kind = "NoWalls", from = 1, to = 7 }, -- no barriers anywhere: one slip and you're off
+					{ kind = "Tunnel", from = 5, to = 7 },
+					{ kind = "Boost", point = 6, ahead = 40, lane = 0 },
+					{ kind = "Ramp", point = 7, lane = 0, angle = 20, length = 30, gap = 100 },
+					-- frogs all the way up and through: pairs that pass in the middle, and singles
+					{ kind = "Frog", point = 3, ahead = 0, hops = 2, period = 4, offset = 0 },
+					{ kind = "Frog", point = 3, ahead = 8, hops = 2, period = 4, offset = 0, reverse = true },
+					{ kind = "Frog", point = 4, ahead = 25, period = 3.5, hops = 3, offset = 1 },
+					{ kind = "Frog", point = 5, ahead = 35, hops = 2, period = 4, offset = 2 },
+					{ kind = "Frog", point = 5, ahead = 43, hops = 2, period = 4, offset = 2, reverse = true },
+					{ kind = "Frog", point = 6, ahead = -25, period = 3.5, hops = 3, offset = 2.5, reverse = true },
+					{ kind = "Frog", point = 6, ahead = 80, hops = 2, period = 4, offset = 3 }, -- (right after the boost pad!)
+					{ kind = "Frog", point = 6, ahead = 88, hops = 2, period = 4, offset = 3, reverse = true },
 				},
 			},
 		},
@@ -9061,6 +10159,24 @@ local KINDS = {
 			{ s = "Ball", size = V(0.24, 0.24, 0.24), at = V(0, 1.12, -0.18), color = C(255, 70, 90) },
 			{ s = "Egg", size = V(0.45, 0.3, 0.15), at = V(0.85, -0.1, -0.76), color = PINK, pair = true }, -- cheeks
 			{ s = "Egg", size = V(1.5, 1.6, 0.5), at = V(0, -1.75, -0.65), color = C(200, 240, 150) }, -- tummy
+		},
+	},
+	-- Feelsgood Fred: a laid-back swamp frog with big droopy eyes and wide lips.
+	-- He's the king of Croaker Swamp (that's his temple).
+	Fred = {
+		kart = C(110, 175, 70),
+		fur = C(95, 155, 62),
+		body = C(55, 95, 180), -- his comfy blue t-shirt
+		head = V(2.9, 2, 2.3),
+		eyes = false,
+		extras = {
+			{ s = "Egg", size = V(1.15, 1.05, 0.95), at = V(0.56, 0.8, -0.55), color = WHITE, pair = true }, -- big bulging eyes...
+			{ s = "Egg", size = V(0.5, 0.36, 0.3), at = V(0.5, 0.72, -1), color = BLACK, pair = true }, -- pupils peeking out from under...
+			{ s = "Egg", size = V(1.24, 0.62, 1.04), at = V(0.56, 1.1, -0.56), rot = V(0, 0, -8), color = "Fur", pair = true }, -- ...heavy, droopy lids
+			{ s = "Egg", size = V(1.22, 0.07, 0.96), at = V(0.56, 0.84, -0.6), rot = V(0, 0, -8), color = C(55, 95, 40), pair = true }, -- the lids' edge
+			{ s = "Egg", size = V(2.3, 0.42, 0.8), at = V(0, -0.36, -0.95), color = C(175, 85, 60) }, -- big wide lips
+			{ s = "Egg", size = V(2.1, 0.38, 0.72), at = V(0, -0.68, -0.88), color = C(175, 85, 60) },
+			{ s = "Egg", size = V(2.05, 0.07, 0.6), at = V(0, -0.52, -1.1), color = C(90, 35, 30) }, -- the line of his mouth
 		},
 	},
 	Monkey = {
@@ -35649,6 +36765,8 @@ return {
 	    each other: they need to be further apart, or one at least 20 studs higher
 	  • corners so tight that the inside edge of the road would fold over itself
 	  • road running through the lobby
+	It only checks the layout. Steps and holes in the built road surface are
+	checked in Play: RaceServer prints [RoadCheck] lines every time a track loads.
 	Positions are in the same numbers as the track's POINTS.
 ]]
 
@@ -35779,8 +36897,10 @@ return function(id: string): string
 	-- Corners too tight for the road's width, and the lobby
 	for _, r in routes do
 		local lastReported = -math.huge
-		for i = 4, #r.samples - 3 do
-			local a, b, c = flat(r.samples[i - 3]), flat(r.samples[i]), flat(r.samples[i + 3])
+		-- (measured over neighbouring samples: a sharp corner is short, and a longer
+		-- stretch averages it out)
+		for i = 2, #r.samples - 1 do
+			local a, b, c = flat(r.samples[i - 1]), flat(r.samples[i]), flat(r.samples[i + 1])
 			local ab, bc, ca = (b - a).Magnitude, (c - b).Magnitude, (a - c).Magnitude
 			local area2 = math.abs((b - a):Cross(c - a).Y)
 			local radius = if area2 > 1e-3 then ab * bc * ca / (2 * area2) else math.huge
@@ -35889,6 +37009,20 @@ end
 				<UniqueId name="UniqueId">38a87ad7161be5090ad5b95200022bbc</UniqueId>
 			</Properties>
 		</Item>
+	</Item>
+	<Item class="ServiceVisibilityService" referent="RBXC6ACF548AF5447F9BD99BFC9F6503F79">
+		<Properties>
+			<BinaryString name="HiddenServices">AAAAAA==</BinaryString>
+			<BinaryString name="VisibleServices">AQAAAAIQAAAAVm9pY2VDaGF0U2VydmljZQ==</BinaryString>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+			<string name="Name">ServiceVisibilityService</string>
+			<int64 name="SourceAssetId">-1</int64>
+			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001863</UniqueId>
+		</Properties>
 	</Item>
 	<Item class="HttpService" referent="RBXF0F7071DE9D64DDD970FF7AE58FEF3C3">
 		<Properties>
