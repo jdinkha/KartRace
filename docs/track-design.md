@@ -1,0 +1,37 @@
+# Track design
+
+Read before designing a new track or changing a track's layout, areas, shortcuts or hazards.
+
+The goal is for each track to feel like a level in a video game (think of driving through a 3D Zelda dungeon or a Mario Kart world). It should not feel like a real-world circuit (NASCAR/F1: one line of constant width with a few turns). It's still a race from the start line to one finish line, but the trip goes through distinct places.
+- **Theme.** Each level should have a "theme". For example, Frosty Peaks has a "Snow" theme. This is important for the background music especially, because each "theme" will have its own song eventually.
+- **A string of named areas.** Split each track into about 4–6 areas. Each gets its own name (on a `Banner`), its own look and its own challenge. Change the pace between them: open arena → tight cliff road → cave → big jump.
+- **Rooms joined by corridors.** Like a dungeon: wide `Room` sections (arenas, plazas, caverns, 60–140 studs wide) connected by normal roads and `Tunnel` caves.
+- **Using walled, linear roads.** Do not feel inclined to make numerous straighforward, walled off roads (straight or nearly straight lines with walls on the left and right). Instead, prefer the use of elevation, unwalled roads, bendy turns, obstacles, open terrains, etc.
+- **Reference:** In 'assets/img1.png', you can see that the overall design of the level does not have to be linear, it can have branching paths. In 'assets/img2.png', you can see that the off-road should serve as an obstacle that racers must drive around, but also serve as potential shortcuts if players can boost or jump over it. In both images, you can see interesting world-building (mountains, trees, waterfalls, Yoshi eggs, a Yoshi billboard with Yoshis watching us on the cliffs), take inspiration from that.
+- **Choices and creative shortcuts.** Each track needs at least two shortcuts, and they should be inventive, not just "a narrower road". Mark each one with a `Sign` or `Banner`. Examples already in the game:
+  - a hole you can drop through onto road below (Magma's Lava River Jump: the main road loops down and passes under its own jump, `Skippable`)
+  - a secret cave behind a waterfall (Jungle)
+  - a boost-only leap across a ravine (Jungle)
+  - an icy rail-less slide (Frosty)
+  - a grass cut that's only fast if you hit the boost pad first (Skyway)
+  - a risky geyser tube (Magma)
+  - a windy, rail-less cliff ledge with one sharp 90° corner and a boost pad right before it as a trap: boost into the corner and you fly off (Frosty's Windy Ledge)
+
+  A good shortcut saves a few seconds but costs something: risk of falling, slow off-road, hazards, or needing a boost.
+- **Off-road instead of bare walls.** Roads have slow off-road strips (grass, ash, snow, mud) between the road and the walls (`OFFROAD`); the walls sit at their outer edge. Boosting ignores off-road, so a boost pad before an off-road cut makes it a real shortcut. Make the non-drivable parts feel like you're driving in a real world rather than driving on a NASCAR track.
+- **Race length.** A race should take about 1.5–2 minutes: around 7000–8500 studs of main road, with several distinct areas.
+- **Hazards that fit the theme, with patterns players can learn.** Timed things warn before they fire (geysers bubble first). Moving things move steadily (fire bars, snowballs). Always leave a clear line through, and never place an unavoidable hit.
+- **Height and landmarks.** Climb and drop, cross over or under other parts of the track, and give players something big to head for (the volcano, the sky rink).
+- **Kid-friendly punishment.** Hazards slow you, spin you out, or send you back a little ("TOO HOT!", "WHOOPS!"). Nothing violent, but something a little mature, like a haunted house, is OK.
+- **Room for a dozen karts.** Races have up to 12 racers (`MAX_RACERS`). The main road is never narrower than `ROAD_WIDTH` (46, about eight karts side by side). Only branches can be narrower (~26–32), because only part of the pack takes them.
+
+
+**The one exception is Rainbow Skyway: the "vanilla" track** (like Mario Circuit). It's deliberately plain: wide (54), gentle and nearly straight, with walls everywhere and no hazards. Its extras stay simple: grass verges, a few cloud pillars to weave between, boost pads and one grass cut. It should still be a pretty track. New tracks should follow the level style above, not copy Skyway.
+
+## Current tracks
+Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vote offers 3 of them at random (`VOTE_CHOICES`):
+- **Rainbow Skyway** (Sky, vanilla, ~8600 studs): Into the Clouds (sweeping climb under a giant rainbow) → boost straight → Sunrise Curve → Cloud Bridge → Starlight Bend/Straight (cloud pillars) → Meadow Corner (Meadow Cut grass shortcut) → Sunset Sweep → Home Stretch. The grid is four karts wide.
+- **Magma Mountain** (Lava, ~8400): Ember Fields → fork: Cinder Ridge or Lava Tube shortcut → Crater Hall inside the hollow volcano → Magma Depths → Sulfur Flats → Obsidian Bridges (no rails, fire bar) → Basalt Forest → Ashfall Canyon → Lava River Jump. Drop through the jump's hole to land on the Lava Falls Loop below, skipping most of it. Then Fire Temple → Temple Gate finish.
+- **Frosty Peaks** (Snow, ~7070): Avalanche Pass → Pass Gate fork: Crystal Cave (a long winding cavern) or Windy Ledge (strong gusts, then a sharp 90° left with a trap boost pad in the middle of the road before it; the corner itself isn't icy) → Sky Rink → Frozen Bridge → Ski Jump → Snowy Lodge → Forest Clearing fork: Pine Forest or Ice Slide (icy, rail-less, a snowman right in the middle) → Snowman Village → Glacier Canyon → Frostbite Hills → finish.
+- **Jungle Ruins** (Jungle, ~6800): River Crossing (rope bridges) → Boulder Steps → The Waterfall fork: Cliff Road or the Secret Cave hidden behind the waterfall → Temple of the Sun (a hall inside the hollow pyramid, water geysers) → Temple Stairs (boulders) → The Ravine: long windy rope bridge (`push` 60), or the Ravine Leap (needs a boost) → Mud Flats (all mud, with a line of boost pads) → Vine Tunnel → Crocodile Creek → finish.
+- **Croaker Swamp** (Swamp, ~8100): a misty swamp at sunset; the water sits just under the road (`FALL_DEPTH` 8), so falling off anywhere drops you in and you respawn. Lily Pad Landing (start, Feelsgood Fred's billboard) → The Bog (a long mud stretch, points 9–13, with one long boost pad, `time` 2.4, just before it and a pair of frogs before and after the pad) or the Boardwalk shortcut (rail-less planks over the water, 6 pairs of frogs at 80% speed, `period` 5) → Temple Courtyard fork: the great hall of the Frog King's Temple (S-bends, 8 frog idols lashing their tongues in turn), out a side door and round the moat, or the High Passage shortcut (no barriers anywhere and frogs all the way: climb the temple's front steps, through a small doorway into a passage high above the hall, out a small doorway at the back, boost and leap across the moat; it has `respawns = false`, so falling off puts you back in the courtyard in front of the temple) → The Overgrowth (an 88-wide, barrier-less room packed with 77 trees in staggered rows, added by `forest()` in the Tracks module, the outermost right on the edge, plus 7 frogs hopping along the gaps between rows) → Mushroom Glade (a winding cave of glowing mushrooms) → Lily Pad Sprint (rail-less planks over open water, boost pads, frogs) → finish. Feelsgood Fred sits on top of the temple.

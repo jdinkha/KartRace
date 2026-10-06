@@ -19,10 +19,23 @@ Roblox kart racing game written in Luau. The scripts live in the place file (`Ka
 4. Tell the owner what to try by hand. Only a person can judge if it's fun.
 5. If you changed a system described in this file, update this file to match.
 
+## Blender 3D Modelling & Asset Generation
+You have access to the Blender MCP server when Blender is running and connected locally. Use it to generate low-poly models, environment props, and assets for the Roblox game.
+
+### Blender Rules for Roblox:
+- **Low-Poly & Scale:** Keep geometry clean and low-poly. Remember that **1 Blender unit = 1 Roblox stud**. Always design items to scale (e.g., a crate should be around 4x4x4 studs).
+- **Origin Points:** Keep the object's origin point centered at the base (bottom-center) of the model so it aligns properly when imported or scripted into Roblox Studio.
+- **No Complex Materials:** Stick to simple vertex colors or basic principled BSDF materials with flat colors. Roblox Studio handles textures and materials natively via imports.
+- **Naming Conventions:** Name objects clearly (e.g., `Prop_WoodenCrate`, `Scenery_PineTree`) so they can be easily referenced or exported.
+- **Exporting:** Once a model is generated in Blender, remind the owner to export it as an `.fbx` file, check its transforms (Apply Scale/Rotation), and use the Roblox Studio 3D Importer.
+
 ## Track design: every track is a level, not a circuit
 The goal is for each track to feel like a level in a video game (think of driving through a 3D Zelda dungeon or a Mario Kart world). It should not feel like a real-world circuit (NASCAR/F1: one line of constant width with a few turns). It's still a race from the start line to one finish line, but the trip goes through distinct places.
+- **Theme.** Each level should have a "theme". For example, Frosty Peaks has a "Snow" theme. This is important for the background music especially, because each "theme" will have its own song eventually.
 - **A string of named areas.** Split each track into about 4–6 areas. Each gets its own name (on a `Banner`), its own look and its own challenge. Change the pace between them: open arena → tight cliff road → cave → big jump.
 - **Rooms joined by corridors.** Like a dungeon: wide `Room` sections (arenas, plazas, caverns, 60–140 studs wide) connected by normal roads and `Tunnel` caves.
+- **Using walled, linear roads.** Do not feel inclined to make numerous straighforward, walled off roads (straight or nearly straight lines with walls on the left and right). Instead, prefer the use of elevation, unwalled roads, bendy turns, obstacles, open terrains, etc.
+- **Reference:** In 'assets/img1.png', you can see that the overall design of the level does not have to be linear, it can have branching paths. In 'assets/img2.png', you can see that the off-road should serve as an obstacle that racers must drive around, but also serve as potential shortcuts if players can boost or jump over it. In both images, you can see interesting world-building (mountains, trees, waterfalls, Yoshi eggs, a Yoshi billboard with Yoshis watching us on the cliffs), take inspiration from that.
 - **Choices and creative shortcuts.** Each track needs at least two shortcuts, and they should be inventive, not just "a narrower road". Mark each one with a `Sign` or `Banner`. Examples already in the game:
   - a hole you can drop through onto road below (Magma's Lava River Jump: the main road loops down and passes under its own jump, `Skippable`)
   - a secret cave behind a waterfall (Jungle)
@@ -49,7 +62,6 @@ Current tracks (all in the `RaceServer.Tracks` ModuleScript). Each round the vot
 - **Jungle Ruins** (Jungle, ~6800): River Crossing (rope bridges) → Boulder Steps → The Waterfall fork: Cliff Road or the Secret Cave hidden behind the waterfall → Temple of the Sun (a hall inside the hollow pyramid, water geysers) → Temple Stairs (boulders) → The Ravine: long windy rope bridge (`push` 60), or the Ravine Leap (needs a boost) → Mud Flats (all mud, with a line of boost pads) → Vine Tunnel → Crocodile Creek → finish.
 - **Croaker Swamp** (Swamp, ~8100): a misty swamp at sunset; the water sits just under the road (`FALL_DEPTH` 8), so falling off anywhere drops you in and you respawn. Lily Pad Landing (start, Feelsgood Fred's billboard) → The Bog (a long mud stretch, points 9–13, with one long boost pad, `time` 2.4, just before it and a pair of frogs before and after the pad) or the Boardwalk shortcut (rail-less planks over the water, 6 pairs of frogs at 80% speed, `period` 5) → Temple Courtyard fork: the great hall of the Frog King's Temple (S-bends, 8 frog idols lashing their tongues in turn), out a side door and round the moat, or the High Passage shortcut (no barriers anywhere and frogs all the way: climb the temple's front steps, through a small doorway into a passage high above the hall, out a small doorway at the back, boost and leap across the moat; it has `respawns = false`, so falling off puts you back in the courtyard in front of the temple) → The Overgrowth (an 88-wide, barrier-less room packed with 77 trees in staggered rows, added by `forest()` in the Tracks module, the outermost right on the edge, plus 7 frogs hopping along the gaps between rows) → Mushroom Glade (a winding cave of glowing mushrooms) → Lily Pad Sprint (rail-less planks over open water, boost pads, frogs) → finish. Feelsgood Fred sits on top of the temple.
 
-- **Reference:** In 'assets/img1.png', you can see that the overall design of the level does not have to be linear, it can have branching paths. In 'assets/img2.png', you can see that the off-road should serve as an obstacle that racers must drive around, but also serve as potential shortcuts if players can boost or jump over it. In both images, you can see interesting world-building (mountains, trees, waterfalls, Yoshi eggs, a Yoshi billboard with Yoshis watching us on the cliffs).
 
 
 ## Layout
