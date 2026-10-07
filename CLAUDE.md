@@ -44,13 +44,15 @@ If you change a system, update its doc (or this file) to match.
 
 ## Before saying a change is done
 1. Playtest through the MCP and check the Output for new errors (ignore the known Studio plugin errors below).
-2. Track changes: run TrackCheck on that track, then load it in Play (`PreviewTrack`) and fix every `[RoadCheck]` warning. Grid/standings changes: run GridCheck.
+2. Track changes: run TrackCheck on that track, then load it in Play (`PreviewTrack`) and fix every `[RoadCheck]`, `[GateCheck]` and `[MansionCheck]` warning, and anything new in `[SceneCheck]` (flicker, decorations stuck in walls, slivers; it prints a few seconds after loading). Grid/standings changes: run GridCheck.
 3. Visual changes: take a screenshot and look at it.
 4. Tell the owner what to try by hand. Only a person can judge if it's fun.
 
 ## Testing in Studio
 - Through the MCP you can press Play, read the Output, run code on the Server/Client and take screenshots.
 - Track layout check (game stopped): `require(game.ServerStorage.TrackCheck:Clone())("Magma")`. Reports road lengths, roads crashing into each other (need 20+ studs of height between crossings), corners too tight for the road's width (TIGHT), and roads through the lobby.
+- Checkpoint zones: `[GateCheck]` runs every time a track loads (Studio) and warns if any checkpoint can be passed from another part of the road. Racers can pass any gate ahead of their count, and the finish line always finishes the race, so this must stay clean.
+- Visual mistakes: `ServerStorage.SceneCheck` runs a few seconds after every track loads (Studio) and prints `[SceneCheck]` flicker / stuck / sliver lines (see `docs/track-building.md`).
 - Road surface check: in Studio, `checkRoads` runs every time a track loads and prints `[RoadCheck] <track>: no steps or holes in the road` or one warning per hole/step (positions in POINTS numbers). It skips jump gaps, ramp lips and boost pads. Moonlight Manor also prints `[MansionCheck]`: anything solid (house wall, floor, furniture, fill, solid tunnel) in a road's way.
 - Bot run: start a race with no input and watch the CPUs; on Moonlight Manor they all finish in about 2:00–2:15. A bot sitting still for 10+ s means a spot it can't drive through.
 - Grid check (game stopped): `require(game.ServerStorage.GridCheck:Clone())()`.

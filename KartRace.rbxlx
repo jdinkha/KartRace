@@ -1,7 +1,7 @@
 <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Workspace" referent="RBXCE9909963E6747808B6E78937BD747E5">
+	<Item class="Workspace" referent="RBXF926464E052B4F51B39A0BA69085BFF3">
 		<Properties>
 			<float name="AirDensity">0.00120000006</float>
 			<float name="AirTurbulenceIntensity">0</float>
@@ -9,7 +9,7 @@
 			<token name="AuthorityMode">1</token>
 			<token name="AvatarUnificationMode">0</token>
 			<token name="ClientAnimatorThrottling">0</token>
-			<Ref name="CurrentCamera">RBXEDC5FB6892514099A6FA28EFBF4B153A</Ref>
+			<Ref name="CurrentCamera">RBXEF61CBA5CACA48A69F291E086C91B9A7</Ref>
 			<double name="DistributedGameTime">0</double>
 			<token name="EnableSLIMAvatars">0</token>
 			<token name="ExpandedTerrain">0</token>
@@ -108,7 +108,7 @@
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001495</UniqueId>
 		</Properties>
-		<Item class="Part" referent="RBX1559E8B4681640F985B0C9E61B431DD8">
+		<Item class="Part" referent="RBX9B2C5EB117FB4B0AAAB5E9F08D4DEBD2">
 			<Properties>
 				<token name="shape">1</token>
 				<token name="formFactorRaw">1</token>
@@ -209,7 +209,7 @@
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001870</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="Terrain" referent="RBXD70EBC710FAC462D96836EE0FCF199A2">
+		<Item class="Terrain" referent="RBX33604669059B4BAB95F847B7188DED70">
 			<Properties>
 				<token name="AcquisitionMethod">0</token>
 				<bool name="Decoration">false</bool>
@@ -327,7 +327,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001871</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="Camera" referent="RBXEDC5FB6892514099A6FA28EFBF4B153A">
+		<Item class="Camera" referent="RBXEF61CBA5CACA48A69F291E086C91B9A7">
 			<Properties>
 				<CoordinateFrame name="CFrame">
 					<X>-508.244324</X>
@@ -375,7 +375,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="TimerService" referent="RBX825C05B3DA354EEF8E11E72E70C7B087">
+	<Item class="TimerService" referent="RBXF0ED8DAA8A324E2F8E58DC262EEFA396">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -387,7 +387,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000017f7</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="CollectionService" referent="RBXB16CE95E0682456E89ACDFB22F80C066">
+	<Item class="CollectionService" referent="RBXDBEDE57C1EA84FA0AF5905CF26AC7BF1">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -399,7 +399,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000017f8</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="SoundService" referent="RBXD992309C85694E41A7501D5BC3BF9407">
+	<Item class="SoundService" referent="RBXEACCB09461D7495D97A6E58F57A532C5">
 		<Properties>
 			<bool name="AcousticSimulationEnabled">false</bool>
 			<token name="AmbientReverb">0</token>
@@ -441,7 +441,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000017f9</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="VideoCaptureService" referent="RBX61EF3F8F5FCA4E42AA5EC6352B415F58">
+	<Item class="VideoCaptureService" referent="RBXA97BACF552A4437CA4DA045ECE61AE44">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -453,7 +453,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001805</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="NonReplicatedCSGDictionaryService" referent="RBX0ED7481609A94F13BA8D401ED60D4E12">
+	<Item class="NonReplicatedCSGDictionaryService" referent="RBX40DB330B9F0741778E437438E8BB8A10">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -465,7 +465,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001806</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="CSGDictionaryService" referent="RBX34C8DCFA9F364FA48D20BFF40E7BA857">
+	<Item class="CSGDictionaryService" referent="RBX3D10A69D15F147DD9C2FAD3132CEF84C">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -477,7 +477,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001807</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Chat" referent="RBXE51175D0E5F1449E882CE942324CA855">
+	<Item class="Chat" referent="RBXDA6B5E522E8F4E6AA5F9E9563CA583AD">
 		<Properties>
 			<bool name="BubbleChatEnabled">false</bool>
 			<bool name="IsAutoMigrated">true</bool>
@@ -492,7 +492,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000180d</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Players" referent="RBX160E4E7F0DC44247926EDC06F10B28BC">
+	<Item class="Players" referent="RBX0A8B598E664A4FFBA63F8034BCBF9435">
 		<Properties>
 			<bool name="BanningEnabled">true</bool>
 			<bool name="CharacterAutoLoads">true</bool>
@@ -510,7 +510,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000180f</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ReplicatedFirst" referent="RBXD7DE916FD9794A82AE856B0E7DF9377C">
+	<Item class="ReplicatedFirst" referent="RBXFF380F7116F0473E90BD8BAF9A74AB29">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -522,7 +522,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001812</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TweenService" referent="RBX34E7D4535A7349B1B63E17FDE48C4161">
+	<Item class="TweenService" referent="RBX35710FF21C714288B79654E422493026">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -534,7 +534,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001814</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="MaterialService" referent="RBXE5B967FD7E9846C99CF4A578ECFE2AD1">
+	<Item class="MaterialService" referent="RBX551C36B059F84A04BFFEA0C7413419A6">
 		<Properties>
 			<string name="AsphaltName">Asphalt</string>
 			<string name="BasaltName">Basalt</string>
@@ -587,7 +587,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001815</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TextChatService" referent="RBX1DAFE41882044A59A1CA5898FE0831B4">
+	<Item class="TextChatService" referent="RBX82CE12300FD0405298E7002DE6B2AB73">
 		<Properties>
 			<bool name="ChatTranslationFTUXShown">true</bool>
 			<bool name="ChatTranslationToggleEnabled">false</bool>
@@ -606,7 +606,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001816</UniqueId>
 		</Properties>
-		<Item class="ChatWindowConfiguration" referent="RBXF931EF7F55EF45828DAA8DE908B4C291">
+		<Item class="ChatWindowConfiguration" referent="RBX490196BF58404ADDB8710831A68AED98">
 			<Properties>
 				<Color3 name="BackgroundColor3">
 					<R>0.0980392173</R>
@@ -648,7 +648,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001873</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="ChatInputBarConfiguration" referent="RBX231728D1B41545A7967C0F0BB9351C51">
+		<Item class="ChatInputBarConfiguration" referent="RBX13B7B89EBD954FB59BDE6E63CE8C71B6">
 			<Properties>
 				<bool name="AutocompleteEnabled">true</bool>
 				<Color3 name="BackgroundColor3">
@@ -693,7 +693,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001874</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="BubbleChatConfiguration" referent="RBX675A378986DF410ABD39FB25FD90EE2C">
+		<Item class="BubbleChatConfiguration" referent="RBXC4F5ED0361614A348390882DC128F68C">
 			<Properties>
 				<string name="AdorneeName">HumanoidRootPart</string>
 				<Color3 name="BackgroundColor3">
@@ -738,7 +738,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001875</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="ChannelTabsConfiguration" referent="RBX4ECF0CC9E02B45BC88519F0279A06B0A">
+		<Item class="ChannelTabsConfiguration" referent="RBX96EA52D1052D425FB22AAD95DFF51D65">
 			<Properties>
 				<Color3 name="BackgroundColor3">
 					<R>0.0980392173</R>
@@ -786,7 +786,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="PermissionsService" referent="RBX3B79D82C3725437DA2315505FD7D95F2">
+	<Item class="PermissionsService" referent="RBXDE423E5112B14B5A9F717D912EF23581">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -795,10 +795,10 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<string name="Name">PermissionsService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-			<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e7d</UniqueId>
+			<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e81</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="PlayerEmulatorService" referent="RBX22677B3263D941089047897142BF8844">
+	<Item class="PlayerEmulatorService" referent="RBX5B2403A6D813402E985BA1DB93C52568">
 		<Properties>
 			<bool name="CustomPoliciesEnabled">false</bool>
 			<string name="EmulatedCountryCode"></string>
@@ -817,7 +817,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001819</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="StudioData" referent="RBX5116F989C70D4542BC5E4235BB397D9B">
+	<Item class="StudioData" referent="RBXC4BAEB6AC63D47C9BA3E38910EDEC119">
 		<Properties>
 			<bool name="EnableScriptCollabByDefaultOnLoad">false</bool>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -830,7 +830,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000181c</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="StarterPlayer" referent="RBX8BEBAC0D0E474A9497CE4A90C5BE819C">
+	<Item class="StarterPlayer" referent="RBX80C43BADA97A4BF1B547A5B87A788B1C">
 		<Properties>
 			<bool name="AllowCustomAnimations">true</bool>
 			<bool name="AutoJumpEnabled">true</bool>
@@ -872,7 +872,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000181e</UniqueId>
 		</Properties>
-		<Item class="StarterPlayerScripts" referent="RBX4AF21DFE4A494EA69B2229DD7C467A66">
+		<Item class="StarterPlayerScripts" referent="RBX618078EAFD1A45D3813A452F0202A5C5">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -883,7 +883,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186e</UniqueId>
 			</Properties>
-			<Item class="LocalScript" referent="RBXB5730281221A4E98879891235097FD4F">
+			<Item class="LocalScript" referent="RBX3AB712F03B504C9CADA6E59D85C48EC1">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceClient  —  a LocalScript that goes in StarterPlayer > StarterPlayerScripts
@@ -968,7 +968,7 @@ local HANDLING = {
 	MAX_COINS = 20, -- the most coins you can carry in one race
 	COIN_SPEED = 0.01, -- extra top speed per coin you carry (20 coins = 20% faster)
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts
-	TAX_BOOST = 2, -- each coin over MAX_COINS (only just after a Taxman) is worth this many coins of speed
+	TAX_BOOST = 4, -- each coin over MAX_COINS (only just after a Taxman) is worth this many coins of speed
 	MEGA_JUMP = 100, -- how fast a Mega Jump throws you upwards (studs/s)
 	PICKUP_REACH = 4.5, -- how close you pass a coin/box for it to vanish on your screen straight away. Keep it a bit under the server's REACH, so the server grabs whatever you saw grabbed
 }
@@ -1206,18 +1206,22 @@ local function textLabel(props: { [string]: any }, parent: Instance): TextLabel
 	return make("TextLabel", defaults, parent)
 end
 
+-- (the bar is as wide as its text, and smaller on phones)
+local smallScreen = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 local statusLabel = textLabel({
 	Name = "Status",
 	AnchorPoint = Vector2.new(0.5, 0),
 	Position = UDim2.new(0.5, 0, 0, 8),
-	Size = UDim2.new(0.5, 0, 0, 36),
+	Size = UDim2.fromOffset(0, if smallScreen then 24 else 32),
+	AutomaticSize = Enum.AutomaticSize.X,
+	TextScaled = false,
+	TextSize = if smallScreen then 16 else 22,
 	BackgroundColor3 = Color3.new(0, 0, 0),
 	BackgroundTransparency = 0.45,
 	TextStrokeTransparency = 1,
 }, gui)
 make("UICorner", { CornerRadius = UDim.new(0, 10) }, statusLabel)
-make("UIPadding", { PaddingTop = UDim.new(0, 5), PaddingBottom = UDim.new(0, 5), PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) }, statusLabel)
-make("UISizeConstraint", { MinSize = Vector2.new(240, 0), MaxSize = Vector2.new(520, 36) }, statusLabel)
+make("UIPadding", { PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) }, statusLabel)
 
 local feedLabel = textLabel({
 	Name = "Feed",
@@ -1245,15 +1249,6 @@ local placeSubLabel = textLabel({
 	Visible = false,
 }, gui)
 
-local timerLabel = textLabel({
-	Name = "Timer",
-	AnchorPoint = Vector2.new(1, 0),
-	Position = UDim2.new(1, -16, 0, 8),
-	Size = UDim2.new(0, 170, 0, 42),
-	TextXAlignment = Enum.TextXAlignment.Right,
-	Visible = false,
-}, gui)
-
 local bigLabel = textLabel({
 	Name = "Big",
 	AnchorPoint = Vector2.new(0.5, 0.5),
@@ -1278,14 +1273,17 @@ local hintLabel = textLabel({
 	Name = "Hint",
 	AnchorPoint = Vector2.new(0.5, 1),
 	Position = UDim2.new(0.5, 0, 1, -14),
-	Size = UDim2.new(0.6, 0, 0, 26),
+	Size = UDim2.fromOffset(0, 26),
+	AutomaticSize = Enum.AutomaticSize.X,
+	TextScaled = false,
+	TextSize = 18,
 	BackgroundColor3 = Color3.new(0, 0, 0),
 	BackgroundTransparency = 0.5,
 	TextStrokeTransparency = 1,
 	Visible = false,
 }, gui)
 make("UICorner", { CornerRadius = UDim.new(0, 8) }, hintLabel)
-make("UIPadding", { PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4) }, hintLabel)
+make("UIPadding", { PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) }, hintLabel)
 
 -- Coins you're carrying this race (under your place)
 local COIN_COLOR = Color3.fromRGB(255, 200, 40)
@@ -1301,7 +1299,8 @@ make("UICorner", { CornerRadius = UDim.new(1, 0) }, coinIcon)
 make("UIStroke", { Color = Color3.fromRGB(180, 120, 20), Thickness = 2 }, coinIcon)
 local coinLabel = textLabel({ Position = UDim2.fromOffset(36, 0), Size = UDim2.new(1, -36, 1, 0), TextXAlignment = Enum.TextXAlignment.Left }, coinFrame)
 
--- The item you're holding (top right, under the timer)
+-- The item you're holding (top left, under your coins: Roblox's player list covers the
+-- top right). Click or tap it to use it.
 local ITEM_LOOKS = {
 	Boost = { text = "BOOST", color = Color3.fromRGB(255, 140, 40) },
 	TripleCoin = { text = "+3 COINS", color = COIN_COLOR },
@@ -1320,16 +1319,18 @@ for id in ITEM_LOOKS do
 end
 table.sort(ROLL_ORDER)
 -- Someone's Inversion Mist: from `mistFrom` to `mistUntil` (server clock) your left and right are swapped
-local mistBy, mistFrom, mistUntil = "", 0, 0
-local itemFrame = make("Frame", {
+-- (`mistStart`: when the warning began, so the haze can thicken over it)
+local mistBy, mistFrom, mistUntil, mistStart = "", 0, 0, 0
+local itemFrame = make("TextButton", {
 	Name = "Item",
-	AnchorPoint = Vector2.new(1, 0),
-	Position = UDim2.new(1, -16, 0, 56),
+	Position = UDim2.new(0, 16, 0, 148),
 	Size = UDim2.fromOffset(120, 96),
 	BackgroundColor3 = Color3.fromRGB(20, 20, 32),
 	BackgroundTransparency = 0.2,
+	Text = "",
+	AutoButtonColor = false,
 	Visible = false,
-}, gui) :: Frame
+}, gui) :: TextButton
 make("UICorner", { CornerRadius = UDim.new(0, 14) }, itemFrame)
 local itemStroke = make("UIStroke", { Thickness = 3 }, itemFrame) :: UIStroke
 local itemName = textLabel({ Position = UDim2.fromScale(0.08, 0.1), Size = UDim2.fromScale(0.84, 0.5) }, itemFrame)
@@ -1418,7 +1419,7 @@ local hintVersion = 0
 local function showHint()
 	local text
 	if touchOnly() then
-		text = "Thumbstick: drive & steer  •  Hold DRIFT while turning  •  ITEM: use item  •  BACK: look behind  •  RESET: back to checkpoint"
+		return -- (phones show their buttons instead)
 	elseif gamepadOnly() then
 		text = "RT: gas  •  LT: brake  •  Stick: steer  •  Hold RB while turning: drift  •  X: item  •  LB: look back  •  Y: respawn"
 	else
@@ -1600,6 +1601,7 @@ type Ground = {
 	boost: number, -- seconds of boost from the pad you're on (0 = not on one)
 	grip: number, -- 1 = normal road, lower = slippery (ice)
 	offRoad: boolean, -- on slow grass / ash / snow / mud?
+	slow: number, -- top speed here as a share of normal: OFFROAD_SPEED off-road, unless the part's `OffRoadSpeed` says otherwise (Moonlight Manor's floors)
 	color: Color3?, -- colour of the surface (for the dust)
 }
 
@@ -1629,6 +1631,7 @@ local function senseGround(d: DriveState): Ground?
 	local boost = padTime(center)
 	local grip = if center then gripOf(center.Instance) else 1
 	local offRoad = center ~= nil and center.Instance:GetAttribute("OffRoad") == true
+	local slow = if offRoad then tonumber(center.Instance:GetAttribute("OffRoadSpeed")) or HANDLING.OFFROAD_SPEED else 1
 	local color = if center then (center.Instance :: BasePart).Color else nil
 	local corners: { RaycastResult } = {}
 	local cornerCount = 0
@@ -1653,13 +1656,13 @@ local function senseGround(d: DriveState): Ground?
 			end
 			if normal.Y > 0.5 then
 				local middle = (fl + fr + bl + br) / 4
-				return { normal = normal, distance = (cf.Position - middle):Dot(normal), boost = boost, grip = grip, offRoad = offRoad, color = color }
+				return { normal = normal, distance = (cf.Position - middle):Dot(normal), boost = boost, grip = grip, offRoad = offRoad, slow = slow, color = color }
 			end
 		end
 	end
 	-- Otherwise (e.g. right at the lip of the jump) trust the middle ray alone
 	if center and center.Normal.Y > 0.3 then
-		return { normal = center.Normal, distance = (cf.Position - center.Position):Dot(center.Normal), boost = boost, grip = grip, offRoad = offRoad, color = color }
+		return { normal = center.Normal, distance = (cf.Position - center.Position):Dot(center.Normal), boost = boost, grip = grip, offRoad = offRoad, slow = slow, color = color }
 	end
 	return nil
 end
@@ -1945,7 +1948,7 @@ local function driveStep(dt: number)
 	-- off-road (mud, grass, snow) you can still drift (from a lower speed, as
 	-- it's slow going there), but it charges no boost: that would skip the slow-down.
 	local onOffRoad = ground ~= nil and ground.offRoad
-	local driftMin = HANDLING.DRIFT_MIN_SPEED * (if onOffRoad then HANDLING.OFFROAD_SPEED else 1)
+	local driftMin = HANDLING.DRIFT_MIN_SPEED * (if ground then ground.slow else 1)
 	if d.drifting then
 		if onOffRoad then
 			d.driftTime = 0
@@ -2000,7 +2003,7 @@ local function driveStep(dt: number)
 		local bonus = coinBonus + (if boosting then HANDLING.BOOST_SPEED / HANDLING.MAX_SPEED - 1 else 0)
 		local topSpeed = HANDLING.MAX_SPEED * (1 + bonus)
 		if ground and ground.offRoad and not boosting then
-			topSpeed *= HANDLING.OFFROAD_SPEED -- off-road slows you down (unless you're boosting)
+			topSpeed *= ground.slow -- off-road slows you down (unless you're boosting)
 		end
 		if boosting then
 			forwardSpeed = math.max(forwardSpeed, topSpeed)
@@ -2181,6 +2184,68 @@ local function onItemInput(_: string, inputState: Enum.UserInputState): Enum.Con
 	end
 	return Enum.ContextActionResult.Sink
 end
+itemFrame.Activated:Connect(function()
+	onItemInput("KartItem", Enum.UserInputState.Begin)
+end)
+
+-- Touch screens: a big DRIFT button bottom right, BACK beside it and a red RESET
+-- above (the item is used by tapping its icon). Shown while you drive.
+local touchPad = make("Frame", {
+	Name = "TouchPad",
+	AnchorPoint = Vector2.new(1, 1),
+	Position = UDim2.new(1, -12, 1, -12),
+	Size = UDim2.fromScale(0.62, 0.62),
+	BackgroundTransparency = 1,
+	Visible = false,
+}, gui) :: Frame
+make("UIAspectRatioConstraint", { AspectRatio = 1, DominantAxis = Enum.DominantAxis.Height }, touchPad)
+local function touchButton(name: string, text: string, at: UDim2, size: number, color: Color3, alpha: number, onDown: () -> (), onUp: (() -> ())?)
+	local button = make("TextButton", {
+		Name = name,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = at,
+		Size = UDim2.fromScale(size, size),
+		BackgroundColor3 = color,
+		BackgroundTransparency = alpha,
+		AutoButtonColor = false,
+		Font = FONT,
+		Text = text,
+		TextColor3 = WHITE,
+		TextScaled = true,
+	}, touchPad) :: TextButton
+	make("UICorner", { CornerRadius = UDim.new(0.5, 0) }, button)
+	make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = WHITE, Transparency = 0.5, Thickness = 2 }, button)
+	make("UIPadding", { PaddingTop = UDim.new(0.3, 0), PaddingBottom = UDim.new(0.3, 0), PaddingLeft = UDim.new(0.15, 0), PaddingRight = UDim.new(0.15, 0) }, button)
+	local held: InputObject? = nil -- (the finger holding it: let go anywhere and it lets go)
+	button.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch and not held then
+			held = input
+			onDown()
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input == held then
+			held = nil
+			if onUp then
+				onUp()
+			end
+		end
+	end)
+end
+local DARK = Color3.fromRGB(20, 20, 32)
+touchButton("Drift", "DRIFT", UDim2.fromScale(0.7, 0.7), 0.6, DARK, 0.35, function()
+	onDriftInput("KartDrift", Enum.UserInputState.Begin)
+end, function()
+	onDriftInput("KartDrift", Enum.UserInputState.End)
+end)
+touchButton("Back", "BACK", UDim2.fromScale(0.16, 0.84), 0.28, DARK, 0.35, function()
+	onLookBackInput("KartLookBack", Enum.UserInputState.Begin)
+end, function()
+	onLookBackInput("KartLookBack", Enum.UserInputState.End)
+end)
+touchButton("Reset", "RESET", UDim2.fromScale(0.2, 0.25), 0.3, Color3.fromRGB(225, 45, 45), 0.45, function()
+	onRespawnInput("KartRespawn", Enum.UserInputState.Begin)
+end)
 
 local function stopDriving()
 	local d = drive
@@ -2281,14 +2346,11 @@ local function startDriving(seat: VehicleSeat, humanoid: Humanoid)
 	}
 
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
-	ContextActionService:BindActionAtPriority("KartDrift", onDriftInput, true, Enum.ContextActionPriority.High.Value, Enum.KeyCode.Space, Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonR1)
-	ContextActionService:SetTitle("KartDrift", "DRIFT")
-	ContextActionService:BindAction("KartRespawn", onRespawnInput, true, Enum.KeyCode.R, Enum.KeyCode.ButtonY)
-	ContextActionService:SetTitle("KartRespawn", "RESET")
-	ContextActionService:BindAction("KartLookBack", onLookBackInput, true, Enum.KeyCode.Q, Enum.KeyCode.ButtonL1)
-	ContextActionService:SetTitle("KartLookBack", "BACK")
-	ContextActionService:BindAction("KartItem", onItemInput, true, Enum.KeyCode.E, Enum.KeyCode.ButtonX)
-	ContextActionService:SetTitle("KartItem", "ITEM")
+	-- (touch screens use touchPad's buttons and the item icon instead of Roblox's own buttons)
+	ContextActionService:BindActionAtPriority("KartDrift", onDriftInput, false, Enum.ContextActionPriority.High.Value, Enum.KeyCode.Space, Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonR1)
+	ContextActionService:BindAction("KartRespawn", onRespawnInput, false, Enum.KeyCode.R, Enum.KeyCode.ButtonY)
+	ContextActionService:BindAction("KartLookBack", onLookBackInput, false, Enum.KeyCode.Q, Enum.KeyCode.ButtonL1)
+	ContextActionService:BindAction("KartItem", onItemInput, false, Enum.KeyCode.E, Enum.KeyCode.ButtonX)
 
 	workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
 	RunService:BindToRenderStep("KartCamera", Enum.RenderPriority.Camera.Value + 1, cameraStep)
@@ -2655,13 +2717,10 @@ local function spillCoins(kart: Instance, lost: number)
 	task.delay(1, tag.Destroy, tag)
 end
 
-local myFinishTime: number? = nil
-
 raceState:GetAttributeChangedSignal("Phase"):Connect(function()
 	local phase = raceState:GetAttribute("Phase")
 	local racing = player:GetAttribute("Racing") == true
 	if phase == "Countdown" then
-		myFinishTime = nil
 		resultsFrame.Visible = false
 		if racing then
 			showHint()
@@ -2718,7 +2777,6 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 	elseif action == "RacerFinished" then
 		local userId, name, place, finishTime = ...
 		if userId == player.UserId then
-			myFinishTime = finishTime
 			showBig("FINISH!  " .. ordinal(place), PLACE_COLORS[place] or WHITE, 1.6)
 			celebrate()
 			playSound("Victory")
@@ -2742,7 +2800,7 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 		-- someone behind used an Inversion Mist: a warning, then left and right swap
 		local by, from, untilTime = ...
 		if typeof(from) == "number" and typeof(untilTime) == "number" then
-			mistBy, mistFrom, mistUntil = tostring(by), from, untilTime
+			mistBy, mistFrom, mistUntil, mistStart = tostring(by), from, untilTime, workspace:GetServerTimeNow()
 			playSound("Gust", nil, 1.4)
 		end
 	elseif action == "ItemNews" then
@@ -3087,17 +3145,10 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	local showRaceHud = racing and (phase == "Countdown" or phase == "Racing" or phase == "Results")
-	timerLabel.Visible = showRaceHud
 	placeLabel.Visible = showRaceHud
 	placeSubLabel.Visible = showRaceHud
+	touchPad.Visible = showRaceHud and drive ~= nil and touchOnly()
 	if showRaceHud then
-		if myFinishTime then
-			timerLabel.Text = formatTime(myFinishTime)
-		elseif phase == "Racing" then
-			timerLabel.Text = formatTime(now - numberAttr(raceState, "RaceStart"))
-		elseif phase == "Countdown" then
-			timerLabel.Text = formatTime(0)
-		end
 		local place = numberAttr(player, "Place")
 		if place > 0 then
 			placeLabel.Text = ordinal(place)
@@ -3120,13 +3171,15 @@ RunService.RenderStepped:Connect(function()
 		itemName.Text = itemLook.text
 		itemName.TextColor3 = itemLook.color
 		itemStroke.Color = itemLook.color
-		itemKey.Text = if rolling then "spinning..." elseif os.clock() < itemPending then "..." elseif touchOnly() then "Tap ITEM" elseif gamepadOnly() then "Press X" else "Press E"
+		itemKey.Text = if rolling then "spinning..." elseif os.clock() < itemPending then "..." elseif touchOnly() then "Tap to use" elseif gamepadOnly() then "Press X" else "Press E"
 	end
 	-- Someone's Inversion Mist: a purple haze, a countdown, then a reminder
 	local misty = racing and now < mistUntil
 	mistFrame.Visible = misty
 	if misty then
-		mistFrame.BackgroundTransparency = if now < mistFrom then 0.9 else 0.78
+		-- the haze thickens over the warning, and is full once left and right swap
+		local warned = math.clamp((now - mistStart) / math.max(mistFrom - mistStart, 0.1), 0, 1)
+		mistFrame.BackgroundTransparency = 1 - 0.22 * warned
 		mistLabel.Text = if now < mistFrom then string.format("%s's INVERSION MIST!\nLeft and right swap in %d...", mistBy, math.ceil(mistFrom - now)) else "LEFT AND RIGHT ARE SWAPPED!"
 	end
 
@@ -3462,7 +3515,7 @@ end)
 					<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186f</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="LocalScript" referent="RBX933044E38D19480A88A502805F15B6FD">
+			<Item class="LocalScript" referent="RBX6DAA46CC7BE24DA8A401AB41C6CB82F5">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	GarageClient  —  a LocalScript in StarterPlayer > StarterPlayerScripts
@@ -3841,7 +3894,7 @@ end)
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="StarterCharacterScripts" referent="RBX91DC3A4485F24DDFADD50DFE47F0957C">
+		<Item class="StarterCharacterScripts" referent="RBX6800E54BFAFA4BEBA0598696802A572F">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3854,7 +3907,7 @@ end)
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="StarterPack" referent="RBX4FB98868646B41BCB0A6BFF6261162E9">
+	<Item class="StarterPack" referent="RBXC250760727384907BA16BB5D0B27E06F">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3866,7 +3919,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000181f</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="StarterGui" referent="RBXD9B60394F1394487A2A678C29CCD8078">
+	<Item class="StarterGui" referent="RBX33A2C705B38546CFBE8CCA20B6632E82">
 		<Properties>
 			<token name="ClipsDescendantsSupportsRotation">0</token>
 			<bool name="ResetPlayerGuiOnSpawn">true</bool>
@@ -3886,7 +3939,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001820</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="LocalizationService" referent="RBXCB7AE38D9CE74DF79817250E1BC4BD85">
+	<Item class="LocalizationService" referent="RBX628DBFD10D9D467380119FCE5DBD8FB2">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3898,7 +3951,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001822</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TeleportService" referent="RBXF9A03714246F41A880C1EE8ECA59BBFB">
+	<Item class="TeleportService" referent="RBX97687799711948B0B51F134BEB13EC0F">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3910,7 +3963,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001826</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="PhysicsService" referent="RBXC0273F8554AE460FBD27EF4F45C82D11">
+	<Item class="PhysicsService" referent="RBX4D48039A76C4445CBDCDDC30BD11CF1D">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3922,7 +3975,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001828</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="InsertService" referent="RBX908A116AEE684EED82436C13C50167A3">
+	<Item class="InsertService" referent="RBX9852B79855FD4BE48EA05B02868C8D21">
 		<Properties>
 			<bool name="AllowInsertFreeModels">false</bool>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -3934,7 +3987,7 @@ end)
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182b</UniqueId>
 		</Properties>
-		<Item class="StringValue" referent="RBX9A06E33B44804499B45220D14E9E93FE">
+		<Item class="StringValue" referent="RBX6B701315FD9740D9A6F290B87A063A63">
 			<Properties>
 				<string name="Value">{0A9EE8AA-DA3D-44DC-8D20-0EBAA01C6F0B}</string>
 				<BinaryString name="AttributesSerialize"></BinaryString>
@@ -3948,7 +4001,7 @@ end)
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="GamePassService" referent="RBX358377F345714BA8AB24EB5135345FD9">
+	<Item class="GamePassService" referent="RBX8EBE57F69C20460190DE5190D3B643A7">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3960,7 +4013,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182c</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Debris" referent="RBX92D1D7EBE8F1409F9882EF25CFAB44ED">
+	<Item class="Debris" referent="RBX2B0D5E3F86D44E44BFF4CD0DD089D8CC">
 		<Properties>
 			<int name="MaxItems">1000</int>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -3973,7 +4026,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182d</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="CookiesService" referent="RBX0FEC9D768E06449CA326EADA1794E953">
+	<Item class="CookiesService" referent="RBX3B67B20CEFDA42BA86D3D5364E0D42F9">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3985,7 +4038,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182e</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Selection" referent="RBX37329DAC3BAA4880ADC29059A3E8DE22">
+	<Item class="Selection" referent="RBX51B0270A36974C6A8A35EE068C531C9C">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3997,7 +4050,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182f</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="VRService" referent="RBXB191EB4DE4C94AE3880AA56E1682F759">
+	<Item class="VRService" referent="RBXD1170BB58996450EA5CE61D7806AC77B">
 		<Properties>
 			<token name="AutomaticScaling">0</token>
 			<bool name="AvatarGestures">false</bool>
@@ -4014,7 +4067,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001833</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ContextActionService" referent="RBXC0886DB54F8B448A80E49919B2633521">
+	<Item class="ContextActionService" referent="RBXB089180F2C2843A98112C3CAB7637AE0">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4026,7 +4079,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001834</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ScriptService" referent="RBXAE9C0FAF19CE49F8B31DFF15D12978EA">
+	<Item class="ScriptService" referent="RBX6F6B37B7CEF947FFBA2A3547BF3408A1">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4038,7 +4091,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001835</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="AssetService" referent="RBX2FAA602AE1D3464B9476E15084302271">
+	<Item class="AssetService" referent="RBX870AADF1B155448B975EDE2C700FACBF">
 		<Properties>
 			<bool name="AllowInsertFreeAssets">false</bool>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -4051,7 +4104,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001836</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TouchInputService" referent="RBXB5A52A3243194F789B2A665150EFB274">
+	<Item class="TouchInputService" referent="RBXE7723BFE95484E4AB8B661925C4EECBE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4063,7 +4116,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001838</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="AvatarSettings" referent="RBXFA9D2F3128534B49B451F8CFE9CC9DA5">
+	<Item class="AvatarSettings" referent="RBX491A75DC5C114181901B5A2E9A94919C">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4074,7 +4127,7 @@ end)
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000183e</UniqueId>
 		</Properties>
-		<Item class="AvatarRules" referent="RBX8377BFA08C4F4BF28BE5CD6E3C892C12">
+		<Item class="AvatarRules" referent="RBX1FBF40D5546C46D99166CF3F90BDBB21">
 			<Properties>
 				<token name="AvatarType">1</token>
 				<BinaryString name="AttributesSerialize"></BinaryString>
@@ -4084,9 +4137,9 @@ end)
 				<string name="Name">DefaultAvatarRules</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-				<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e76</UniqueId>
+				<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7a</UniqueId>
 			</Properties>
-			<Item class="AvatarBodyRules" referent="RBX737B676354AA4D40B6B9FED3E42AE375">
+			<Item class="AvatarBodyRules" referent="RBX28710B9E022741ED834C7CD1C4D3C610">
 				<Properties>
 					<token name="AppearanceMode">0</token>
 					<token name="BuildMode">0</token>
@@ -4127,10 +4180,10 @@ end)
 					<string name="Name">AvatarBodyRules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e77</UniqueId>
+					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7b</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="AvatarCollisionRules" referent="RBX29E5596B3B1C40BA9209E6B60DC63825">
+			<Item class="AvatarCollisionRules" referent="RBX1F02912DA2A544259680D02D888AEDBF">
 				<Properties>
 					<token name="CollisionMode">0</token>
 					<token name="HitAndTouchDetectionMode">0</token>
@@ -4147,10 +4200,10 @@ end)
 					<string name="Name">AvatarCollisionRules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e78</UniqueId>
+					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7c</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="AvatarAnimationRules" referent="RBX45B40DEAFB184F78A5115F0D496A969F">
+			<Item class="AvatarAnimationRules" referent="RBXF850244B23C745238E175D75068D6711">
 				<Properties>
 					<token name="AnimationClipsMode">0</token>
 					<token name="AnimationPacksMode">0</token>
@@ -4181,10 +4234,10 @@ end)
 					<string name="Name">AvatarAnimationRules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e79</UniqueId>
+					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7d</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="AvatarAccessoryRules" referent="RBXD1F44A6BC4854ECDBAA437BEAEC80F40">
+			<Item class="AvatarAccessoryRules" referent="RBXB18423C064E64A1E8E56A3956D695C92">
 				<Properties>
 					<token name="AccessoryMode">0</token>
 					<token name="CustomAccessoryMode">0</token>
@@ -4220,10 +4273,10 @@ end)
 					<string name="Name">AvatarAccessoryRules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e7a</UniqueId>
+					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7e</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="AvatarClothingRules" referent="RBXD848A5A9FB554248926B9CD6C00953F1">
+			<Item class="AvatarClothingRules" referent="RBXED500590064D4DB0A375AAA8EE434A74">
 				<Properties>
 					<token name="ClothingMode">0</token>
 					<bool name="CustomClassicPantsAccessoryEnabled">false</bool>
@@ -4263,10 +4316,10 @@ end)
 					<string name="Name">AvatarClothingRules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e7b</UniqueId>
+					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7f</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="AvatarAbilityRules" referent="RBX467D140544704964A22B5F50F3143298">
+			<Item class="AvatarAbilityRules" referent="RBX573757629E6E42B6891C45BE262D041B">
 				<Properties>
 					<token name="CharacterControllerMode">0</token>
 					<bool name="EnableClimbing">true</bool>
@@ -4288,12 +4341,12 @@ end)
 					<string name="Name">AvatarAbilityRules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000e7c</UniqueId>
+					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e80</UniqueId>
 				</Properties>
 			</Item>
 		</Item>
 	</Item>
-	<Item class="Packages" referent="RBX359BCD7320F4498C9393357FC64CB274">
+	<Item class="Packages" referent="RBX475FFA5E25B443E69CB5F068A1635051">
 		<Properties>
 			<bool name="IsDehydrated">false</bool>
 			<int name="ShellPackagesCount">0</int>
@@ -4308,7 +4361,7 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001842</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="GuidRegistryService" referent="RBXB8B8299BC969408BBB3A2A76A011B2F6">
+	<Item class="GuidRegistryService" referent="RBX9F5D46FC39384ED4888D3E46DC917D98">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4320,7 +4373,21 @@ end)
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001843</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="LuaWebService" referent="RBXFB74A3C0383144058F8B8A63CE1A2540">
+	<Item class="ServiceVisibilityService" referent="RBX6F4136687AD9445F880940A47387735A">
+		<Properties>
+			<BinaryString name="HiddenServices">AAAAAA==</BinaryString>
+			<BinaryString name="VisibleServices">AQAAAAIQAAAAVm9pY2VDaGF0U2VydmljZQ==</BinaryString>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+			<string name="Name">ServiceVisibilityService</string>
+			<int64 name="SourceAssetId">-1</int64>
+			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001863</UniqueId>
+		</Properties>
+	</Item>
+	<Item class="LuaWebService" referent="RBXB2809ED37D464DF497311FADB0DFB2CE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4329,10 +4396,10 @@ end)
 			<string name="Name">LuaWebService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-			<UniqueId name="UniqueId">60ce135b6a8239510ad5831a00000f9d</UniqueId>
+			<UniqueId name="UniqueId">3526879107bcf9450ad8173200000f9d</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ProcessInstancePhysicsService" referent="RBXA07D7800481F40E388ABE02C2DED2C93">
+	<Item class="ProcessInstancePhysicsService" referent="RBX5C3B18BD46724D9D9701EFE66765462C">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4341,10 +4408,10 @@ end)
 			<string name="Name">ProcessInstancePhysicsService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-			<UniqueId name="UniqueId">6035dd41eaea73be0ad5c410000003b8</UniqueId>
+			<UniqueId name="UniqueId">25a21ac24889a8a60ad86213000003ba</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ReplicatedStorage" referent="RBX593A5FE6BC584C839E3D4EA9F0D79C20">
+	<Item class="ReplicatedStorage" referent="RBX4CD13AAC2B1C4BEA99C76B1C86277041">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -4355,7 +4422,7 @@ end)
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000184c</UniqueId>
 		</Properties>
-		<Item class="ModuleScript" referent="RBXC8E0CC50D2BB4899B2215DC7736128E8">
+		<Item class="ModuleScript" referent="RBX7719A8B063E3469D9978DD0EFD9F9CC4">
 			<Properties>
 				<Content name="LinkedSource"><null></null></Content>
 				<ProtectedString name="Source"><![CDATA[--[[
@@ -4446,7 +4513,7 @@ return Garage
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430ec</UniqueId>
 			</Properties>
-			<Item class="Folder" referent="RBX3A7135157D6649BCB2CC1D4CB8BA1B7F">
+			<Item class="Folder" referent="RBXDD9F3807E7AF416B966EA6ADCDF14F98">
 				<Properties>
 					<Color3 name="IconTint">
 						<R>0</R>
@@ -4462,7 +4529,7 @@ return Garage
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430ef</UniqueId>
 				</Properties>
-				<Item class="Model" referent="RBX6679FB94F0434E23B8BEF23E8575D7EF">
+				<Item class="Model" referent="RBXBB081F4B42944599BFA35F24E2137FFB">
 					<Properties>
 						<token name="LevelOfDetail">0</token>
 						<CoordinateFrame name="ModelMeshCFrame">
@@ -4515,7 +4582,7 @@ return Garage
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f1</UniqueId>
 					</Properties>
-					<Item class="Part" referent="RBXFF0A1CBEC96345FA9F97FBEE81AE49E7">
+					<Item class="Part" referent="RBX2006031700AC4B3E87AD5653228C87A9">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -4616,7 +4683,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f2</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBXC8F86AD0A9914CD5B2AC9DD286790251">
+					<Item class="Part" referent="RBXEE1D9CF8EC7640FC8C19302E28DDA95D">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -4717,7 +4784,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f3</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX10F886DB7A0F496BAA96120841947E43">
+					<Item class="Part" referent="RBX4305CC71FD5A478496B538FC132B778B">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -4818,7 +4885,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f4</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX54C28066B9BD47E29135010D38C7AF4D">
+					<Item class="Part" referent="RBXCF8ED5C224424CFFB951B3CF1CC055AE">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -4919,7 +4986,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f5</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX27025ABD8BAE47268720DECF00A79FEC">
+					<Item class="Part" referent="RBX774395E05EC3457F9EDE16FDAF36C267">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -5020,7 +5087,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f6</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBXAC0274C71A3348AE84B77503B4FE96E5">
+					<Item class="Part" referent="RBXC1523995D000447885A6C55DD50880A6">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -5121,7 +5188,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f7</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBXED11642417984253866E36EC7C6A52FF">
+					<Item class="Part" referent="RBX4158BC95D5674A6D917580D088468576">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -5222,7 +5289,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f8</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX90568A2116064BA5B5251281829F41DE">
+					<Item class="Part" referent="RBX8CDC42DEBB134F3D9654BCF163E518C9">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -5323,7 +5390,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f9</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="WedgePart" referent="RBX7292F276E3BC4D75BB50B94F654D3A78">
+					<Item class="WedgePart" referent="RBX6C003CD8CD8249B6ACC4D40DA34E2E58">
 						<Properties>
 							<token name="formFactorRaw">1</token>
 							<bool name="Anchored">true</bool>
@@ -5423,7 +5490,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fa</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="WedgePart" referent="RBX01BDDAD71E054B43BA1EAC16C7D6ABBD">
+					<Item class="WedgePart" referent="RBX68FC1D32B5AD440797A420489F03D314">
 						<Properties>
 							<token name="formFactorRaw">1</token>
 							<bool name="Anchored">true</bool>
@@ -5523,7 +5590,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fb</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBXC9A30392612C43D4A9FA67F83118D701">
+					<Item class="Part" referent="RBX511F7C0A923042C89478F673F8B4DA47">
 						<Properties>
 							<token name="shape">0</token>
 							<token name="formFactorRaw">1</token>
@@ -5624,7 +5691,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fc</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX378ACB1E29084C70A6AA3652BFC2AE7B">
+					<Item class="Part" referent="RBX319D1B1F495349B6857EE960C8B4D17B">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -5725,7 +5792,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fd</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBXC1D8A802160C48D89825AEF470D6AAFA">
+					<Item class="Part" referent="RBXACCCDC077F4F4E0699641046FC6D6F59">
 						<Properties>
 							<token name="shape">0</token>
 							<token name="formFactorRaw">1</token>
@@ -5826,7 +5893,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fe</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBXE93ED99FDB0745C2BAA13D2A74DDE3BB">
+					<Item class="Part" referent="RBX57D0BB91744B47A6B10A402F857D77FD">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -5927,7 +5994,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430ff</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX9987946B557040379A93DAE4AB1CB1A9">
+					<Item class="Part" referent="RBX73BD3937D86441A08A27BC1F94A18ABB">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6028,7 +6095,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043100</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX0008BBC3BDCD43779B27F6317CF6AC9C">
+					<Item class="Part" referent="RBXDCF5EE53E89A44B1B5CE8AB19426E959">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6129,7 +6196,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043101</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX403693E4EE9744E9B372AF15A1E1B488">
+					<Item class="Part" referent="RBX9746AEED9CDD4AC28C0544BAD9E3F503">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6230,7 +6297,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043102</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX2E6B4D0977BE4992A937AFDF68A36E10">
+					<Item class="Part" referent="RBXEF61A44403B74F90B3E3D12E48406673">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6331,7 +6398,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043103</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX18DB7081D0C84B9A90AA8C6FA3DD7D72">
+					<Item class="Part" referent="RBX4856C0E6534C4A96BAF52C4137588DBF">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6432,7 +6499,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043104</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX4F3E7B69AB8F43C5A3CD515C28DB6C49">
+					<Item class="Part" referent="RBX153D1E72B4E640AB8D5E2C11DDC416B9">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6533,7 +6600,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043105</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX50066B47BFA94C43A2ECCE54B7200302">
+					<Item class="Part" referent="RBX3A8C20A9DDCF4CBB923FFC529A022F32">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -6634,7 +6701,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043106</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX908DA3402AB74AD0886820EF8F4531C8">
+					<Item class="Part" referent="RBX2553B4E93E42403992AF30F11A4D01D9">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -6736,7 +6803,7 @@ return Garage
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="Model" referent="RBX5FA5C464DE594A30BF72953CE446D96F">
+				<Item class="Model" referent="RBXEDEEAD718A914125BC948C90489BD3DA">
 					<Properties>
 						<token name="LevelOfDetail">0</token>
 						<CoordinateFrame name="ModelMeshCFrame">
@@ -6789,7 +6856,7 @@ return Garage
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f9</UniqueId>
 					</Properties>
-					<Item class="MeshPart" referent="RBXC081DDFAC9A94605BCF36137BE3EB024">
+					<Item class="MeshPart" referent="RBXAAD0CA8761C94734B81A028D23C0C6E3">
 						<Properties>
 							<bool name="DoubleSided">false</bool>
 							<bool name="HasJointOffset">false</bool>
@@ -6926,7 +6993,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f5</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="MeshPart" referent="RBXA9FF0E3780274993BD5BA0947EDD7E12">
+					<Item class="MeshPart" referent="RBXF3C0AC30E8D649B2BD6378002EEBBB48">
 						<Properties>
 							<bool name="DoubleSided">false</bool>
 							<bool name="HasJointOffset">false</bool>
@@ -7063,7 +7130,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f6</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="MeshPart" referent="RBXC42956DC0F044C28BEFCB13B1D6FEB61">
+					<Item class="MeshPart" referent="RBXCAAB96A99A554601AA083F0D076CD8DA">
 						<Properties>
 							<bool name="DoubleSided">false</bool>
 							<bool name="HasJointOffset">false</bool>
@@ -7200,7 +7267,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f7</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX820BC9971FD44E84BFD6DCC8D28284FF">
+					<Item class="Part" referent="RBX3251A3D982814693B4685DCA65023A35">
 						<Properties>
 							<token name="shape">1</token>
 							<token name="formFactorRaw">1</token>
@@ -7303,7 +7370,7 @@ return Garage
 					</Item>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX79FA62B4682946BDA35592BC0193641E">
+			<Item class="Folder" referent="RBX457FB46BC91D4783879F0FE4B9557677">
 				<Properties>
 					<Color3 name="IconTint">
 						<R>0</R>
@@ -7319,7 +7386,7 @@ return Garage
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f0</UniqueId>
 				</Properties>
-				<Item class="Model" referent="RBXC83B361CB76D4A5787AFF14C9DEE49FE">
+				<Item class="Model" referent="RBX11968836D80C4C368AED54CE01F90592">
 					<Properties>
 						<token name="LevelOfDetail">0</token>
 						<CoordinateFrame name="ModelMeshCFrame">
@@ -7372,7 +7439,7 @@ return Garage
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043108</UniqueId>
 					</Properties>
-					<Item class="Part" referent="RBXCC6505A3E702402391C2B2BA15CE865A">
+					<Item class="Part" referent="RBXF5E7EBE81192435EBF67AA846ADB335D">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -7473,7 +7540,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043109</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="Part" referent="RBX6FA4F3A8C2EC4F4E9EA93CC2DB74B1F2">
+					<Item class="Part" referent="RBXD90E6E87D1574A4DBA48C43537341456">
 						<Properties>
 							<token name="shape">2</token>
 							<token name="formFactorRaw">1</token>
@@ -7575,7 +7642,7 @@ return Garage
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="Model" referent="RBX8BAE8C41F92349B3A7409F6522D1AD6C">
+				<Item class="Model" referent="RBX565239D8FB4E408FBEDB3F191AB0B5A4">
 					<Properties>
 						<token name="LevelOfDetail">0</token>
 						<CoordinateFrame name="ModelMeshCFrame">
@@ -7628,7 +7695,7 @@ return Garage
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434fb</UniqueId>
 					</Properties>
-					<Item class="MeshPart" referent="RBXE005459D06B24857A1792F7DC4D11CED">
+					<Item class="MeshPart" referent="RBX53FB10368FBD42C49637A90FB3C8592B">
 						<Properties>
 							<bool name="DoubleSided">false</bool>
 							<bool name="HasJointOffset">false</bool>
@@ -7765,7 +7832,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043361</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="MeshPart" referent="RBXAB3F1E4B3BA3483D8B55194715E457E3">
+					<Item class="MeshPart" referent="RBXEAA4734FC483456696B075E562AEB3E4">
 						<Properties>
 							<bool name="DoubleSided">false</bool>
 							<bool name="HasJointOffset">false</bool>
@@ -7902,7 +7969,7 @@ return Garage
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043362</UniqueId>
 						</Properties>
 					</Item>
-					<Item class="MeshPart" referent="RBX460AF921C3C04FDD95FC64B28BCE5E37">
+					<Item class="MeshPart" referent="RBXAAA4C959E4954B48B16F0D098745D7C0">
 						<Properties>
 							<bool name="DoubleSided">false</bool>
 							<bool name="HasJointOffset">false</bool>
@@ -8042,7 +8109,7 @@ return Garage
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ModuleScript" referent="RBX16FD667544634566BA20170A14FE1EF3">
+		<Item class="ModuleScript" referent="RBXDE418D9950D74CB496DFD05AE4C7F04D">
 			<Properties>
 				<Content name="LinkedSource"><null></null></Content>
 				<ProtectedString name="Source"><![CDATA[--[[
@@ -8514,7 +8581,7 @@ return Mascots
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="ServerScriptService" referent="RBXBD451DA8469A481CAA0EAFCA88A08DB5">
+	<Item class="ServerScriptService" referent="RBX04E22DA64DB34E158A58CE1BA8B3A0BB">
 		<Properties>
 			<bool name="LoadStringEnabled">false</bool>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -8526,7 +8593,7 @@ return Mascots
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000184d</UniqueId>
 		</Properties>
-		<Item class="Script" referent="RBX957194C8BFDE407099DECE97694C7B9A">
+		<Item class="Script" referent="RBX71A4D91C63B149129478FF13902BFC06">
 			<Properties>
 				<ProtectedString name="Source"><![CDATA[--[[
 	RaceServer  —  a normal Script that goes in ServerScriptService
@@ -8578,7 +8645,6 @@ local SETTINGS = {
 	MAX_RACERS = 12, -- size of the starting grid; extra players wait for the next race
 	RESPAWN_COOLDOWN = 1.5, -- seconds between manual respawns
 	NO_RETURN_TIME = 4, -- after going over the lip of a `noReturn` jump, falling within this many seconds puts you back after its gap
-	CHECKPOINT_SKIP = 3, -- checkpoints in a row a racer can miss (flying over them off a jump, a lag spike) and still have the next one count
 	LEADERBOARD_SIZE = 10,
 	LEADERBOARD_REFRESH = 60, -- seconds between leaderboard refreshes
 	DATASTORE_NAME = "GlobalWins_v1", -- rename to start a fresh leaderboard
@@ -8661,9 +8727,9 @@ local PICKUPS = {
 		Banana = 1, -- a banana peel thrown ahead: the first kart to touch it spins out
 		MegaJump = 1, -- one huge jump
 		Mist = 1, -- Inversion Mist: everyone ahead gets left and right swapped for a while
-		Stealer = 1, -- takes the item of the racer furthest back who has one
+		Stealer = 1, -- takes the item of a random racer who has one
 		Roulette = 1, -- spins for a random item (any of them, Roulette too, each equally likely)
-		Taxman = 1, -- takes up to TAX coins from everyone else; coins over MAX_COINS are a short speed boost
+		Taxman = 1, -- takes up to TAX coins from everyone ahead of you; coins over MAX_COINS are a short speed boost
 		Teleport = 1, -- swap places with a random racer
 	},
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts. Keep the same as HANDLING in RaceClient!
@@ -8671,11 +8737,11 @@ local PICKUPS = {
 	BANANA_SAFE = 2, -- seconds before the thrower can slip on their own peel
 	MEGA_JUMP = 100, -- how fast a Mega Jump throws you upwards (studs/s). Keep the same as HANDLING in RaceClient!
 	MIST_WARNING = 2, -- seconds of warning before the Inversion Mist swaps left and right...
-	MIST_TIME = 5, -- ...and for how long
-	ROULETTE_SPIN = 1.2, -- seconds the Roulette spins before you get your item
-	TAX = 5, -- coins the Taxman takes from each other racer (all they have, if less)
+	MIST_TIME = 3, -- ...and for how long
+	ROULETTE_SPIN = 0.8, -- seconds the Roulette spins before you get your item
+	TAX = 5, -- coins the Taxman takes from each racer ahead of you (all they have, if less)
 	TAX_TIME = 5, -- seconds the coins over MAX_COINS last...
-	TAX_BOOST = 2, -- ...and each of them is worth this many coins of speed (+2% top speed). Keep the same as HANDLING in RaceClient!
+	TAX_BOOST = 4, -- ...and each of them is worth this many coins of speed (+4% top speed). Keep the same as HANDLING in RaceClient!
 	RESPAWN_TIME = 1.5, -- seconds before a grabbed coin or box comes back
 	REACH = 5.5, -- how close (studs) a kart's middle has to pass to grab one
 	CRASH_COINS = 3, -- coins dropped when a dangerous hazard hits you (fire, geysers, frogs...), or for being put back on the track (not for safe obstacles like crates and rocks, walls or bumping karts)
@@ -10486,7 +10552,12 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 	-- side karts scrape along is smooth; on the outside of a bend each piece is
 	-- stretched a touch so there's no notch at the back. Open sections, gaps
 	-- and the spots where another road joins this one get none.
-	local wallTall = cfg.WALL_HEIGHT + 1 -- also reaches 1 stud below the road so nothing slips underneath
+	-- (also reaches 1 stud below the road so nothing slips underneath. Neighbouring roads'
+	-- walls are a hair different in height: where they overlap at a junction, the two
+	-- wall colours flickered on the tops. A branch of a branch is listed right after it,
+	-- so the next road in the list always gets a different height.)
+	local wallTop = cfg.WALL_HEIGHT - ((table.find(everyRoute, route) or 1) - 1) % 3 * 0.25
+	local wallTall = wallTop + 1
 	local hasWall: { [number]: { [number]: boolean } } = { [-1] = {}, [1] = {} }
 	for _, side in { -1, 1 } do
 		local line: { Vector3 } = {}
@@ -10517,11 +10588,15 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 			hasWall[side][i] = true
 			local extraBack, extraFront = stretch(i), stretch(i + 1)
 			local up = (frames[i].UpVector + frames[i + 1].UpVector).Unit
+			-- (the stripes are 0.1 apart in height: on a bend the pieces overlap a little,
+			-- and two colours at the same height flickered there)
+			local stripe = math.floor(i / 2) % 2
+			local tall = wallTall - stripe * 0.1
 			newPart("Part", {
 				Name = "Wall",
-				Size = Vector3.new(thick, wallTall, len + extraBack + extraFront),
-				CFrame = CFrame.lookAt((a + b) / 2, b, up) * CFrame.new(side * thick / 2, wallTall / 2 - 1, (extraBack - extraFront) / 2),
-				Color = if math.floor(i / 2) % 2 == 0 then style.Wall else style.WallStripe,
+				Size = Vector3.new(thick, tall, len + extraBack + extraFront),
+				CFrame = CFrame.lookAt((a + b) / 2, b, up) * CFrame.new(side * thick / 2, tall / 2 - 1, (extraBack - extraFront) / 2),
+				Color = if stripe == 0 then style.Wall else style.WallStripe,
 				Material = style.WallMaterial,
 			}, walls)
 		end
@@ -10532,7 +10607,7 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 		if inRoom(i) or route.section("Tunnel", dist[i]) then
 			for _, side in { -1, 1 } do
 				if hasWall[side][i] then
-					buildTorch(route.roadPoint(i, side * (edge[i] + thick / 2), cfg.WALL_HEIGHT), style, decor)
+					buildTorch(route.roadPoint(i, side * (edge[i] + thick / 2), wallTop), style, decor)
 				end
 			end
 		end
@@ -10587,11 +10662,26 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 		local half = route.halfWidthAt(d)
 		local outer = route.edgeAt(d)
 		local lane = feature.lane or 0
-		if feature.side then -- signs: just outside the wall on that side
-			lane = (if feature.side == "left" then -1 else 1) * (outer + 6)
+		local kind = feature.kind
+		local side, text = feature.side, feature.text or ""
+		if kind == "Sign" then
+			-- A sign that names a branch of this road goes on the side that branch really
+			-- leaves on, its arrow pointing that way. (Worked out, not trusted from the track's
+			-- numbers: facing +Z in Roblox your right is -X, and Moonlight Manor's signs had
+			-- been written mirrored.) Frames' +X is the driver's right.
+			for _, other in everyRoute do
+				if other.isBranch and other.joins[1] == route and string.find(string.upper(text), string.upper(other.name), 1, true) then
+					local fork = frames[route.nearest(other.samples[1])]
+					local away = other.samples[math.min(6, other.count)]
+					side = if fork:PointToObjectSpace(away).X < 0 then "left" else "right"
+					text = if side == "left" then "< " .. string.upper(other.name) else string.upper(other.name) .. " >"
+				end
+			end
+		end
+		if side then -- signs: just outside the wall on that side (its nearer post 4 studs out, clear of the wall even on a bend)
+			lane = (if side == "left" then -1 else 1) * (outer + 8)
 		end
 		local spot = frame * CFrame.new(lane, 0, 0)
-		local kind = feature.kind
 		if kind == "Boost" then
 			buildBoostPad(spot, road, decor, feature.time, feature.width)
 		elseif kind == "Ramp" then
@@ -10601,7 +10691,25 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 			buildArch(cfg, frame, feature.text or "", decor, outer * 2)
 			table.insert(route.busy, d)
 		elseif kind == "Sign" then
-			buildSign(flatCFrame(spot.Position, frame.LookVector), feature.text or "", decor)
+			-- (never standing on another road or in its walls, e.g. the branch it points to:
+			-- step back along this road, then forward, until it's clear)
+			local at, look = spot.Position, frame.LookVector
+			for _, shift in { 0, -15, -30, -45, -60, -75, 15, 30 } do
+				local f = route.frameAt(math.clamp(d + shift, 0, route.total))
+				local try = (f * CFrame.new((if side == "left" then -1 else 1) * (route.edgeAt(math.clamp(d + shift, 0, route.total)) + 8), 0, 0)).Position
+				local clear = true
+				for _, other in everyRoute do
+					if other ~= route and other.covers(try, cfg.WALL_THICKNESS + 7) then
+						clear = false
+						break
+					end
+				end
+				if clear then
+					at, look = try, f.LookVector
+					break
+				end
+			end
+			buildSign(flatCFrame(at, look), text, decor)
 		elseif kind == "Waterfall" then
 			buildWaterfall(frame, outer, decor)
 			table.insert(route.busy, d)
@@ -10647,7 +10755,8 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 				newPart("Part", ghost({
 					Name = "GapPost",
 					Size = Vector3.new(1.2, 12, 1.2),
-					CFrame = route.frameAt(d) * CFrame.new(side * (route.halfWidthAt(d) + 1), 5, 0),
+					-- (standing level with the road, just outside its walls: not sunk into the ramp or a wall)
+					CFrame = route.frameAt(d) * CFrame.new(side * (route.edgeAt(d) + cfg.WALL_THICKNESS + 1), 6, 0),
 					Color = style.Hazard,
 					Material = Enum.Material.Neon,
 				}), decor)
@@ -10661,7 +10770,7 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 		local turnRight = route.corner[i] > 0
 		local j = i - 2
 		local racingPart = route.isBranch or (dist[i] > cfg.PRE_START and dist[i] < route.total - cfg.RUN_OFF)
-		if math.abs(route.corner[i]) > 1 / 150 and i - lastSign > 15 and racingPart and hasWall[if turnRight then -1 else 1][j] and not inRoom(j) then
+		if math.abs(route.corner[i]) > 1 / 150 and i - lastSign > 15 and racingPart and hasWall[if turnRight then -1 else 1][j] and not inRoom(j) and not route.section("Tunnel", dist[j]) then -- (in a tunnel it'd be inside the cave wall)
 			lastSign = i
 			buildCornerSign(cfg, frames[j], turnRight, decor, edge[j])
 		end
@@ -10926,6 +11035,29 @@ local function buildPickups(main, branches: { any }, startDist: number, finishDi
 	-- ...and one down the middle of each branch, a little reward for taking it
 	for _, route in branches do
 		coinLine(route, route.total / 2 - (PICKUPS.COINS_PER_LINE - 1) * PICKUPS.COIN_GAP / 2, { 0, 6, -6 })
+	end
+	-- ...plus wherever a track asks for more, on any road: a `Coins` feature is a line
+	-- of coins, an `Items` feature a row of item boxes (to make a longer branch worth it)
+	local everyRoad = { main }
+	for _, route in branches do
+		table.insert(everyRoad, route)
+	end
+	for _, route in everyRoad do
+		for _, feature in route.features do
+			local at = if feature.kind == "Coins" or feature.kind == "Items" then route.spotDist(feature) else nil
+			if not at then
+				continue
+			end
+			if feature.kind == "Coins" then
+				coinLine(route, at, { feature.lane or 0, 6, -6, 0 })
+			else
+				local count = math.clamp(math.floor((route.halfWidthAt(at) * 2 - 8) / PICKUPS.ITEM_BOX_GAP) + 1, 2, 7)
+				for k = 1, count do
+					local lane = (k - (count + 1) / 2) * PICKUPS.ITEM_BOX_GAP
+					buildItemBox(route.frameAt(at):PointToWorldSpace(Vector3.new(lane, height, 0)), RAINBOW[(k - 1) % #RAINBOW + 1], folder)
+				end
+			end
+		end
 	end
 end
 
@@ -11213,12 +11345,60 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 	table.sort(kept)
 	for k, d in kept do
 		local frame = main.frameAt(d)
+		-- (the finish line reaches 180 studs up, so Mega Jumping over it still counts)
+		local tall = if k == #kept then 200 else 40
 		newPart("Part", ghost({
 			Name = tostring(k),
-			Size = Vector3.new(main.edgeAt(d) * 2 + 24, 40, 2),
-			CFrame = CFrame.lookAt(frame.Position, frame.Position + frame.LookVector),
+			Size = Vector3.new(main.edgeAt(d) * 2 + 24, tall, 2),
+			CFrame = CFrame.lookAt(frame.Position, frame.Position + frame.LookVector) * CFrame.new(0, tall / 2 - 20, 0),
 			Transparency = 1,
 		}), checkpointFolder)
+	end
+	-- STUDIO CHECK: racers can pass any gate ahead of their count, so no gate's zone may
+	-- reach another part of any road (a racer there would jump ahead), and the start
+	-- line mustn't be inside the finish line's zone. Feels at the middle and both edges
+	-- of every road sample, at kart height.
+	if RunService:IsStudio() then
+		local problems = 0
+		for k, d in kept do
+			local gate = checkpointFolder:FindFirstChild(tostring(k)) :: BasePart
+			local half = gate.Size / 2
+			local home = main.frameAt(d).Position
+			for _, route in everyRoute do
+				for i, s in route.samples do
+					if math.abs(s.X - home.X) > half.X + 100 or math.abs(s.Z - home.Z) > half.X + 100 then
+						continue
+					end
+					for _, x in { -1, 0, 1 } do
+						local rel = gate.CFrame:PointToObjectSpace(route.roadPoint(i, x * route.edge[i], 2))
+						if rel.Z <= 0 and rel.Z > -60 and math.abs(rel.X) <= half.X and math.abs(rel.Y) <= half.Y then
+							-- (fine: the main road right by the gate, or a branch that splits off or
+							-- rejoins within 150 studs of it: a racer there is really that far along)
+							local own
+							if route == main then
+								own = math.abs(main.dist[i] - d) < 150
+							else
+								local from, to = mainSpan(route)
+								own = d > from - 150 and d < to + 150
+							end
+							if not own then
+								problems += 1
+								if problems <= 6 then
+									local q = s - cfg.ORIGIN
+									warn(string.format("[GateCheck] %s: checkpoint %d can be passed from %s at (%.0f, %.0f, %.0f)", tostring(cfg.name), k, route.name, q.X, q.Y, q.Z))
+								end
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+		if problems == 0 then
+			print("[GateCheck] " .. tostring(cfg.name) .. ": every checkpoint can only be passed on its own stretch of road")
+		elseif problems > 6 then
+			warn("[GateCheck] " .. tostring(cfg.name) .. ": " .. problems .. " spots in all")
+		end
 	end
 	buildPickups(main, branches, startDist, finishDist, merged, newFolder("Pickups", track))
 
@@ -12595,8 +12775,16 @@ local function loadTrack(def)
 	trackFolder = result
 	currentPath = path
 	result.Parent = workspace
+	if cfg.MANSION then
+		MansionBuilder.tidy(result) -- (windows behind stairs, cupboards or walls go)
+	end
 	if RunService:IsStudio() then
 		checkRoads(cfg, def.name, routes, result.Road)
+		-- flicker, decorations stuck in walls, slivers (ServerStorage.SceneCheck; takes a few seconds, so in the background)
+		local sceneCheck = game:GetService("ServerStorage"):FindFirstChild("SceneCheck")
+		if sceneCheck then
+			task.spawn(require(sceneCheck :: ModuleScript), result, def.name, cfg.ORIGIN)
+		end
 	end
 	currentTrackDef = def
 	applyLighting(cfg.style)
@@ -13083,6 +13271,7 @@ end
 -- touch it spins out and the peel's gone; the thrower is safe from it for BANANA_SAFE.
 local bananaRay = RaycastParams.new()
 bananaRay.FilterType = Enum.RaycastFilterType.Include
+local BANANA_PEEL = game:GetService("ServerStorage"):WaitForChild("BananaPeel") :: MeshPart
 local function throwBanana(racer: Racer)
 	local hazards, road = trackFolder:FindFirstChild("Hazards"), trackFolder:FindFirstChild("Road")
 	local hitbox = racer.hitbox
@@ -13111,20 +13300,10 @@ local function throwBanana(racer: Racer)
 		CanTouch = false,
 		Attributes = { Hazard = "Banana", Thrower = racer.kart.Name, SafeUntil = now + PICKUPS.BANANA_SAFE, ArmedAt = now + 0.35 },
 	}, peel)
-	local yellow = Color3.fromRGB(250, 215, 60)
-	local body = newPart("Part", ghost({ Name = "Peel", Size = Vector3.new(2.4, 1.2, 4.6), CFrame = base * CFrame.new(0, 0.6, 0), Color = yellow }), peel)
-	local mesh = Instance.new("SpecialMesh")
-	mesh.MeshType = Enum.MeshType.Sphere
-	mesh.Parent = body
-	for k = 0, 2 do -- the peeled-back skin
-		newPart("Part", ghost({
-			Name = "PeelFlap",
-			Size = Vector3.new(1.4, 0.35, 3.4),
-			CFrame = base * CFrame.Angles(0, k * math.pi * 2 / 3, 0) * CFrame.new(0, 0.3, 2.3) * CFrame.Angles(math.rad(12), 0, 0),
-			Color = yellow,
-		}), peel)
-	end
-	newPart("Part", ghost({ Name = "PeelTip", Size = Vector3.new(0.6, 0.6, 0.6), CFrame = base * CFrame.new(0, 1.3, -1.9), Color = Color3.fromRGB(90, 60, 30) }), peel)
+	-- the looks: the peel model (a MeshPart kept in ServerStorage), standing on the road
+	local looks = BANANA_PEEL:Clone()
+	looks.CFrame = base * CFrame.new(0, looks.Size.Y / 2, 0)
+	looks.Parent = peel
 	peel.Parent = hazards
 end
 
@@ -13200,28 +13379,29 @@ local function useItem(racer: Racer)
 			end
 		end
 	elseif item == "Stealer" then
-		-- the item of whoever's furthest back and holding one (last place first)
-		local order = rivalsOf(racer)
-		table.sort(order, function(a, b)
-			return (a.livePlace or 0) > (b.livePlace or 0)
-		end)
-		for _, other in order do
-			local stolen = other.item
-			if stolen and stolen ~= "Rolling" then
-				setItem(other, nil)
-				setItem(racer, stolen)
-				itemNews(racer, "Stole", stolen, other.name)
-				itemNews(other, "Robbed", stolen, racer.name)
-				return
+		-- the item of a random racer who's holding one
+		local holders = {}
+		for _, other in rivalsOf(racer) do
+			if other.item and other.item ~= "Rolling" then
+				table.insert(holders, other)
 			end
 		end
-		itemNews(racer, "NothingToSteal")
+		if #holders == 0 then
+			itemNews(racer, "NothingToSteal")
+			return
+		end
+		local other = holders[math.random(1, #holders)]
+		local stolen = other.item
+		setItem(other, nil)
+		setItem(racer, stolen)
+		itemNews(racer, "Stole", stolen, other.name)
+		itemNews(other, "Robbed", stolen, racer.name)
 	elseif item == "Taxman" then
-		-- up to TAX coins from everyone else; coins over MAX_COINS stay for TAX_TIME (as speed)
+		-- up to TAX coins from everyone ahead; coins over MAX_COINS stay for TAX_TIME (as speed)
 		local taken = 0
 		for _, other in rivalsOf(racer) do
 			local tax = math.min(PICKUPS.TAX, other.coins)
-			if tax > 0 then
+			if tax > 0 and (other.livePlace or math.huge) < (racer.livePlace or 0) then
 				setCoins(other, other.coins - tax)
 				raceEvent:FireAllClients("CoinsLost", other.kart, tax)
 				itemNews(other, "TaxedBy", tax, racer.name)
@@ -14141,10 +14321,14 @@ local function runRace(humans: { Player })
 				end
 			end
 
-			-- Passed the next gate, or one a little further on? (a big jump can fly
-			-- right over a gate or two, e.g. off Magma's Lava River Jump onto the road below)
+			-- Passed the next gate, or ANY gate further on? A racer can get ahead of their
+			-- count in lots of ways: flying over gates off a jump or a Mega Jump, a shortcut
+			-- found by jumping a wall, or a Teleporter swap with a racer whose count lagged.
+			-- Wherever they really are, the next gate they drive through puts them right,
+			-- and driving through the finish line always finishes the race. (Safe because no
+			-- gate's zone covers any other part of the road: [GateCheck] makes sure.)
 			local passed = nil
-			for k = racer.nextCheckpoint, math.min(racer.nextCheckpoint + SETTINGS.CHECKPOINT_SKIP, #checkpoints) do
+			for k = racer.nextCheckpoint, #checkpoints do
 				if passedCheckpoint(checkpoints[k], pos) then
 					passed = k
 				end
@@ -14698,7 +14882,7 @@ end
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186c</UniqueId>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX8094DCE758844089B73B0F853F51E4E4">
+			<Item class="ModuleScript" referent="RBX04675C7B0FC64FC6A63049066F1930B1">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[--[[
@@ -14748,7 +14932,10 @@ end
 	              (not before the jump), and a low wall on the far edge stops
 	              anyone driving back into the hole
 	  "Banner"    arch over the road with `text` on it (name each area!)
-	  "Sign"      signpost with `text`, just outside the wall on `side` ("left"/"right")
+	  "Sign"      signpost with `text`, just outside the wall on `side` ("left"/"right").
+	              If the text names a branch of this road ("WINE RACKS"), the sign
+	              works out the side and arrow itself from where that branch leaves.
+	              (Facing +Z in Roblox your right is -X: easy to get backwards.)
 	  "Waterfall" a curtain of water right across the road (drive through it)
 	  "Rock" / "Crystal" / "Snowman" / "Tree"   solid obstacle to steer around. `size`
 	  "Crate" / "Block" / "Barrel"   more obstacles: a wooden crate, a toy block
@@ -14781,6 +14968,10 @@ end
 	              and it croaks first. `period` (average seconds between lashes,
 	              default 3), `active` (seconds a lash lasts). Keep `reach`
 	              short of the far side so there's always a way past
+	  "Coins"     an extra line of coins down the road here (`lane` optional)
+	  "Items"     an extra row of item boxes across the road here. Item boxes
+	              only go on the main road by themselves (and not where a
+	              branch skips it): use these to reward a longer branch
 	  "Respawn"   a respawn point right here. They're placed by themselves every
 	              so often, but never near hazards or obstacles: use this where
 	              that leaves a long stretch without one (a clearing in a forest)
@@ -15760,7 +15951,7 @@ return {
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9f</UniqueId>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXB4F1DF3F635B430C9277E8D0B612A45C">
+				<Item class="ModuleScript" referent="RBXEF303E08E0964067816F4B8E21D1360A">
 					<Properties>
 						<Content name="LinkedSource"><null></null></Content>
 						<ProtectedString name="Source"><![CDATA[--[[
@@ -15833,7 +16024,9 @@ local function turtle(start: Vector3, heading: number)
 		end
 		return t
 	end
-	-- Turn `angle` degrees (+ = right) round a circle of `radius`, staying level
+	-- Turn `angle` degrees round a circle of `radius`, staying level. CAREFUL: + turns
+	-- towards +X, which for a driver is a LEFT turn (facing +Z in Roblox, your right
+	-- is -X). Signs that name a branch work out their own side, so this can't mislabel them.
 	function t.turn(angle: number, radius: number)
 		local side = if angle > 0 then 1 else -1
 		local n = math.max(2, math.round(math.rad(math.abs(angle)) * radius / GAP))
@@ -15880,7 +16073,10 @@ M.go(150).mark("coalEnd")
 M.turn(40, 200).mark("laundry") -- LAUNDRY ROOM
 M.go(130).mark("laundryEnd").turn(-40, 200).go(40).mark("cellarStairs")
 M.turn(-90, 60).go(40).mark("stairsUp")
-M.go(360, 90).mark("groundFloor") -- the creaky cellar stairs
+-- the creaky cellar stairs: two flights with a landing halfway, where the Wine Racks comes in
+M.go(160, 45).mark("stairsLanding")
+M.go(40).mark("stairsLandingEnd")
+M.go(160, 45).mark("groundFloor")
 -- THE GROUND FLOOR (Y 90)
 M.go(80).turn(-90, 110).mark("kitchen") -- KITCHEN: the second fork
 M.go(150).mark("kitchenEnd")
@@ -15939,6 +16135,7 @@ local FEATURES = {
 	{ kind = "Crate", point = M.at.laundry, ahead = 110, lane = -12, size = 10 },
 	{ kind = "Flat", from = M.at.cellarStairs, to = M.at.groundFloor },
 	{ kind = "Banner", point = M.at.stairsUp, text = "CELLAR STAIRS" },
+	{ kind = "Room", from = M.at.stairsLanding, to = M.at.stairsLandingEnd, width = 80 }, -- (the Wine Racks joins here)
 	{ kind = "Boost", point = M.at.stairsUp, ahead = 10, lane = 0 },
 	-- The Ground Floor
 	{ kind = "Room", from = M.at.kitchen, to = M.at.kitchenEnd, width = 130 },
@@ -16011,17 +16208,23 @@ local FEATURES = {
 	{ kind = "Ramp", point = M.at.leap, ahead = -10, angle = 14, length = 26, gap = 120 },
 	paint(M.at.garden, M.last(), GRAVEL, Enum.Material.Pebble), -- the gravel drive
 	{ kind = "NoWalls", from = M.at.garden, to = M.at.gates }, -- (land short of the drive and you can still drive onto it)
-	{ kind = "Banner", point = M.at.gates, text = "FRONT GATES" },
+	{ kind = "Banner", point = M.at.gates, ahead = -70, text = "FRONT GATES" }, -- (not on the finish line: its FINISH arch stands there)
 }
 
 ------------------------------------------------------------------------
 -- THE BRANCHES (a branch that starts or ends on another branch is listed after it)
 ------------------------------------------------------------------------
 -- The Cellar
+-- The Wine Racks is a level of its own (~1400 studs, ~17 s): between the racks, through
+-- the wall into the Wine Store (the cellar's quiet north half), back south into the
+-- laundry and up a ramp of crates onto the Cellar Stairs' landing, where a hard right
+-- turn up the stairs pays for its coins, item boxes and boost pads.
 local wineRacks = turtle(V(140, 0, 432), 75)
 wineRacks.go(20).turn(-45, 100).turn(60, 100).mark("racks")
 wineRacks.go(90).mark("racksEnd").go(30).mark("racks2").go(80).mark("racks2End")
-wineRacks.turn(60, 90).go(10).turn(-50, 90).go(10)
+wineRacks.turn(-90, 90).go(50).turn(90, 70).mark("store") -- (wide enough of the boiler room's wall)
+wineRacks.go(100).mark("storeEnd").turn(90, 70).mark("southLeg").go(112).turn(-90, 70).mark("climb")
+wineRacks.go(200, 45).mark("climbEnd").go(55)
 
 local mouseHole = turtle(V(335, 0, 545), 70)
 mouseHole.turn(-40, 60).turn(90, 60).turn(30, 60).turn(-25, 60)
@@ -16065,15 +16268,22 @@ skylights.go(40).turn(-60, 120).go(260).turn(-50, 120).go(40).turn(30, 120)
 
 local BRANCHES = {
 	{
-		name = "Wine Racks", -- between towering racks of barrels
+		name = "Wine Racks", -- between towering racks of barrels, through the Wine Store and up onto the stairs' landing
 		width = 30,
 		POINTS = wineRacks.POINTS,
 		FEATURES = {
 			{ kind = "Banner", point = 3, text = "WINE RACKS" },
 			{ kind = "Room", from = wineRacks.at.racks, to = wineRacks.at.racksEnd, width = 70 },
 			{ kind = "Room", from = wineRacks.at.racks2, to = wineRacks.at.racks2End, width = 70 },
-			{ kind = "Barrel", point = wineRacks.at.racks2End, ahead = 35, lane = 6, size = 9 },
+			{ kind = "Coins", point = wineRacks.at.racks, ahead = 15 },
 			{ kind = "Boost", point = wineRacks.at.racks2, ahead = 20, lane = -8 },
+			{ kind = "Room", from = wineRacks.at.store, to = wineRacks.at.storeEnd, width = 60 },
+			{ kind = "Banner", point = wineRacks.at.store, ahead = 10, text = "WINE STORE" },
+			{ kind = "Barrel", point = wineRacks.at.store, ahead = 50, lane = 12, size = 9 },
+			{ kind = "Coins", point = wineRacks.at.store, ahead = 40, lane = -10 },
+			{ kind = "Items", point = wineRacks.at.southLeg, ahead = 70 },
+			{ kind = "Boost", point = wineRacks.at.climb, ahead = 10, lane = 0 },
+			{ kind = "Coins", point = wineRacks.at.climb, ahead = 60 },
 		},
 	},
 	{
@@ -16200,6 +16410,7 @@ local MANSION = {
 	x = { -150, 1300 }, -- the house's walls
 	z = { 150, 1050 },
 	floors = { 0, 90, 180, 270 }, -- cellar, ground floor, bedrooms, attic
+	floorSpeed = 0.85, -- top speed on the floors, as a share of the road's (off-road is 0.55): jump a wall with a Mega Jump and you can still drive across the room and back onto the road
 	roof = 330,
 	ground = 90, -- the lawn round the house (the cellar is underground)
 	cliffBottom = -34, -- down to the lake
@@ -16236,15 +16447,16 @@ local MANSION = {
 	-- blocks under raised road: staircases, ramps onto furniture, the porch roof
 	-- (`reach` = how far above `base` the road on it goes, if more than one floor (95))
 	fills = {
-		{ from = V(1162, 0, 312), to = V(1162, 0, 672), base = 0, width = 90, color = C(110, 75, 48) }, -- cellar stairs
+		{ from = V(1162, 0, 312), to = V(1162, 0, 672), base = 0, width = 90, color = C(110, 75, 48) }, -- cellar stairs (and their landing)
+		{ from = V(907, 0, 492), to = V(1117, 0, 492), base = 0, width = 30, color = C(125, 82, 48), material = Enum.Material.WoodPlanks }, -- the Wine Racks' ramp of crates up to the landing
 		{ from = V(272, 0, 682), to = V(272, 0, 322), base = 90, width = 120, color = C(225, 220, 210), material = Enum.Material.Marble }, -- grand staircase
 		{ from = V(1216, 0, 443), to = V(1216, 0, 803), base = 180, width = 90, color = C(95, 62, 42) }, -- attic stairs
 		{ from = V(292, 0, 717), to = V(292, 0, 477), base = 270, width = 50, color = C(120, 85, 52) }, -- the ladder
-		{ from = V(955, 0, 955), to = V(860, 0, 955), base = 90, width = 40, color = C(140, 30, 45), material = Enum.Material.Fabric }, -- a chair onto the table
+		{ from = V(955, 0, 955), to = V(860, 0, 955), base = 90, width = 30, color = C(140, 30, 45), material = Enum.Material.Fabric }, -- a chair onto the table (no wider than its road: wider, it poked into the kitchen's off-road)
 		{ from = V(930, 0, 738), to = V(814, 0, 738), base = 90, width = 40, color = C(175, 185, 165) }, -- a step stool onto the counter
 		{ from = V(604, 0, 738), to = V(524, 0, 738), base = 90, width = 40, color = C(175, 185, 165) },
-		{ from = V(615, 0, 458), to = V(695, 0, 458), base = 180, width = 70, color = QUILT, material = Enum.Material.Fabric }, -- the quilt hanging over the bed
-		{ from = V(755, 0, 458), to = V(835, 0, 458), base = 180, width = 70, color = QUILT, material = Enum.Material.Fabric },
+		{ from = V(615, 0, 458), to = V(695, 0, 458), base = 180, width = 60, color = QUILT, material = Enum.Material.Fabric }, -- the quilt hanging over the bed (clear of the bed posts)
+		{ from = V(755, 0, 458), to = V(835, 0, 458), base = 180, width = 60, color = QUILT, material = Enum.Material.Fabric },
 		{ from = V(1040, 0, 866), to = V(900, 0, 812), base = 270, width = 34, depth = 6, color = BEAM }, -- the rafters
 		{ from = V(900, 0, 804), to = V(708, 0, 804), base = 270, width = 34, depth = 6, color = BEAM },
 		{ from = V(860, 0, 792), to = V(690, 0, 772), base = 270, width = 26, depth = 6, color = BEAM }, -- the tightrope
@@ -16255,13 +16467,17 @@ local MANSION = {
 		{ "WineRack", V(-125, 0, 520), -90, length = 320 },
 		{ "WineRack", V(110, 0, 650), 0, length = 240 },
 		{ "Boiler", V(430, 0, 750) },
-		{ "Boiler", V(470, 0, 210), 180 },
-		{ "Washer", V(890, 0, 480), 180 },
-		{ "Washer", V(925, 0, 475), 180 },
-		{ "Washer", V(960, 0, 470), 180 },
-		{ "Washer", V(995, 0, 465), 180 },
-		{ "Trunk", V(620, 0, 820), 20 },
-		{ "Trunk", V(700, 0, 780), -15 },
+		{ "Boiler", V(470, 0, 190), 180 }, -- (clear of the Heating Pipe)
+		-- (washing machines along the laundry's east wall, out of the Wine Racks' way)
+		{ "Washer", V(1268, 0, 300), 90 },
+		{ "Washer", V(1268, 0, 335), 90 },
+		{ "Washer", V(1268, 0, 370), 90 },
+		{ "Washer", V(1268, 0, 405), 90 },
+		{ "Trunk", V(620, 0, 930), 20 },
+		{ "Trunk", V(700, 0, 960), -15 },
+		-- the Wine Store: racks along both sides of the Wine Racks' road
+		{ "WineRack", V(717, 0, 684), 180, length = 120 },
+		{ "WineRack", V(717, 0, 802), 0, length = 160 },
 		{ "Sheet", V(820, 0, 860), 0 },
 		{ "Portrait", V(160, 45, 157), 180, kind = "Fred", color = C(70, 100, 60) },
 		-- Ground floor
@@ -16358,7 +16574,7 @@ return {
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="ModuleScript" referent="RBX6268891265984B93B1B2F1B5D326E883">
+			<Item class="ModuleScript" referent="RBXDE4BF60EA5304ABFA8026ADF88CC9266">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[--[[
@@ -16515,7 +16731,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 						Color = runLook.floor,
 						Material = runLook.floorMaterial or Enum.Material.Fabric,
 						CanTouch = false,
-						Attributes = { OffRoad = true }, -- slow, like the carpet beside the road
+						Attributes = { OffRoad = true, OffRoadSpeed = spec.floorSpeed }, -- a little slow (less than the carpet beside the road: Mega Jump shortcuts across rooms should pay off)
 					}, walkable))
 				end
 				runStart = nil
@@ -16598,13 +16814,14 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 				deco(props)
 			end
 			-- dark wooden panelling along the bottom of the wall (up from the floor), with a gold rail on top
+			-- (its ends stop 0.1 short of the wall's, so at a doorway's side the two don't flicker)
 			if panels and b0 < panels + 1 then
 				local tall = math.min(20, b1 - panels)
 				if tall > 0.2 then
 					local spot = CFrame.fromMatrix(W(mid.X, panels + tall / 2, mid.Z), along, Vector3.yAxis)
-					solid({ Name = "Panelling", Size = Vector3.new(s1 - s0, tall, thick + 1), CFrame = spot, Color = DARK_WOOD, Material = Enum.Material.Wood })
+					solid({ Name = "Panelling", Size = Vector3.new(s1 - s0 - 0.2, tall, thick + 1), CFrame = spot, Color = DARK_WOOD, Material = Enum.Material.Wood })
 					if tall >= 20 then
-						solid({ Name = "Rail", Size = Vector3.new(s1 - s0, 1.2, thick + 1.6), CFrame = spot * CFrame.new(0, tall / 2, 0), Color = GOLD, Material = Enum.Material.Wood })
+						solid({ Name = "Rail", Size = Vector3.new(s1 - s0 - 0.2, 1.2, thick + 1.6), CFrame = spot * CFrame.new(0, tall / 2, 0), Color = GOLD, Material = Enum.Material.Wood })
 					end
 				end
 			end
@@ -16629,7 +16846,39 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 				table.move(after.gaps, 1, #after.gaps, #slice.gaps + 1, slice.gaps)
 			end
 		end
+		-- Each opening (a run of slices with doorways) is one clean rectangle: from its
+		-- lowest sill to its highest top. Cut slice by slice, a road climbing past a wall
+		-- or crossing it at an angle left stepped bits of wall hanging from the ceiling.
+		local c = 1
+		while c <= #slices do
+			if #slices[c].gaps == 0 then
+				c += 1
+				continue
+			end
+			local last, sill, top = c, math.huge, -math.huge
+			while last <= #slices and #slices[last].gaps > 0 do
+				for _, gap in slices[last].gaps do
+					sill, top = math.min(sill, gap[3]), math.max(top, gap[4])
+				end
+				last += 1
+			end
+			for k = c, last - 1 do
+				slices[k].gaps = { { slices[k].s0, slices[k].s1, sill, top } }
+			end
+			c = last
+		end
+		-- ...and neighbouring slices that are now the same become one piece (no slivers)
+		local pieces = {}
 		for _, slice in slices do
+			local prev = pieces[#pieces]
+			local g, pg = slice.gaps[1], prev and prev.gaps[1]
+			if prev and #slice.gaps == #prev.gaps and (not g or (g[3] == pg[3] and g[4] == pg[4])) then
+				prev.s1 = slice.s1
+			else
+				table.insert(pieces, { s0 = slice.s0, s1 = slice.s1, gaps = slice.gaps })
+			end
+		end
+		for _, slice in pieces do
 			table.sort(slice.gaps, function(p, q)
 				return p[3] < q[3]
 			end)
@@ -16644,6 +16893,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	end
 
 	-- Outside walls, level by level: wallpaper inside, stone outside, lit windows
+	local windowCount = 0
 	local sides = { { x0, z0, x1, z0 }, { x1, z0, x1, z1 }, { x1, z1, x0, z1 }, { x0, z1, x0, z0 } } -- (anticlockwise seen from above, so `outward` points out)
 	for k, y in spec.floors do
 		local top = levels[k + 1] - 6.25
@@ -16653,10 +16903,13 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			wall(side[1], side[2], side[3], side[4], y - 6.25, top, 2, STONE, Enum.Material.Slate, true, 4)
 			-- a stone band round the outside at each floor
 			local mid = a + along * (length / 2)
-			solid({ Name = "Cornice", Size = Vector3.new(length + 12, 5, 4), CFrame = CFrame.fromMatrix(W(mid.X, y - 4, mid.Z), along, Vector3.yAxis) + outward * 6, Color = C(120, 115, 135), Material = Enum.Material.Slate })
-			-- windows every 90 studs, away from doorways
+			-- (its top 2 below the floor: level with a doorway's sill, at the cellar door, it flickered)
+			solid({ Name = "Cornice", Size = Vector3.new(length + 12, 5, 4), CFrame = CFrame.fromMatrix(W(mid.X, y - 4.5, mid.Z), along, Vector3.yAxis) + outward * 6, Color = C(120, 115, 135), Material = Enum.Material.Slate })
+			-- windows every 90 studs, away from doorways (the cellar's only on the lake side: the
+			-- other three are underground). Each window's parts share a WindowId, so tidy() can
+			-- take out any window that ends up behind stairs, cupboards or a wall.
 			for s = 60, length - 60, 90 do
-				local clear = true
+				local clear = k > 1 or side == sides[1]
 				for _, door in doors do
 					clear = clear and (s < door[1] - 30 or s > door[2] + 30 or door[3] > y + 70)
 				end
@@ -16666,13 +16919,15 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 					local high = if k == 1 then y + 60 elseif k == #spec.floors then y + 28 else y + 42
 					local cf = CFrame.fromMatrix(W(spot.X, high, spot.Z), along, Vector3.yAxis)
 					local size = if k == 1 then Vector3.new(30, 16, 0.6) elseif k == #spec.floors then Vector3.new(26, 28, 0.6) else Vector3.new(28, 44, 0.6)
-					solid({ Name = "WindowFrame", Size = Vector3.new(size.X + 6, size.Y + 6, 12), CFrame = cf, Color = DARK_WOOD, Material = Enum.Material.Wood })
+					windowCount += 1
+					local id = { WindowId = windowCount }
+					solid({ Name = "WindowFrame", Size = Vector3.new(size.X + 6, size.Y + 6, 12), CFrame = cf, Color = DARK_WOOD, Material = Enum.Material.Wood }):SetAttribute("WindowId", windowCount)
 					-- outside: warm light glowing from inside; inside: cold moonlight
-					deco({ Name = "WindowGlow", Size = size, CFrame = cf + outward * 6.2, Color = C(255, 205, 120), Material = Enum.Material.Neon })
-					deco({ Name = "WindowMoon", Size = size, CFrame = cf - outward * 6.2, Color = C(120, 140, 210), Material = Enum.Material.Neon, Transparency = 0.2 })
+					deco({ Name = "WindowGlow", Size = size, CFrame = cf + outward * 6.2, Color = C(255, 205, 120), Material = Enum.Material.Neon, Attributes = id })
+					deco({ Name = "WindowMoon", Size = size, CFrame = cf - outward * 6.2, Color = C(120, 140, 210), Material = Enum.Material.Neon, Transparency = 0.2, Attributes = id })
 					for _, sign in { -1, 1 } do
-						deco({ Name = "WindowBar", Size = Vector3.new(2, size.Y, 1), CFrame = cf + outward * sign * 6.5, Color = DARK_WOOD })
-						deco({ Name = "WindowBar", Size = Vector3.new(size.X, 2, 1), CFrame = cf + outward * sign * 6.5, Color = DARK_WOOD })
+						deco({ Name = "WindowBar", Size = Vector3.new(2, size.Y, 1), CFrame = cf + outward * sign * 6.5, Color = DARK_WOOD, Attributes = id })
+						deco({ Name = "WindowBar", Size = Vector3.new(size.X, 2, 1), CFrame = cf + outward * sign * 6.5, Color = DARK_WOOD, Attributes = id })
 					end
 				end
 			end
@@ -16709,8 +16964,10 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		for i = 1, #samples - 1 do
 			local p, q = samples[i], samples[i + 1]
 			local run = Vector3.new(q.X - p.X, 0, q.Z - p.Z)
-			-- (sample lists of different roads follow on from each other: skip the jump between them)
-			if run.Magnitude < 0.5 or run.Magnitude > 40 or not (inFill(p) or inFill(q)) then
+			-- (sample lists of different roads follow on from each other: skip the jump between
+			-- them. And only roads running along the fill's line: a branch arriving across it,
+			-- like the Wine Racks onto the stairs' landing, isn't the road it holds up)
+			if run.Magnitude < 0.5 or run.Magnitude > 40 or not (inFill(p) or inFill(q)) or math.abs(run.Unit:Dot(seg.Unit)) < 0.7 then
 				continue
 			end
 			local low = math.min(p.Y, q.Y) - origin.Y - 0.6
@@ -16718,13 +16975,13 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			local bottom = if fill.depth then low - fill.depth else fill.base
 			local mid = (p + q) / 2 - origin
 			local look = { Name = fill.name or "Fill", Color = fill.color, Material = fill.material or Enum.Material.Wood }
-			if low - bottom > 0.05 then
+			if low - bottom > 0.3 then -- (thinner than that, skip it: it'd be a sliver)
 				local block = table.clone(look)
 				block.Size = Vector3.new(fill.width, low - bottom, run.Magnitude)
 				block.CFrame = CFrame.lookAt(W(mid.X, (low + bottom) / 2, mid.Z), W(mid.X, (low + bottom) / 2, mid.Z) + run)
 				solid(block)
 			end
-			if high - low > 0.05 then -- (a wedge is tallest at its back (+Z): turn that end to the higher sample)
+			if high - low > 0.3 then -- (a wedge is tallest at its back (+Z): turn that end to the higher sample)
 				local slope = table.clone(look)
 				local center = W(mid.X, (low + high) / 2, mid.Z)
 				slope.Shape = "Wedge"
@@ -16747,14 +17004,16 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		solid({ Name = "TableCloth", Size = Vector3.new(size.X + 1, 8, size.Z * 0.5), CFrame = cf * CFrame.new(0, size.Y - 4.6, size.Z * 0.18), Color = C(235, 228, 215), Material = Enum.Material.Fabric, Transparency = 0.05 })
 		for _, sx in { -1, 1 } do
 			for _, sz in { -1, 1 } do
-				solid({ Name = "TableLeg", Size = Vector3.new(8, size.Y - 3, 8), CFrame = cf * CFrame.new(sx * (size.X / 2 - 6), (size.Y - 3) / 2, sz * (size.Z / 2 - 4)), Color = WOOD, Material = Enum.Material.Wood })
+				-- (20 in from the ends: further out, one stood in the kitchen's off-road)
+				solid({ Name = "TableLeg", Size = Vector3.new(8, size.Y - 3, 8), CFrame = cf * CFrame.new(sx * (size.X / 2 - 20), (size.Y - 3) / 2, sz * (size.Z / 2 - 4)), Color = WOOD, Material = Enum.Material.Wood })
 			end
 		end
 		for _, sz in { -1, 1 } do -- chairs pushed in along both sides
 			for x = -size.X / 2 + 40, size.X / 2 - 40, 60 do
 				local chair = cf * CFrame.new(x, 0, sz * (size.Z / 2 + 18)) * CFrame.Angles(0, if sz > 0 then math.pi else 0, 0)
+				-- (the back's a hair narrower than the seat, so their sides don't flicker)
 				solid({ Name = "ChairSeat", Size = Vector3.new(30, 3, 28), CFrame = chair * CFrame.new(0, 13.5, 0), Color = C(140, 30, 45), Material = Enum.Material.Fabric })
-				solid({ Name = "ChairBack", Size = Vector3.new(30, 34, 3), CFrame = chair * CFrame.new(0, 30, 13), Color = WOOD, Material = Enum.Material.Wood })
+				solid({ Name = "ChairBack", Size = Vector3.new(29.6, 34, 3), CFrame = chair * CFrame.new(0, 30, 13), Color = WOOD, Material = Enum.Material.Wood })
 				for _, lx in { -12, 12 } do
 					for _, lz in { -11, 11 } do
 						solid({ Name = "ChairLeg", Size = Vector3.new(3, 12, 3), CFrame = chair * CFrame.new(lx, 6, lz), Color = WOOD, Material = Enum.Material.Wood })
@@ -16841,9 +17100,10 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	-- A giant four-poster bed: mattress top at `size.Y`, pillows at the head (-X end)
 	function BUILD.Bed(cf: CFrame, p)
 		local size = p.size
-		-- (the quilt's top sits between the mattress's and the road's, so none of them flicker)
+		-- (the quilt's top sits between the mattress's and the road's, and it hangs a little over
+		-- the foot of the bed, so none of them flicker)
 		solid({ Name = "Mattress", Size = Vector3.new(size.X, 5, size.Z), CFrame = cf * CFrame.new(0, size.Y - 3, 0), Color = C(245, 240, 235), Material = Enum.Material.Fabric })
-		solid({ Name = "Quilt", Size = Vector3.new(size.X * 0.7, 5.4, size.Z + 1), CFrame = cf * CFrame.new(size.X * 0.15, size.Y - 3, 0), Color = C(175, 70, 95), Material = Enum.Material.Fabric })
+		solid({ Name = "Quilt", Size = Vector3.new(size.X * 0.7 + 0.6, 5.4, size.Z + 1), CFrame = cf * CFrame.new(size.X * 0.15 + 0.3, size.Y - 3, 0), Color = C(175, 70, 95), Material = Enum.Material.Fabric })
 		solid({ Name = "BedFrame", Size = Vector3.new(size.X + 4, 5, size.Z + 4), CFrame = cf * CFrame.new(0, size.Y - 7.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
 		for _, sx in { -1, 1 } do
 			for _, sz in { -1, 1 } do
@@ -17098,18 +17358,26 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	solid({ Name = "Foundation", Size = Vector3.new(x1 - x0, -6.25 - cliffBottom, z1 - z0), CFrame = CFrame.new(W((x0 + x1) / 2, (cliffBottom - 6.25) / 2, (z0 + z1) / 2)), Color = C(70, 66, 80), Material = Enum.Material.Slate })
 	-- (and a solid block of earth under the lawn, so the cellar is underground)
 	for _, t in lawnTiles do
-		solid({ Name = "Earth", Size = Vector3.new(t[3] - t[1], cliffTop - cliffBottom, t[4] - t[2]), CFrame = CFrame.new(W((t[1] + t[3]) / 2, (cliffTop + cliffBottom) / 2, (t[2] + t[4]) / 2)), Color = C(60, 50, 45), Material = Enum.Material.Ground })
+		-- (its bottom 2 above the cliff's, so they don't flicker)
+		solid({ Name = "Earth", Size = Vector3.new(t[3] - t[1], cliffTop - cliffBottom - 2, t[4] - t[2]), CFrame = CFrame.new(W((t[1] + t[3]) / 2, (cliffTop + cliffBottom + 2) / 2, (t[2] + t[4]) / 2)), Color = C(60, 50, 45), Material = Enum.Material.Ground })
 	end
 
 	--------------------------------------------------------------------
 	-- STUDIO CHECK: no house wall, floor, furniture or tunnel may stand in a road's way
 	--------------------------------------------------------------------
-	-- (it feels across the road's whole width at each sample, just above the road
-	-- and at kart height, for anything solid there)
+	-- (it feels across the road and its off-road at each sample, just above the road
+	-- and at kart height, for anything solid there; for furniture and fills, across
+	-- the road's own walls too)
 	if RunService:IsStudio() then
-		for _, list in { floorParts, solidParts } do
-			for _, part in list do
-				table.insert(wallParts, part)
+		local WALL_BITS = { Panelling = true, Rail = true, WindowFrame = true, Cornice = true }
+		local extra: { [BasePart]: number } = {} -- studs beyond the road's edge to feel for this part
+		for _, part in floorParts do
+			table.insert(wallParts, part)
+		end
+		for _, part in solidParts do
+			table.insert(wallParts, part)
+			if not WALL_BITS[part.Name] then
+				extra[part] = 3 -- (the road's own wall, just past the off-road)
 			end
 		end
 		for _, part in walls:GetChildren() do
@@ -17132,15 +17400,16 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			local right = dir.Unit:Cross(Vector3.yAxis)
 			for _, part in wallParts do
 				local half = part.Size / 2
-				local reach = math.max(half.X, half.Z) + halves[i] + 2
-				local pos = part.Position
-				if math.abs(pos.X - p.X) > reach or math.abs(pos.Z - p.Z) > reach or math.abs(pos.Y - p.Y) > half.Y + 8 then
+				local across = halves[i] + (extra[part] or 0)
+				-- (a quick skip for parts too far away to matter: a sphere round the part, so
+				-- it works however the part is turned; an upright cylinder's height is its X)
+				if (part.Position - p).Magnitude > half.Magnitude + across + 8 then
 					continue
 				end
 				local hit = false
-				for u = -1, 1, 0.5 do
+				for u = -1, 1, 0.25 do
 					for _, up in { 0.4, 6 } do
-						local rel = part.CFrame:PointToObjectSpace(p + right * u * halves[i] + Vector3.new(0, up, 0))
+						local rel = part.CFrame:PointToObjectSpace(p + right * u * across + Vector3.new(0, up, 0))
 						local inside = math.abs(rel.X) < half.X and math.abs(rel.Y) < half.Y and math.abs(rel.Z) < half.Z + 3
 						if part:IsA("WedgePart") then -- (only under its slope, which climbs towards +Z)
 							inside = inside and rel.Y / half.Y <= rel.Z / half.Z
@@ -17171,6 +17440,41 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	end
 end
 
+-- Once the track is in the workspace (spatial queries only work there): takes out any
+-- window that ended up behind something solid (stairs, cupboards, a portrait, an inner
+-- wall meeting the outside wall), whole: its frame, glass and bars.
+function MansionBuilder.tidy(track: Instance)
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { track:FindFirstChild("Walls"), track:FindFirstChild("Walkable") } :: { Instance }
+	local blocked: { [number]: boolean } = {}
+	local parts: { BasePart } = {}
+	for _, part in track:GetDescendants() do
+		local id = if part:IsA("BasePart") then part:GetAttribute("WindowId") else nil
+		if typeof(id) ~= "number" then
+			continue
+		end
+		table.insert(parts, part)
+		if part.Name == "WindowGlow" or part.Name == "WindowMoon" or part.Name == "WindowFrame" then
+			-- (feels the glass with the frame's margin round it, and the frame itself, which sits
+			-- in its own wall)
+			local grow = if part.Name == "WindowFrame" then Vector3.new(-0.2, -0.2, -0.2) else Vector3.new(5.8, 5.8, 0)
+			for _, other in workspace:GetPartBoundsInBox(part.CFrame, part.Size + grow, params) do
+				local ownWall = part.Name == "WindowFrame" and (other.Name == "HouseWall" or other.Name == "Panelling" or other.Name == "Rail" or other.Name == "Cornice")
+				if other:GetAttribute("WindowId") ~= id and other.CanCollide and not ownWall then
+					blocked[id] = true
+					break
+				end
+			end
+		end
+	end
+	for _, part in parts do
+		if blocked[part:GetAttribute("WindowId") :: number] then
+			part:Destroy()
+		end
+	end
+end
+
 return MansionBuilder
 ]]></ProtectedString>
 					<string name="ScriptGuid">{A8499483-49BE-449B-B828-E410CD2544F5}</string>
@@ -17184,7 +17488,7 @@ return MansionBuilder
 					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85000dcf8d</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="Sound" referent="RBX8AFCF130B64E4B9CB7A34D4E65BBD495">
+			<Item class="Sound" referent="RBXE48869348C1F43A79B37FFFB88881334">
 				<Properties>
 					<bool name="AcousticSimulationEnabled">true</bool>
 					<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17210,7 +17514,7 @@ return MansionBuilder
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ec</UniqueId>
 				</Properties>
-				<Item class="Sound" referent="RBX7B6C76DCDF174D12B5FF7EFDFE782E8A">
+				<Item class="Sound" referent="RBXC0772892ED8745B087B3FFA5F68C2EBD">
 					<Properties>
 						<bool name="AcousticSimulationEnabled">true</bool>
 						<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17236,7 +17540,7 @@ return MansionBuilder
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ed</UniqueId>
 					</Properties>
-					<Item class="Sound" referent="RBX50F42D87D76B43B8A6963456B138F006">
+					<Item class="Sound" referent="RBX17759906BE074DF1A37A5BFB9B208A9B">
 						<Properties>
 							<bool name="AcousticSimulationEnabled">true</bool>
 							<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17262,7 +17566,7 @@ return MansionBuilder
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ee</UniqueId>
 						</Properties>
-						<Item class="Sound" referent="RBX74279445274B45A6B926B90D51EC4D2E">
+						<Item class="Sound" referent="RBX056BC9AC548645E7AA540CFF445E7021">
 							<Properties>
 								<bool name="AcousticSimulationEnabled">true</bool>
 								<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17288,7 +17592,7 @@ return MansionBuilder
 								<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 								<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ef</UniqueId>
 							</Properties>
-							<Item class="Sound" referent="RBX34686E61DEA54A0D95F7322BF4C7FBE5">
+							<Item class="Sound" referent="RBX90989DC11C0945A08FBC239A236358A7">
 								<Properties>
 									<bool name="AcousticSimulationEnabled">true</bool>
 									<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17314,7 +17618,7 @@ return MansionBuilder
 									<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 									<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f0</UniqueId>
 								</Properties>
-								<Item class="Sound" referent="RBX646AB48E3A284277A29D083C98C6DFF0">
+								<Item class="Sound" referent="RBX0BDD071DDB3242E3A634AA62919C9F57">
 									<Properties>
 										<bool name="AcousticSimulationEnabled">true</bool>
 										<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17340,7 +17644,7 @@ return MansionBuilder
 										<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 										<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f1</UniqueId>
 									</Properties>
-									<Item class="Sound" referent="RBX8B199C55D1EF4EDAB7D8F032792373B9">
+									<Item class="Sound" referent="RBXF9171C433C804B13B1B1188BF596A0D7">
 										<Properties>
 											<bool name="AcousticSimulationEnabled">true</bool>
 											<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17366,7 +17670,7 @@ return MansionBuilder
 											<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 											<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f2</UniqueId>
 										</Properties>
-										<Item class="Sound" referent="RBX173EE071D9144CD78194043BB30C4C3A">
+										<Item class="Sound" referent="RBX2D7E7FD4291F4A938878D87495216FB0">
 											<Properties>
 												<bool name="AcousticSimulationEnabled">true</bool>
 												<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17392,7 +17696,7 @@ return MansionBuilder
 												<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 												<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f3</UniqueId>
 											</Properties>
-											<Item class="Sound" referent="RBX45D17EFCFF1A40D48BBC387659E6DCFC">
+											<Item class="Sound" referent="RBX6D61BBB5EE414F4FBE6284325F2D92DE">
 												<Properties>
 													<bool name="AcousticSimulationEnabled">true</bool>
 													<NumberRange name="LoopRegion">0 60000 </NumberRange>
@@ -17429,7 +17733,7 @@ return MansionBuilder
 			</Item>
 		</Item>
 	</Item>
-	<Item class="ServerStorage" referent="RBX9E27EC011EA1435D8CA2CFD8C0417F38">
+	<Item class="ServerStorage" referent="RBXBEF743F591584FE79EE91E47C4C6077D">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -17440,7 +17744,7 @@ return MansionBuilder
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000184e</UniqueId>
 		</Properties>
-		<Item class="Folder" referent="RBX6BB65959E1BE419EB95FD73418287EAA">
+		<Item class="Folder" referent="RBXE7F08479EA8F4AFC88C0B71B53E0F274">
 			<Properties>
 				<Color3 name="IconTint">
 					<R>0</R>
@@ -17456,7 +17760,7 @@ return MansionBuilder
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700009033</UniqueId>
 			</Properties>
-			<Item class="Script" referent="RBX526D9FF395884D05AF3FF8645179C29D">
+			<Item class="Script" referent="RBX447D18C872A348BA84970806CA61E28B">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceServer  —  a normal Script that goes in ServerScriptService
@@ -19525,7 +19829,7 @@ end
 					<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700009034</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="LocalScript" referent="RBX8CBCBC134AD7459EA61A80617B5D535E">
+			<Item class="LocalScript" referent="RBXED1C541DCC024ACBADC3F170597969DB">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceClient  —  a LocalScript that goes in StarterPlayer > StarterPlayerScripts
@@ -20558,7 +20862,7 @@ end)
 					<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700009037</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="Script" referent="RBX3478D8764115473CA6B210C6EFFEAB41">
+			<Item class="Script" referent="RBX93F024C042AC4F998D9861E42AEB93DA">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceServer  —  a normal Script that goes in ServerScriptService
@@ -23458,7 +23762,7 @@ end
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad580580000e761</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="LocalScript" referent="RBXAFE7BD0807D44ADFA0785F2B6A2BBDAC">
+			<Item class="LocalScript" referent="RBX556AECACC69B4A82824E2531213ACBC1">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceClient  —  a LocalScript that goes in StarterPlayer > StarterPlayerScripts
@@ -24651,7 +24955,7 @@ end)
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad580580000e764</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="Script" referent="RBX1ACA3D2CF360447CAC9B80742BA311DC">
+			<Item class="Script" referent="RBX0D0836982CB14C8BA9184374742F0182">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceServer  —  a normal Script that goes in ServerScriptService
@@ -28470,7 +28774,7 @@ end
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9b</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="LocalScript" referent="RBX50EFDF2B0B2A4E609DCAD83284B8D22A">
+			<Item class="LocalScript" referent="RBXC89A41E4FDC74187B5D13170C3CAEE8F">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceClient  —  a LocalScript that goes in StarterPlayer > StarterPlayerScripts
@@ -30095,7 +30399,7 @@ end)
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9d</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="Script" referent="RBXE1101738846149A3A42C78EB6CBE1E2A">
+			<Item class="Script" referent="RBXB95D49A01E664A03A40656CDD9102C27">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceServer  —  a normal Script that goes in ServerScriptService
@@ -33868,7 +34172,7 @@ end
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">4c20f22b29233c1f0ad5add900005b39</UniqueId>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX1607E7852E2B4500B232D12CE786215C">
+				<Item class="ModuleScript" referent="RBXD01F1B25E7294414974F3C97C3A0068E">
 					<Properties>
 						<Content name="LinkedSource"><null></null></Content>
 						<ProtectedString name="Source"><![CDATA[--[[
@@ -34618,7 +34922,7 @@ return {
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="LocalScript" referent="RBX032B303B2BFA4ACDB04D6122352DB83D">
+			<Item class="LocalScript" referent="RBXF4FF5FB0315241A19018CD7FD087BA1A">
 				<Properties>
 					<ProtectedString name="Source"><![CDATA[--[[
 	RaceClient  —  a LocalScript that goes in StarterPlayer > StarterPlayerScripts
@@ -36278,7 +36582,7 @@ end)
 					<UniqueId name="UniqueId">4c20f22b29233c1f0ad5add900005b3e</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBXAE789007A4B44EF0BC03917EB6A23E97">
+			<Item class="ModuleScript" referent="RBX3AF3B92A436A4495808D4920ABD606B3">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[--[[
@@ -40575,7 +40879,7 @@ end
 					<UniqueId name="UniqueId">28ac185ee58ec4a50ad5c68700000878</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBXFAD99B5C28744F638D955D23E5BE1EFC">
+			<Item class="ModuleScript" referent="RBXCA4C7C5072A44D168DC2B47DA81DEF40">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[--[[
@@ -42240,7 +42544,7 @@ end)
 					<UniqueId name="UniqueId">28ac185ee58ec4a50ad5c6870000087b</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX49C3EEA309EB4FE592A7B6FCD209156F">
+			<Item class="ModuleScript" referent="RBX37F6A6782D604E7DA5AB716F9533B9F5">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[--[[
@@ -42989,7 +43293,7 @@ return {
 					<UniqueId name="UniqueId">28ac185ee58ec4a50ad5c6870000087d</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBXC57826FC5981471EA2CE08E905CD4B20">
+			<Item class="ModuleScript" referent="RBX2EB48F4EDA0B41B09754499BDD4B2B3D">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[--[[
@@ -43741,7 +44045,7 @@ return {
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ModuleScript" referent="RBXED3624AB2CD44ADEA6DA3C929920507B">
+		<Item class="ModuleScript" referent="RBX0E2955E92C4C44F1B0434F3DC77A14FC">
 			<Properties>
 				<Content name="LinkedSource"><null></null></Content>
 				<ProtectedString name="Source"><![CDATA[--[[
@@ -43922,7 +44226,7 @@ end
 				<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040ba1</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="ModuleScript" referent="RBX6A8B735783F34C7680C8C54654D4F7B3">
+		<Item class="ModuleScript" referent="RBXCE6F1EA64180410AB70D532D8A354952">
 			<Properties>
 				<Content name="LinkedSource"><null></null></Content>
 				<ProtectedString name="Source"><![CDATA[-- Checks the starting-grid order rules in RaceServer (startingGrid) with fake
@@ -43998,22 +44302,385 @@ end
 				<UniqueId name="UniqueId">38a87ad7161be5090ad5b95200022bbc</UniqueId>
 			</Properties>
 		</Item>
+		<Item class="MeshPart" referent="RBX6237170CC12A441CA40183F5DBCEF387">
+			<Properties>
+				<bool name="DoubleSided">false</bool>
+				<bool name="HasJointOffset">false</bool>
+				<bool name="HasSkinnedMesh">false</bool>
+				<Vector3 name="InitialSize">
+					<X>2.23902655</X>
+					<Y>1.99999988</Y>
+					<Z>1.7907294</Z>
+				</Vector3>
+				<Vector3 name="JointOffset">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<Content name="MeshId"><url>rbxassetid://121791698839412</url></Content>
+				<BinaryString name="PhysicsData"></BinaryString>
+				<token name="RenderFidelity">0</token>
+				<Content name="TextureID"><url>rbxassetid://78335307999219</url></Content>
+				<int name="VertexCount">0</int>
+				<SharedString name="AeroMeshData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+				<token name="FluidFidelityInternal">0</token>
+				<bool name="InertiaMigrated">false</bool>
+				<SharedString name="PhysicalConfigData">+qv2o0HSW+htH+ALwYQpiw==</SharedString>
+				<Vector3 name="UnscaledCofm">
+					<X>-0.00209662877</X>
+					<Y>-0.23559089</Y>
+					<Z>-0.0224761497</Z>
+				</Vector3>
+				<Vector3 name="UnscaledVolInertiaDiags">
+					<X>0.192868859</X>
+					<Y>0.273222297</Y>
+					<Z>0.23575677</Z>
+				</Vector3>
+				<Vector3 name="UnscaledVolInertiaOffDiags">
+					<X>8.50359284e-05</X>
+					<Y>-0.000331180665</Y>
+					<Z>-0.029592948</Z>
+				</Vector3>
+				<float name="UnscaledVolume">0.765140235</float>
+				<bool name="Anchored">true</bool>
+				<bool name="AudioCanCollide">true</bool>
+				<float name="BackParamA">-0.5</float>
+				<float name="BackParamB">0.5</float>
+				<token name="BackSurface">0</token>
+				<token name="BackSurfaceInput">0</token>
+				<float name="BottomParamA">-0.5</float>
+				<float name="BottomParamB">0.5</float>
+				<token name="BottomSurface">0</token>
+				<token name="BottomSurfaceInput">0</token>
+				<CoordinateFrame name="CFrame">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+				<bool name="CanCollide">false</bool>
+				<bool name="CanQuery">false</bool>
+				<bool name="CanTouch">false</bool>
+				<bool name="CastShadow">true</bool>
+				<string name="CollisionGroup">Default</string>
+				<int name="CollisionGroupId">0</int>
+				<Color3uint8 name="Color3uint8">4288914085</Color3uint8>
+				<PhysicalProperties name="CustomPhysicalProperties">
+					<CustomPhysics>false</CustomPhysics>
+				</PhysicalProperties>
+				<bool name="EnableFluidForces">true</bool>
+				<float name="FrontParamA">-0.5</float>
+				<float name="FrontParamB">0.5</float>
+				<token name="FrontSurface">0</token>
+				<token name="FrontSurfaceInput">0</token>
+				<float name="LeftParamA">-0.5</float>
+				<float name="LeftParamB">0.5</float>
+				<token name="LeftSurface">0</token>
+				<token name="LeftSurfaceInput">0</token>
+				<bool name="Locked">false</bool>
+				<bool name="Massless">false</bool>
+				<token name="Material">256</token>
+				<string name="MaterialVariantSerialized"></string>
+				<CoordinateFrame name="PivotOffset">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+				<float name="Reflectance">0</float>
+				<float name="RightParamA">-0.5</float>
+				<float name="RightParamB">0.5</float>
+				<token name="RightSurface">0</token>
+				<token name="RightSurfaceInput">0</token>
+				<int name="RootPriority">0</int>
+				<Vector3 name="RotVelocity">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<float name="TopParamA">-0.5</float>
+				<float name="TopParamB">0.5</float>
+				<token name="TopSurface">0</token>
+				<token name="TopSurfaceInput">0</token>
+				<float name="Transparency">0</float>
+				<Vector3 name="Velocity">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<Vector3 name="size">
+					<X>4.9258585</X>
+					<Y>4.39999962</Y>
+					<Z>3.93960476</Z>
+				</Vector3>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">BananaPeel</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+				<UniqueId name="UniqueId">4321598fa75f2b860ad803d60005813d</UniqueId>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX3C55DCEA20EA47328B2B2CA725378570">
+			<Properties>
+				<Content name="LinkedSource"><null></null></Content>
+				<ProtectedString name="Source"><![CDATA[--[[
+	SceneCheck  -  looks over a freshly built track for the small visual mistakes
+	that are easy to miss while building one, and prints [SceneCheck] lines:
+
+	  flicker   two visible faces in the same plane, overlapping, with a different
+	            colour, material or text on them (z-fighting), where you can see them
+	  stuck     a decoration (torch, sign, banner, arch, window, lamp) sunk into
+	            something solid: a wall, a floor, furniture or a road
+	  sliver    a solid piece you can see that's thinner than SLIVER studs
+
+	RaceServer runs it (in Studio) a moment after each track loads, like RoadCheck.
+	By hand, in Play on the Server:
+	  require(game.ServerStorage.SceneCheck)(workspace.RaceTrack, "Magma", Vector3.new(-800, 120, 0))
+	Positions are printed in the track's own numbers (like POINTS).
+]]
+
+local SLIVER = 0.3
+local SAME_PLANE = 0.08 -- studs: faces closer than this flicker against each other
+local SHOW = 6 -- example spots printed per kind of problem
+-- Decorations that must never be inside anything solid
+local WATCH = {
+	TorchPost = true, TorchFlame = true, SignBoard = true, SignPost = true, ArchBanner = true, ArchPost = true,
+	CornerSign = true, WindowGlow = true, WindowMoon = true, Lamp = true, GapPost = true,
+}
+
+local function visible(part: BasePart): boolean
+	return part.Transparency < 0.6 and part.LocalTransparencyModifier < 0.6
+end
+local function hasText(part: BasePart): boolean
+	return part:FindFirstChildWhichIsA("SurfaceGui") ~= nil or part:FindFirstChildWhichIsA("Decal") ~= nil
+end
+
+-- The big flat faces of a block or wedge: { n = outward normal, pts = corners }
+local function faces(p: BasePart)
+	local list = {}
+	if p:FindFirstChildWhichIsA("SpecialMesh") or p:IsA("MeshPart") or (p:IsA("Part") and p.Shape ~= Enum.PartType.Block) then
+		return list
+	end
+	local cf, h = p.CFrame, p.Size / 2
+	local function add(n: Vector3, pts: { Vector3 })
+		for i = 1, #pts do
+			if (pts[i] - pts[i % #pts + 1]).Magnitude < 1.2 then
+				return -- (thin edges: a road's 1-stud side, a curb)
+			end
+		end
+		table.insert(list, { n = cf:VectorToWorldSpace(n), pts = pts })
+	end
+	local function corner(x: number, y: number, z: number): Vector3
+		return cf:PointToWorldSpace(Vector3.new(x * h.X, y * h.Y, z * h.Z))
+	end
+	if p:IsA("WedgePart") then
+		add(Vector3.xAxis, { corner(1, -1, -1), corner(1, -1, 1), corner(1, 1, 1) })
+		add(-Vector3.xAxis, { corner(-1, -1, -1), corner(-1, -1, 1), corner(-1, 1, 1) })
+		add(-Vector3.yAxis, { corner(1, -1, 1), corner(1, -1, -1), corner(-1, -1, -1), corner(-1, -1, 1) })
+		add(Vector3.zAxis, { corner(1, 1, 1), corner(1, -1, 1), corner(-1, -1, 1), corner(-1, 1, 1) })
+	else
+		for _, s in { -1, 1 } do
+			add(Vector3.xAxis * s, { corner(s, 1, 1), corner(s, 1, -1), corner(s, -1, -1), corner(s, -1, 1) })
+			add(Vector3.yAxis * s, { corner(1, s, 1), corner(1, s, -1), corner(-1, s, -1), corner(-1, s, 1) })
+			add(Vector3.zAxis * s, { corner(1, 1, s), corner(1, -1, s), corner(-1, -1, s), corner(-1, 1, s) })
+		end
+	end
+	return list
+end
+
+-- Is `pt` (in the polygon's plane) inside the convex polygon?
+local function inside(pt: Vector3, poly: { Vector3 }, n: Vector3): boolean
+	local sign = 0
+	for i = 1, #poly do
+		local a, b = poly[i], poly[i % #poly + 1]
+		local c = (b - a):Cross(pt - a):Dot(n)
+		if math.abs(c) < 1e-4 then
+			return false
+		end
+		local s = if c > 0 then 1 else -1
+		if sign == 0 then
+			sign = s
+		elseif s ~= sign then
+			return false
+		end
+	end
+	return true
+end
+local function samplePoints(poly: { Vector3 }): { Vector3 }
+	local out, c = {}, Vector3.zero
+	for _, q in poly do
+		c += q
+	end
+	c /= #poly
+	table.insert(out, c)
+	for _, q in poly do
+		for _, k in { 0.35, 0.7, 0.92 } do
+			table.insert(out, c:Lerp(q, k))
+		end
+	end
+	return out
+end
+
+return function(track: Instance, name: string, origin: Vector3)
+	local folders = {}
+	for _, n in { "Road", "Walls", "Walkable", "Decor", "Scenery" } do
+		local f = track:FindFirstChild(n)
+		if f then
+			table.insert(folders, f)
+		end
+	end
+	local solidFolders = {}
+	for _, n in { "Road", "Walls", "Walkable" } do
+		local f = track:FindFirstChild(n)
+		if f then
+			table.insert(solidFolders, f)
+		end
+	end
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = folders
+	local solidParams = OverlapParams.new()
+	solidParams.FilterType = Enum.RaycastFilterType.Include
+	solidParams.FilterDescendantsInstances = solidFolders
+
+	local found = { flicker = {}, stuck = {}, sliver = {} }
+	local counts = { flicker = {}, stuck = {}, sliver = {} }
+	local function report(kind: string, what: string, at: Vector3)
+		counts[kind][what] = (counts[kind][what] or 0) + 1
+		if #found[kind] < SHOW then
+			local q = at - origin
+			table.insert(found[kind], string.format("%s at (%.0f, %.0f, %.0f)", what, q.X, q.Y, q.Z))
+		end
+	end
+	-- (a face hidden behind or inside something else, or pressed against it, can't flicker)
+	local function covered(at: Vector3, a: BasePart, b: BasePart): boolean
+		for _, p in workspace:GetPartBoundsInBox(CFrame.new(at), Vector3.one * 0.02, params) do
+			if p ~= a and p ~= b and visible(p) then
+				return true
+			end
+		end
+		return false
+	end
+
+	local parts = {}
+	for _, f in folders do
+		for _, p in f:GetDescendants() do
+			if p:IsA("BasePart") and visible(p) then
+				table.insert(parts, p)
+			end
+		end
+	end
+	local done: { [BasePart]: boolean } = {}
+	for count, a in parts do
+		if count % 1500 == 0 then
+			task.wait()
+		end
+		-- slivers
+		if a.CanCollide and math.min(a.Size.X, a.Size.Y, a.Size.Z) < SLIVER and a.Parent and a.Parent.Name ~= "Road" then
+			report("sliver", a.Name, a.Position)
+		end
+		-- decorations stuck in something solid
+		if WATCH[a.Name] and not a.CanCollide then
+			for _, s in workspace:GetPartBoundsInBox(a.CFrame, a.Size - Vector3.one * 0.3, solidParams) do
+				if s.CanCollide and visible(s) then
+					report("stuck", a.Name .. " in " .. s.Name, a.Position)
+					break
+				end
+			end
+		end
+		-- flicker
+		local fa = faces(a)
+		if #fa > 0 then
+			for _, b in workspace:GetPartBoundsInBox(a.CFrame, a.Size + Vector3.one * 0.3, params) do
+				if b == a or done[b] or not visible(b) then
+					continue
+				end
+				local differs = a.Color ~= b.Color or a.Material ~= b.Material or hasText(a) or hasText(b)
+				if not differs then
+					continue
+				end
+				local hit = nil
+				for _, x in fa do
+					for _, y in faces(b) do
+						if x.n:Dot(y.n) > 0.999 and math.abs((x.pts[1] - y.pts[1]):Dot(x.n)) < SAME_PLANE then
+							for _, s in samplePoints(x.pts) do
+								if inside(s, y.pts, x.n) and not covered(s + x.n * 0.3, a, b) then
+									hit = s
+									break
+								end
+							end
+						end
+						if hit then
+							break
+						end
+					end
+					if hit then
+						break
+					end
+				end
+				if hit then
+					local pair = if a.Name < b.Name then a.Name .. " + " .. b.Name else b.Name .. " + " .. a.Name
+					report("flicker", pair, hit)
+				end
+			end
+		end
+		done[a] = true
+	end
+
+	local total = 0
+	for kind, list in found do
+		if #list == 0 then
+			continue
+		end
+		local byName, n = {}, 0
+		for what, c in counts[kind] do
+			table.insert(byName, what .. " x" .. c)
+			n += c
+		end
+		total += n
+		warn(string.format("[SceneCheck] %s: %d %s: %s", name, n, kind, table.concat(byName, ", ")))
+		for _, line in list do
+			warn("[SceneCheck]    " .. line)
+		end
+	end
+	if total == 0 then
+		print("[SceneCheck] " .. name .. ": no flicker, stuck decorations or slivers")
+	end
+	return total
+end
+]]></ProtectedString>
+				<string name="ScriptGuid">{DCCEE8E3-AADC-411F-8646-E350D3982550}</string>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">SceneCheck</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+				<UniqueId name="UniqueId">4321598fa75f2b860ad803d600073f52</UniqueId>
+			</Properties>
+		</Item>
 	</Item>
-	<Item class="ServiceVisibilityService" referent="RBXC6ACF548AF5447F9BD99BFC9F6503F79">
-		<Properties>
-			<BinaryString name="HiddenServices">AAAAAA==</BinaryString>
-			<BinaryString name="VisibleServices">AQAAAAIQAAAAVm9pY2VDaGF0U2VydmljZQ==</BinaryString>
-			<BinaryString name="AttributesSerialize"></BinaryString>
-			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-			<bool name="DefinesCapabilities">false</bool>
-			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-			<string name="Name">ServiceVisibilityService</string>
-			<int64 name="SourceAssetId">-1</int64>
-			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001863</UniqueId>
-		</Properties>
-	</Item>
-	<Item class="VideoService" referent="RBX6D8D0CA14FAE4A5ABD87E6FA6B13F152">
+	<Item class="VideoService" referent="RBX1878A7D0FC1F49708B03394F0DFE7ADE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -44025,7 +44692,7 @@ end
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000188d</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="HttpService" referent="RBXF0F7071DE9D64DDD970FF7AE58FEF3C3">
+	<Item class="HttpService" referent="RBX47D0B0BEFE3D449BBADEAC070AFF0AAB">
 		<Properties>
 			<bool name="HttpEnabled">false</bool>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -44038,7 +44705,7 @@ end
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001867</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Lighting" referent="RBX1773889A00BF4B9EB0B6C7EE1C15264B">
+	<Item class="Lighting" referent="RBX46FC805AC3AC4558A9674B3547FCF320">
 		<Properties>
 			<Color3 name="Ambient">
 				<R>0.5</R>
@@ -44092,7 +44759,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186b</UniqueId>
 		</Properties>
-		<Item class="ColorGradingEffect" referent="RBX8EACAAFAFADF4052879997C49AEC3AD8">
+		<Item class="ColorGradingEffect" referent="RBXCCC4E2AADC1A4076989128C32ECA42E1">
 			<Properties>
 				<token name="TonemapperPreset">1</token>
 				<bool name="Enabled">true</bool>
@@ -44106,7 +44773,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001882</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="BloomEffect" referent="RBXEBFF690F0EE6421A8030D983CCD1CFF9">
+		<Item class="BloomEffect" referent="RBXFB9AB9CA13594777A76CE235480DF545">
 			<Properties>
 				<float name="Intensity">0</float>
 				<float name="Size">24</float>
@@ -44123,7 +44790,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="LodDataService" referent="RBX02BA606C4D704D18ACC7D1FC6801DD41">
+	<Item class="LodDataService" referent="RBXD182BA7F5E624073BB650C1025392160">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -44135,7 +44802,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000188e</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ProximityPromptService" referent="RBXE273EA181A964320A3FE738A8D48D260">
+	<Item class="ProximityPromptService" referent="RBX3E7244D2D6D549828A78DE540DD99D96">
 		<Properties>
 			<bool name="Enabled">true</bool>
 			<int name="MaxIndicatorsVisible">16</int>
@@ -44150,7 +44817,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e60</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="SerializationService" referent="RBXAFA270D2B030428A95B90F81FFDDE288">
+	<Item class="SerializationService" referent="RBXA6F445ABE03F4672981EE4158DA41B74">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -44162,7 +44829,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000018e3</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Teams" referent="RBXFF13AF49B9434832BEFAFBD88DAB4760">
+	<Item class="Teams" referent="RBXEC3873D406034D88A97C43D64CDB657B">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -44174,7 +44841,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e59</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TestService" referent="RBX129E64056D47477A8435C0AC1FA0527B">
+	<Item class="TestService" referent="RBX5DE0569BBE3348A899090D2A16E956CA">
 		<Properties>
 			<bool name="AutoRuns">true</bool>
 			<string name="Description"></string>
@@ -44195,7 +44862,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001a81</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="UGCAvatarService" referent="RBX17C167A3BB86459DA7C51CB5EC416A1B">
+	<Item class="UGCAvatarService" referent="RBX258D9B098DD64EDFA6078FA303CB95D8">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -44207,7 +44874,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e6f</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="VoiceChatService" referent="RBX3244F11C90AA4F46ADBDB880EAC063A0">
+	<Item class="VoiceChatService" referent="RBX2EB46E63B1E24108BDC02B593F5E2E84">
 		<Properties>
 			<token name="DefaultDistanceAttenuation">0</token>
 			<bool name="EnableDefaultVoice">true</bool>
