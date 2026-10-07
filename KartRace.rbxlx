@@ -330,27 +330,27 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 		<Item class="Camera" referent="RBXEDC5FB6892514099A6FA28EFBF4B153A">
 			<Properties>
 				<CoordinateFrame name="CFrame">
-					<X>-502.459778</X>
-					<Y>34.4258499</Y>
-					<Z>786.80072</Z>
-					<R00>0.781517684</R00>
-					<R01>0.208799094</R01>
-					<R02>-0.587905645</R02>
+					<X>-511.56955</X>
+					<Y>1.60277188</Y>
+					<Z>798.060608</Z>
+					<R00>0.640028417</R00>
+					<R01>-0.210504964</R01>
+					<R02>-0.738952875</R02>
 					<R10>-0</R10>
-					<R11>0.942333102</R11>
-					<R12>0.334676623</R12>
-					<R20>0.623883128</R20>
-					<R21>-0.261555701</R21>
-					<R22>0.736449957</R22>
+					<R11>0.961738348</R11>
+					<R12>-0.27396968</R12>
+					<R20>0.768351316</R20>
+					<R21>0.175348386</R21>
+					<R22>0.615539789</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-501.283966</X>
-					<Y>33.7564964</Y>
-					<Z>785.32782</Z>
+					<X>-510.091644</X>
+					<Y>2.15071106</Y>
+					<Z>796.829529</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -968,6 +968,8 @@ local HANDLING = {
 	MAX_COINS = 20, -- the most coins you can carry in one race
 	COIN_SPEED = 0.01, -- extra top speed per coin you carry (20 coins = 20% faster)
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts
+	TAX_BOOST = 2, -- each coin over MAX_COINS (only just after a Taxman) is worth this many coins of speed
+	MEGA_JUMP = 100, -- how fast a Mega Jump throws you upwards (studs/s)
 	PICKUP_REACH = 4.5, -- how close you pass a coin/box for it to vanish on your screen straight away. Keep it a bit under the server's REACH, so the server grabs whatever you saw grabbed
 }
 
@@ -1017,7 +1019,7 @@ local SOUNDS = {
 	StepStone = { "rbxassetid://87061775498714", 1.1 }, -- walking on anything else
 	Coin = { "rbxassetid://93529351909119", 0.5 }, -- grabbing a coin (a little higher with every coin)
 	ItemGet = { "rbxassetid://17780130154", 0.7 }, -- the item you got from a box
-	BoxBreak = { "rbxassetid://9120801590", 1 }, -- an item box cracking open (a wooden snap and splinter)
+	BoxBreak = { "rbxassetid://118987440163311", 1 }, -- an item box cracking open (a wooden snap and splinter)
 }
 -- Floors that get the soft grassy footstep
 local GRASSY = {
@@ -1303,7 +1305,22 @@ local coinLabel = textLabel({ Position = UDim2.fromOffset(36, 0), Size = UDim2.n
 local ITEM_LOOKS = {
 	Boost = { text = "BOOST", color = Color3.fromRGB(255, 140, 40) },
 	TripleCoin = { text = "+3 COINS", color = COIN_COLOR },
+	Banana = { text = "BANANA PEEL", color = Color3.fromRGB(250, 215, 60) },
+	MegaJump = { text = "MEGA JUMP", color = Color3.fromRGB(90, 220, 255) },
+	Mist = { text = "INVERSION MIST", color = Color3.fromRGB(190, 110, 255) },
+	Stealer = { text = "ITEM STEALER", color = Color3.fromRGB(255, 90, 120) },
+	Roulette = { text = "ROULETTE", color = Color3.fromRGB(255, 255, 255) },
+	Taxman = { text = "TAXMAN", color = Color3.fromRGB(110, 220, 120) },
+	Teleport = { text = "TELEPORTER", color = Color3.fromRGB(80, 255, 220) },
 }
+-- (a Roulette that's spinning flicks through all of them)
+local ROLL_ORDER: { string } = {}
+for id in ITEM_LOOKS do
+	table.insert(ROLL_ORDER, id)
+end
+table.sort(ROLL_ORDER)
+-- Someone's Inversion Mist: from `mistFrom` to `mistUntil` (server clock) your left and right are swapped
+local mistBy, mistFrom, mistUntil = "", 0, 0
 local itemFrame = make("Frame", {
 	Name = "Item",
 	AnchorPoint = Vector2.new(1, 0),
@@ -1322,6 +1339,24 @@ local itemKey = textLabel({
 	TextColor3 = Color3.fromRGB(200, 200, 215),
 	TextStrokeTransparency = 1,
 }, itemFrame)
+
+-- A purple haze while someone's Inversion Mist has you (see the HUD update)
+local mistFrame = make("Frame", {
+	Name = "Mist",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(150, 70, 220),
+	BackgroundTransparency = 0.85,
+	BorderSizePixel = 0,
+	ZIndex = 0, -- (under the rest of the HUD)
+	Visible = false,
+}, gui) :: Frame
+local mistLabel = textLabel({
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.new(0.5, 0, 0, 96),
+	Size = UDim2.new(0.6, 0, 0, 56),
+	TextColor3 = Color3.fromRGB(235, 200, 255),
+	TextStrokeTransparency = 0,
+}, mistFrame)
 
 local function touchOnly(): boolean
 	return UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
@@ -1479,7 +1514,9 @@ type DriveState = {
 local drive: DriveState? = nil
 local driftHeld = false
 local lookBack = false -- holding the look-behind button (Q)
-local itemPending = false -- asked the server to use our item, waiting for it to go
+-- Asked the server to use our item: until then (os.clock()), wait for it to go. It gives up
+-- after a second, in case our item never visibly changes (a Stealer that steals a Stealer)
+local itemPending = 0
 local predicted: { [Instance]: number } = {} -- coins/boxes we just drove through that the server hasn't taken yet (and when)
 
 -- Coins to show: the server's count, plus any we've just grabbed that it hasn't counted yet
@@ -1746,6 +1783,27 @@ local function touchHazards(d: DriveState, velocity: Vector3, dt: number): Vecto
 			velocity = knockBack(d, velocity, part.Position, HANDLING.BONK_SPEED * 0.4, HANDLING.LAUNCH_SPEED)
 			reportCrash(d)
 			playSound("Geyser", d.hitbox)
+		elseif kind == "Banana" and part.Parent then
+			-- a banana peel (not your own, just after you threw it): spin out on slippery
+			-- tyres, and the peel's gone (the server takes it away for everyone)
+			local mine = part:GetAttribute("Thrower") == d.kart.Name and now < (tonumber(part:GetAttribute("SafeUntil")) or 0)
+			if not mine and now >= (tonumber(part:GetAttribute("ArmedAt")) or 0) then
+				velocity = Vector3.new(velocity.X * 0.45, velocity.Y, velocity.Z * 0.45)
+				d.spin = HANDLING.SPIN_TIME
+				d.slide = 0.8
+				d.hazardGrace = HANDLING.HAZARD_GRACE
+				d.drifting = false
+				d.boostTime = 0
+				reportCrash(d)
+				playSound("WallHit", d.hitbox, 1.6)
+				showBig("SLIPPED!", Color3.fromRGB(250, 215, 60), 0.5)
+				for _, piece in part.Parent:GetDescendants() do
+					if piece:IsA("BasePart") then
+						piece.LocalTransparencyModifier = 1
+					end
+				end
+				raceEvent:FireServer("HitBanana", part)
+			end
 		end
 	end
 	-- So you notice a gust: the wind howls and the camera rattles
@@ -1833,6 +1891,10 @@ local function driveStep(dt: number)
 	local canDrive = raceState:GetAttribute("Phase") == "Racing" and player:GetAttribute("Finished") ~= true and d.spin <= 0
 	local throttle = if canDrive then d.seat.ThrottleFloat else 0
 	local steer = if canDrive then d.seat.SteerFloat else 0
+	local serverNow = workspace:GetServerTimeNow()
+	if serverNow >= mistFrom and serverNow < mistUntil then
+		steer = -steer -- in someone's Inversion Mist: left and right are swapped
+	end
 
 	-- What's under the kart? (nothing, for a moment after a geyser throws it up)
 	local ground = if d.pop > 0 then nil else senseGround(d)
@@ -1951,13 +2013,18 @@ local function driveStep(dt: number)
 			forwardSpeed = moveToward(forwardSpeed, 0, decel * dt)
 		end
 
-		local coinBoost = 1 + numberAttr(player, "RaceCoins") * HANDLING.COIN_SPEED -- every coin you carry makes you a little faster
-		local topSpeed = (if boosting then HANDLING.BOOST_SPEED else HANDLING.MAX_SPEED) * coinBoost
+		-- Speed boosts add up: every coin you carry is +1% (a Taxman's extra coins over
+		-- MAX_COINS +2% each), and boosting adds what BOOST_SPEED is over MAX_SPEED.
+		-- 20 coins + a boost = +20% +44%.
+		local coins = numberAttr(player, "RaceCoins")
+		local coinBonus = (math.min(coins, HANDLING.MAX_COINS) + math.max(0, coins - HANDLING.MAX_COINS) * HANDLING.TAX_BOOST) * HANDLING.COIN_SPEED
+		local bonus = coinBonus + (if boosting then HANDLING.BOOST_SPEED / HANDLING.MAX_SPEED - 1 else 0)
+		local topSpeed = HANDLING.MAX_SPEED * (1 + bonus)
 		if ground and ground.offRoad and not boosting then
 			topSpeed *= HANDLING.OFFROAD_SPEED -- off-road slows you down (unless you're boosting)
 		end
 		if boosting then
-			forwardSpeed = math.max(forwardSpeed, HANDLING.BOOST_SPEED * coinBoost)
+			forwardSpeed = math.max(forwardSpeed, topSpeed)
 		end
 		if forwardSpeed > topSpeed then
 			forwardSpeed = math.max(topSpeed, forwardSpeed - 60 * dt) -- ease down after a boost
@@ -2117,15 +2184,19 @@ end
 local function onItemInput(_: string, inputState: Enum.UserInputState): Enum.ContextActionResult
 	local d = drive
 	local item = player:GetAttribute("Item")
-	if inputState == Enum.UserInputState.Begin and d and item and not itemPending and not d.hitbox.Anchored
+	if inputState == Enum.UserInputState.Begin and d and item and item ~= "Rolling" and os.clock() >= itemPending and not d.hitbox.Anchored
 		and raceState:GetAttribute("Phase") == "Racing" and player:GetAttribute("Finished") ~= true
 	then
-		itemPending = true
+		itemPending = os.clock() + 1
 		if item == "Boost" then
 			d.boostTime = math.max(d.boostTime, HANDLING.ITEM_BOOST_TIME)
 			playSound("Boost", d.hitbox, 1.1, 1.2)
 		elseif item == "TripleCoin" then -- ching! (pitched like grabbing the coin you end up on)
 			playSound("Coin", nil, 1 + math.min(shownCoins() + 3, HANDLING.MAX_COINS) * 0.015)
+		elseif item == "MegaJump" then -- straight up, right now
+			d.hitbox.AssemblyLinearVelocity += Vector3.yAxis * HANDLING.MEGA_JUMP
+			d.pop = 0.25 -- (let go of the road)
+			playSound("Geyser", d.hitbox, 1.3)
 		end
 		raceEvent:FireServer("UseItem")
 	end
@@ -2642,8 +2713,10 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 		local cf, reason = ...
 		local d = drive
 		if d and typeof(cf) == "CFrame" then
+			-- (a Teleporter swap keeps your speed; being put back stops you)
+			local keep = if reason == "Teleport" then math.max(0, d.hitbox.AssemblyLinearVelocity:Dot(CFrame.Angles(0, d.heading, 0).LookVector)) else 0
 			d.kart:PivotTo(cf)
-			d.hitbox.AssemblyLinearVelocity = Vector3.zero
+			d.hitbox.AssemblyLinearVelocity = cf.LookVector * keep
 			d.hitbox.AssemblyAngularVelocity = Vector3.zero
 			d.heading = headingOf(cf)
 			d.boostTime = 0
@@ -2659,6 +2732,8 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 		end
 		if reason == "Fell" then -- (lava already said "TOO HOT!")
 			showBig("WHOOPS!", Color3.fromRGB(255, 170, 60), 0.5)
+		elseif reason == "Teleport" then
+			showBig("TELEPORT!", ITEM_LOOKS.Teleport.color, 0.6)
 		end
 		playSound("Respawn")
 	elseif action == "RacerFinished" then
@@ -2684,6 +2759,35 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 		if typeof(kart) == "Instance" and typeof(lost) == "number" then
 			spillCoins(kart, lost)
 		end
+	elseif action == "Mist" then
+		-- someone behind used an Inversion Mist: a warning, then left and right swap
+		local by, from, untilTime = ...
+		if typeof(from) == "number" and typeof(untilTime) == "number" then
+			mistBy, mistFrom, mistUntil = tostring(by), from, untilTime
+			playSound("Gust", nil, 1.4)
+		end
+	elseif action == "ItemNews" then
+		local kind, a, b = ...
+		local function itemName(id: any): string
+			local look = ITEM_LOOKS[id]
+			return if look then look.text else tostring(id)
+		end
+		if kind == "Stole" then
+			showFeed(string.format("You stole %s's %s!", tostring(b), itemName(a)))
+		elseif kind == "Robbed" then
+			showFeed(string.format("%s stole your %s!", tostring(b), itemName(a)))
+		elseif kind == "NothingToSteal" then
+			showFeed("Nobody had an item to steal!")
+		elseif kind == "Taxed" then
+			showBig(string.format("TAXMAN! +%d", tonumber(a) or 0), ITEM_LOOKS.Taxman.color, 0.8)
+			playSound("Coin", nil, 1.6)
+		elseif kind == "TaxedBy" then
+			showFeed(string.format("%s's Taxman took %d of your coins!", tostring(b), tonumber(a) or 0))
+		elseif kind == "Swapped" then
+			showFeed(string.format("You swapped places with %s!", tostring(a)))
+		elseif kind == "SwappedBy" then
+			showFeed(string.format("%s swapped places with you!", tostring(a)))
+		end
 	elseif action == "CoinsEarned" then
 		local amount, collected, bonus = ...
 		if typeof(amount) == "number" then
@@ -2695,7 +2799,7 @@ end)
 
 -- A jingle when the server hands you an item from a box
 player:GetAttributeChangedSignal("Item"):Connect(function()
-	itemPending = false
+	itemPending = 0
 	if player:GetAttribute("Item") then
 		playSound("ItemGet")
 	end
@@ -3027,13 +3131,24 @@ RunService.RenderStepped:Connect(function()
 	end
 	coinFrame.Visible = showRaceHud
 	local itemId = player:GetAttribute("Item")
+	local rolling = itemId == "Rolling" -- (a Roulette spinning: flick through every item)
+	if rolling then
+		itemId = ROLL_ORDER[math.floor(os.clock() * 12) % #ROLL_ORDER + 1]
+	end
 	local itemLook = if showRaceHud and typeof(itemId) == "string" then ITEM_LOOKS[itemId] else nil
 	itemFrame.Visible = itemLook ~= nil
 	if itemLook then
 		itemName.Text = itemLook.text
 		itemName.TextColor3 = itemLook.color
 		itemStroke.Color = itemLook.color
-		itemKey.Text = if itemPending then "..." elseif touchOnly() then "Tap ITEM" elseif gamepadOnly() then "Press X" else "Press E"
+		itemKey.Text = if rolling then "spinning..." elseif os.clock() < itemPending then "..." elseif touchOnly() then "Tap ITEM" elseif gamepadOnly() then "Press X" else "Press E"
+	end
+	-- Someone's Inversion Mist: a purple haze, a countdown, then a reminder
+	local misty = racing and now < mistUntil
+	mistFrame.Visible = misty
+	if misty then
+		mistFrame.BackgroundTransparency = if now < mistFrom then 0.9 else 0.78
+		mistLabel.Text = if now < mistFrom then string.format("%s's INVERSION MIST!\nLeft and right swap in %d...", mistBy, math.ceil(mistFrom - now)) else "LEFT AND RIGHT ARE SWAPPED!"
 	end
 
 	updateVote(phase, racing)
@@ -8376,7 +8491,7 @@ local SETTINGS = {
 	-- "Vote": the old way. Everyone in the lobby races every round, after voting between
 	-- VOTE_CHOICES tracks for INTERMISSION_TIME seconds.
 	LOBBY_MODE = "Pick",
-	JOIN_TIME = 15, -- (Pick) seconds the others have to join a race someone started
+	JOIN_TIME = 3, -- (Pick) seconds the others have to join a race someone started
 	INTERMISSION_TIME = 15, -- (Vote) seconds in the lobby before each race (players vote for the next track meanwhile)
 	VOTE_CHOICES = 3, -- how many randomly picked tracks players can vote between
 	TRACK_REVEAL_TIME = 3, -- seconds the winning track is announced before racers are put on it
@@ -8403,6 +8518,7 @@ local SETTINGS = {
 local BOTS = {
 	ENABLED = true,
 	SKILL = { 0.93, 1.01 }, -- each bot's top speed, as a share of a kart's top speed (random in this range)
+	SPEED_SCALE = 0.95, -- every bot's top speed (boosting too) is this share of what it would be: with the items, full-speed bots were too hard
 	CATCH_UP = 0.08, -- bots far behind the leading player speed up by up to this much; far-ahead bots slow down
 	LOOK_AHEAD = 22, -- studs ahead on the road a bot aims for (plus more the faster it goes)
 	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred", "Grand Dad" },
@@ -8461,8 +8577,30 @@ local PICKUPS = {
 	FIRST_ITEM_ROW = 450, -- studs after the start line to the first row of item boxes
 	ITEM_ROW_SPACING = 1600, -- studs of main road between rows of item boxes
 	ITEM_BOX_GAP = 9, -- studs between the boxes in a row
-	ITEMS = { "Boost", "TripleCoin" }, -- a box gives one of these, each equally likely (only if you aren't holding one)
+	-- What an item box gives (only if you aren't holding one), and how likely each item is.
+	-- These are weights: an item with 2 comes up twice as often as one with 1, so all 1 =
+	-- every item equally likely. (The Roulette ignores them: it picks evenly from them all.)
+	ITEMS = {
+		Boost = 1, -- a burst of speed
+		TripleCoin = 1, -- +3 coins
+		Banana = 1, -- a banana peel thrown ahead: the first kart to touch it spins out
+		MegaJump = 1, -- one huge jump
+		Mist = 1, -- Inversion Mist: everyone ahead gets left and right swapped for a while
+		Stealer = 1, -- takes the item of the racer furthest back who has one
+		Roulette = 1, -- spins for a random item (any of them, Roulette too, each equally likely)
+		Taxman = 1, -- takes up to TAX coins from everyone else; coins over MAX_COINS are a short speed boost
+		Teleport = 1, -- swap places with a random racer
+	},
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts. Keep the same as HANDLING in RaceClient!
+	BANANA_THROW = 80, -- studs ahead a Banana Peel lands
+	BANANA_SAFE = 2, -- seconds before the thrower can slip on their own peel
+	MEGA_JUMP = 100, -- how fast a Mega Jump throws you upwards (studs/s). Keep the same as HANDLING in RaceClient!
+	MIST_WARNING = 2, -- seconds of warning before the Inversion Mist swaps left and right...
+	MIST_TIME = 5, -- ...and for how long
+	ROULETTE_SPIN = 1.2, -- seconds the Roulette spins before you get your item
+	TAX = 5, -- coins the Taxman takes from each other racer (all they have, if less)
+	TAX_TIME = 5, -- seconds the coins over MAX_COINS last...
+	TAX_BOOST = 2, -- ...and each of them is worth this many coins of speed (+2% top speed). Keep the same as HANDLING in RaceClient!
 	RESPAWN_TIME = 1.5, -- seconds before a grabbed coin or box comes back
 	REACH = 5.5, -- how close (studs) a kart's middle has to pass to grab one
 	CRASH_COINS = 3, -- coins dropped for hitting an obstacle or hazard, or being put back on the track (not for bumping karts)
@@ -12629,6 +12767,7 @@ type Racer = {
 	lastPos: Vector3?, -- where they were last frame (to find the coins they drove through)
 	lastCrash: number?, -- when they last dropped coins
 	noReturnUntil: number?, -- went over a `noReturn` jump's lip: until then, falling puts them back after its gap
+	taxUntil: number?, -- used a Taxman: until then they can carry more than MAX_COINS
 }
 
 local racers: { [any]: Racer } = {} -- keyed by Player, or by a bot's entry
@@ -12711,9 +12850,11 @@ end
 
 -- Puts a racer back at their last checkpoint. `reason`: "Fell" (off the track),
 -- "Lava" (drove into lava) or nil (they pressed the respawn button, or a bot got stuck).
--- How many coins a racer has this race (never more than MAX_COINS)
+-- How many coins a racer has this race (never more than MAX_COINS, except for
+-- the few seconds after a Taxman, while the extra ones are a speed boost)
 local function setCoins(racer: Racer, coins: number)
-	racer.coins = math.min(coins, PICKUPS.MAX_COINS)
+	local most = if os.clock() < (racer.taxUntil or 0) then math.huge else PICKUPS.MAX_COINS
+	racer.coins = math.clamp(coins, 0, most)
 	if racer.player then
 		racer.player:SetAttribute("RaceCoins", racer.coins)
 	end
@@ -12762,6 +12903,7 @@ local function respawnRacer(racer: Racer, reason: string?)
 	end
 end
 
+-- ("Rolling" = a Roulette that's still spinning: it can't be used or stolen yet)
 local function setItem(racer: Racer, item: string?)
 	racer.item = item
 	if racer.player then
@@ -12771,20 +12913,232 @@ local function setItem(racer: Racer, item: string?)
 	end
 end
 
--- Uses the item a racer is holding. A player's device starts its own Boost
--- the moment they press the button (so it feels instant); this takes the
--- item away, and adds the coins for a TripleCoin.
+-- Every item's name, in a fixed order (PICKUPS.ITEMS is a table of weights)
+local ITEM_LIST: { string } = {}
+for name in PICKUPS.ITEMS do
+	table.insert(ITEM_LIST, name)
+end
+table.sort(ITEM_LIST)
+
+-- A random item. `weighted`: as likely as PICKUPS.ITEMS says (item boxes);
+-- otherwise every item equally likely (the Roulette).
+local function randomItem(weighted: boolean): string
+	local total = 0
+	for _, name in ITEM_LIST do
+		total += if weighted then PICKUPS.ITEMS[name] else 1
+	end
+	local roll = math.random() * total
+	for _, name in ITEM_LIST do
+		roll -= if weighted then PICKUPS.ITEMS[name] else 1
+		if roll < 0 then
+			return name
+		end
+	end
+	return ITEM_LIST[#ITEM_LIST]
+end
+
+-- Everyone still racing apart from `racer`
+local function rivalsOf(racer: Racer): { Racer }
+	local list = {}
+	for _, other in racers do
+		if other ~= racer and not other.finished and not other.returned then
+			table.insert(list, other)
+		end
+	end
+	return list
+end
+
+-- Tells a player what an item just did (their screen words it: "ItemNews" in RaceClient)
+local function itemNews(racer: Racer, ...)
+	if racer.player and racer.player.Parent == Players then
+		raceEvent:FireClient(racer.player, "ItemNews", ...)
+	end
+end
+
+-- Banana Peel: lands BANANA_THROW studs ahead on the road (if that's off the road,
+-- it's gone). It's armed a moment later, as if it just landed. The first kart to
+-- touch it spins out and the peel's gone; the thrower is safe from it for BANANA_SAFE.
+local bananaRay = RaycastParams.new()
+bananaRay.FilterType = Enum.RaycastFilterType.Include
+local function throwBanana(racer: Racer)
+	local hazards, road = trackFolder:FindFirstChild("Hazards"), trackFolder:FindFirstChild("Road")
+	local hitbox = racer.hitbox
+	local look = if racer.ai then CFrame.Angles(0, racer.ai.heading, 0).LookVector else hitbox.CFrame.LookVector
+	look = Vector3.new(look.X, 0, look.Z)
+	if not hazards or not road or look.Magnitude < 0.1 then
+		return
+	end
+	local moving = hitbox.AssemblyLinearVelocity
+	local spot = hitbox.Position + look.Unit * PICKUPS.BANANA_THROW + Vector3.new(moving.X, 0, moving.Z) * 0.15 -- (a player's kart reaches the server a moment late)
+	bananaRay.FilterDescendantsInstances = { road }
+	local hit = workspace:Raycast(spot + Vector3.new(0, 25, 0), Vector3.new(0, -60, 0), bananaRay)
+	if not hit then
+		return
+	end
+	local now = workspace:GetServerTimeNow()
+	local base = CFrame.new(hit.Position) * CFrame.Angles(0, math.random() * math.pi * 2, 0)
+	local peel = Instance.new("Model")
+	peel.Name = "Banana"
+	newPart("Part", { -- what karts touch
+		Name = "BananaHit",
+		Size = Vector3.new(6, 3, 6),
+		CFrame = base * CFrame.new(0, 1.5, 0),
+		Transparency = 1,
+		CanCollide = false,
+		CanTouch = false,
+		Attributes = { Hazard = "Banana", Thrower = racer.kart.Name, SafeUntil = now + PICKUPS.BANANA_SAFE, ArmedAt = now + 0.35 },
+	}, peel)
+	local yellow = Color3.fromRGB(250, 215, 60)
+	local body = newPart("Part", ghost({ Name = "Peel", Size = Vector3.new(2.4, 1.2, 4.6), CFrame = base * CFrame.new(0, 0.6, 0), Color = yellow }), peel)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = body
+	for k = 0, 2 do -- the peeled-back skin
+		newPart("Part", ghost({
+			Name = "PeelFlap",
+			Size = Vector3.new(1.4, 0.35, 3.4),
+			CFrame = base * CFrame.Angles(0, k * math.pi * 2 / 3, 0) * CFrame.new(0, 0.3, 2.3) * CFrame.Angles(math.rad(12), 0, 0),
+			Color = yellow,
+		}), peel)
+	end
+	newPart("Part", ghost({ Name = "PeelTip", Size = Vector3.new(0.6, 0.6, 0.6), CFrame = base * CFrame.new(0, 1.3, -1.9), Color = Color3.fromRGB(90, 60, 30) }), peel)
+	peel.Parent = hazards
+end
+
+-- Teleporter: two racers swap karts' places, speeds kept, and their progress round
+-- the track too (next checkpoint, respawn point), so their places swap as well
+local function placeKart(racer: Racer, cf: CFrame, speed: number)
+	racer.kart:PivotTo(cf)
+	racer.hitbox.AssemblyLinearVelocity = cf.LookVector * speed
+	racer.hitbox.AssemblyAngularVelocity = Vector3.zero
+	racer.lastPos = nil -- (don't sweep up every coin between the two spots)
+	if racer.player then
+		raceEvent:FireClient(racer.player, "Respawned", cf, "Teleport")
+		racer.player:SetAttribute("Checkpoint", racer.nextCheckpoint)
+	elseif racer.ai then
+		racer.ai.lost = true -- (find its place on the road again)
+		racer.ai.heading = headingOf(cf)
+		racer.ai.push = Vector3.zero
+	end
+end
+local function swapPlaces(a: Racer, b: Racer)
+	local function spotOf(racer: Racer): (CFrame, number)
+		local look = if racer.ai then CFrame.Angles(0, racer.ai.heading, 0).LookVector else racer.hitbox.CFrame.LookVector
+		local moving = racer.hitbox.AssemblyLinearVelocity
+		return flatCFrame(racer.hitbox.Position + Vector3.new(0, 1.5, 0), look), Vector3.new(moving.X, 0, moving.Z).Magnitude
+	end
+	local spotA, speedA = spotOf(a)
+	local spotB, speedB = spotOf(b)
+	a.nextCheckpoint, b.nextCheckpoint = b.nextCheckpoint, a.nextCheckpoint
+	a.respawnCFrame, b.respawnCFrame = b.respawnCFrame, a.respawnCFrame
+	a.progress, b.progress = b.progress, a.progress
+	a.noReturnUntil, b.noReturnUntil = b.noReturnUntil, a.noReturnUntil
+	placeKart(a, spotB, speedA)
+	placeKart(b, spotA, speedB)
+end
+
+-- Uses the item a racer is holding. A player's device starts its own Boost and
+-- Mega Jump the moment they press the button (so they feel instant); the server
+-- takes the item away and does everything else.
 local function useItem(racer: Racer)
 	local item = racer.item
-	if not item or racer.finished or racer.returned then
+	if not item or item == "Rolling" or racer.finished or racer.returned then
 		return
 	end
 	setItem(racer, nil)
+	local ai = racer.ai
 	if item == "TripleCoin" then
 		setCoins(racer, racer.coins + 3)
-	elseif item == "Boost" and racer.ai then
-		racer.ai.boost = math.max(racer.ai.boost, PICKUPS.ITEM_BOOST_TIME)
+	elseif item == "Boost" and ai then
+		ai.boost = math.max(ai.boost, PICKUPS.ITEM_BOOST_TIME)
+	elseif item == "MegaJump" and ai then
+		ai.pop = 0.25
+		ai.lift = PICKUPS.MEGA_JUMP
+	elseif item == "Banana" then
+		throwBanana(racer)
+	elseif item == "Roulette" then
+		setItem(racer, "Rolling")
+		task.delay(PICKUPS.ROULETTE_SPIN, function()
+			if racer.item == "Rolling" and not racer.returned then
+				setItem(racer, randomItem(false))
+			end
+		end)
+	elseif item == "Mist" then
+		-- everyone ahead: a warning, then left and right swapped (bots weave about instead)
+		local now = workspace:GetServerTimeNow()
+		for _, other in rivalsOf(racer) do
+			if (other.livePlace or math.huge) < (racer.livePlace or 0) then
+				if other.player then
+					raceEvent:FireClient(other.player, "Mist", racer.name, now + PICKUPS.MIST_WARNING, now + PICKUPS.MIST_WARNING + PICKUPS.MIST_TIME)
+				elseif other.ai then
+					other.ai.mistFrom = os.clock() + PICKUPS.MIST_WARNING
+					other.ai.mistUntil = os.clock() + PICKUPS.MIST_WARNING + PICKUPS.MIST_TIME
+				end
+			end
+		end
+	elseif item == "Stealer" then
+		-- the item of whoever's furthest back and holding one (last place first)
+		local order = rivalsOf(racer)
+		table.sort(order, function(a, b)
+			return (a.livePlace or 0) > (b.livePlace or 0)
+		end)
+		for _, other in order do
+			local stolen = other.item
+			if stolen and stolen ~= "Rolling" then
+				setItem(other, nil)
+				setItem(racer, stolen)
+				itemNews(racer, "Stole", stolen, other.name)
+				itemNews(other, "Robbed", stolen, racer.name)
+				return
+			end
+		end
+		itemNews(racer, "NothingToSteal")
+	elseif item == "Taxman" then
+		-- up to TAX coins from everyone else; coins over MAX_COINS stay for TAX_TIME (as speed)
+		local taken = 0
+		for _, other in rivalsOf(racer) do
+			local tax = math.min(PICKUPS.TAX, other.coins)
+			if tax > 0 then
+				setCoins(other, other.coins - tax)
+				raceEvent:FireAllClients("CoinsLost", other.kart, tax)
+				itemNews(other, "TaxedBy", tax, racer.name)
+				taken += tax
+			end
+		end
+		racer.taxUntil = os.clock() + PICKUPS.TAX_TIME
+		setCoins(racer, racer.coins + taken)
+		itemNews(racer, "Taxed", taken)
+		task.delay(PICKUPS.TAX_TIME, function()
+			if os.clock() >= (racer.taxUntil or 0) and not racer.returned then
+				setCoins(racer, racer.coins) -- (back down to MAX_COINS)
+			end
+		end)
+	elseif item == "Teleport" then
+		local others = rivalsOf(racer)
+		if #others > 0 then
+			local other = others[math.random(1, #others)]
+			swapPlaces(racer, other)
+			itemNews(racer, "Swapped", other.name)
+			itemNews(other, "SwappedBy", racer.name)
+		end
 	end
+end
+
+-- Studio testing helper: hand a racer an item mid-race. Server command bar:
+--   game.ServerStorage.GiveItem:Invoke("Player1", "Taxman")   (a player's name, or a CPU's like "Blaze (CPU)")
+if RunService:IsStudio() then
+	local give = Instance.new("BindableFunction")
+	give.Name = "GiveItem"
+	give.OnInvoke = function(name: any, item: any): boolean
+		for _, racer in racers do
+			if (racer.name == name or (racer.player and racer.player.Name == name)) and PICKUPS.ITEMS[item] then
+				setItem(racer, item)
+				return true
+			end
+		end
+		return false
+	end
+	give.Parent = game:GetService("ServerStorage")
 end
 
 -- Pays a player the coins they collected this race (x2 for 1st, x1.5 for
@@ -12796,7 +13150,8 @@ local function payCoins(racer: Racer)
 	end
 	racer.paid = true
 	local bonus = if racer.place then PICKUPS.PLACE_BONUS[racer.place] or 1 else 1
-	local amount = math.ceil(racer.coins * bonus)
+	local collected = math.min(racer.coins, PICKUPS.MAX_COINS) -- (a Taxman's extra coins are only ever speed)
+	local amount = math.ceil(collected * bonus)
 	if amount <= 0 then
 		return
 	end
@@ -12806,7 +13161,7 @@ local function payCoins(racer: Racer)
 		total.Value += amount
 	end
 	if player.Parent == Players then
-		raceEvent:FireClient(player, "CoinsEarned", amount, racer.coins, bonus)
+		raceEvent:FireClient(player, "CoinsEarned", amount, collected, bonus)
 	end
 	local store = coinsStore
 	if not store or player.UserId <= 0 then -- (Studio test players have negative ids)
@@ -13186,9 +13541,6 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	ai.pop = math.max(0, ai.pop - dt)
 	ai.boost = math.max(0, ai.boost - dt)
 	ai.slide = math.max(0, ai.slide - dt)
-	if racer.item and os.clock() >= ai.itemAt then
-		useItem(racer)
-	end
 
 	-- Where am I on the road? (height counts extra, so roads above and below aren't mixed up)
 	local from, to = math.max(1, ai.index - 8), math.min(path.count, ai.index + 60)
@@ -13248,6 +13600,10 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 		local maxTurn = BOTS.TURN_RATE * dt * (if ground then 1 else 0.35)
 		ai.heading += math.clamp(turn, -maxTurn, maxTurn)
 	end
+	local clock = os.clock()
+	if clock >= (ai.mistFrom or math.huge) and clock < (ai.mistUntil or 0) then
+		ai.heading += math.sin(clock * 5 + bot.lane * 20) * 1.6 * dt -- (in an Inversion Mist: weaving about, confused)
+	end
 
 	-- How fast to go
 	local top = BOTS.MAX_SPEED * bot.skill
@@ -13260,13 +13616,18 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 			ai.boost = math.max(ai.boost, 0.3)
 		end
 	end
-	local coinBoost = 1 + racer.coins * PICKUPS.COIN_SPEED -- every coin carried makes it a little faster
-	top *= coinBoost
+	-- Speed boosts add up, like players': every coin is +1% (a Taxman's extra coins over
+	-- MAX_COINS +2% each), and boosting adds what BOOST_SPEED is over MAX_SPEED
+	local coinBonus = (math.min(racer.coins, PICKUPS.MAX_COINS) + math.max(0, racer.coins - PICKUPS.MAX_COINS) * PICKUPS.TAX_BOOST) * PICKUPS.COIN_SPEED
 	if ai.boost > 0 then
-		top = BOTS.BOOST_SPEED * coinBoost
-	elseif surface and surface:GetAttribute("OffRoad") then
-		top *= BOTS.OFFROAD_SPEED
+		top = BOTS.MAX_SPEED * (1 + coinBonus + BOTS.BOOST_SPEED / BOTS.MAX_SPEED - 1)
+	else
+		top *= 1 + coinBonus
+		if surface and surface:GetAttribute("OffRoad") then
+			top *= BOTS.OFFROAD_SPEED
+		end
 	end
+	top *= BOTS.SPEED_SCALE
 	local grip = if surface then tonumber(surface:GetAttribute("Grip")) or 1 else 1
 	if grip < 0.6 and ai.boost <= 0 then
 		top *= 0.85 -- careful on ice
@@ -13279,6 +13640,18 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 		end
 	end
 	top = math.min(top, tightest * BOTS.TURN_RATE * 0.9)
+	-- Use its item (a Mega Jump only on a straight bit of road, and not just before a gap jump)
+	if racer.item and os.clock() >= ai.itemAt then
+		local gapAhead = false
+		for _, gap in path.sections.Gap do
+			gapAhead = gapAhead or (gap[1] > d - 40 and gap[1] - d < 250)
+		end
+		if racer.item == "MegaJump" and (not ground or tightest < 300 or gapAhead) then
+			ai.itemAt = os.clock() + 0.5
+		else
+			useItem(racer)
+		end
+	end
 	if ai.spin > 0 or racer.finished then
 		top = 0
 	end
@@ -13297,6 +13670,12 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 			elseif kind == "Burn" and ai.grace <= 0 then
 				respawnRacer(racer, "Lava")
 				return
+			elseif kind == "Banana" and ai.grace <= 0 and part.Parent then
+				local safe = part:GetAttribute("Thrower") == racer.kart.Name and now < (tonumber(part:GetAttribute("SafeUntil")) or 0)
+				if not safe and now >= (tonumber(part:GetAttribute("ArmedAt")) or 0) then
+					part.Parent:Destroy() -- slipped on a banana peel
+					knockBot(racer, pos, part.Position, 12, 0)
+				end
 			end
 		end
 		if ai.grace <= 0 then
@@ -13539,7 +13918,7 @@ local function runRace(humans: { Player })
 		if pickup.coin then
 			setCoins(racer, racer.coins + 1)
 		elseif not racer.item then
-			setItem(racer, PICKUPS.ITEMS[math.random(1, #PICKUPS.ITEMS)])
+			setItem(racer, randomItem(true))
 		end
 	end
 
@@ -13778,6 +14157,12 @@ local function runRace(humans: { Player })
 	end
 	for _, racer in racers do
 		releaseRacer(racer, true)
+	end
+	local hazardFolder = trackFolder:FindFirstChild("Hazards")
+	for _, child in if hazardFolder then hazardFolder:GetChildren() else {} do
+		if child.Name == "Banana" then
+			child:Destroy() -- (banana peels left on the road)
+		end
 	end
 	raceEvent:FireAllClients("Results", results)
 	setPodium(results)
@@ -14070,6 +14455,14 @@ raceEvent.OnServerEvent:Connect(function(player, action, choice, id)
 					bot.ai.hitBy[racer.kart] = os.clock() + 0.25
 				end
 			end
+		end
+	elseif action == "HitBanana" then
+		-- Their kart slipped on a banana peel (`choice`) on their screen: it's gone for
+		-- everyone. (Only a peel near their kart, on the current track.)
+		local racer = racers[player]
+		local peel = if typeof(choice) == "Instance" and choice:IsA("BasePart") and choice.Name == "BananaHit" then choice else nil
+		if racer and peel and peel.Parent and peel:IsDescendantOf(trackFolder) and (peel.Position - racer.hitbox.Position).Magnitude < 40 then
+			peel.Parent:Destroy()
 		end
 	elseif action == "Crash" then
 		-- Their kart hit an obstacle or hazard. This only ever costs the sender
@@ -16577,6 +16970,249 @@ return MansionBuilder
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85000dcf8d</UniqueId>
 				</Properties>
+			</Item>
+			<Item class="Sound" referent="RBX8AFCF130B64E4B9CB7A34D4E65BBD495">
+				<Properties>
+					<bool name="AcousticSimulationEnabled">true</bool>
+					<NumberRange name="LoopRegion">0 60000 </NumberRange>
+					<bool name="Looped">false</bool>
+					<bool name="PlayOnRemove">false</bool>
+					<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+					<bool name="PlaybackRegionsEnabled">false</bool>
+					<float name="PlaybackSpeed">1</float>
+					<bool name="Playing">false</bool>
+					<float name="RollOffMaxDistance">10000</float>
+					<float name="RollOffMinDistance">10</float>
+					<token name="RollOffMode">0</token>
+					<Ref name="SoundGroup">null</Ref>
+					<Content name="SoundId"><url>rbxassetid://133331985238497</url></Content>
+					<double name="TimePosition">0</double>
+					<float name="Volume">0.5</float>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">Item grab/equip 7</string>
+					<int64 name="SourceAssetId">133331985238497</int64>
+					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ec</UniqueId>
+				</Properties>
+				<Item class="Sound" referent="RBX7B6C76DCDF174D12B5FF7EFDFE782E8A">
+					<Properties>
+						<bool name="AcousticSimulationEnabled">true</bool>
+						<NumberRange name="LoopRegion">0 60000 </NumberRange>
+						<bool name="Looped">false</bool>
+						<bool name="PlayOnRemove">false</bool>
+						<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+						<bool name="PlaybackRegionsEnabled">false</bool>
+						<float name="PlaybackSpeed">1</float>
+						<bool name="Playing">false</bool>
+						<float name="RollOffMaxDistance">10000</float>
+						<float name="RollOffMinDistance">10</float>
+						<token name="RollOffMode">0</token>
+						<Ref name="SoundGroup">null</Ref>
+						<Content name="SoundId"><url>rbxassetid://80067573243829</url></Content>
+						<double name="TimePosition">0</double>
+						<float name="Volume">0.5</float>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ice shattering</string>
+						<int64 name="SourceAssetId">80067573243829</int64>
+						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+						<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ed</UniqueId>
+					</Properties>
+					<Item class="Sound" referent="RBX50F42D87D76B43B8A6963456B138F006">
+						<Properties>
+							<bool name="AcousticSimulationEnabled">true</bool>
+							<NumberRange name="LoopRegion">0 60000 </NumberRange>
+							<bool name="Looped">false</bool>
+							<bool name="PlayOnRemove">false</bool>
+							<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+							<bool name="PlaybackRegionsEnabled">false</bool>
+							<float name="PlaybackSpeed">1</float>
+							<bool name="Playing">false</bool>
+							<float name="RollOffMaxDistance">10000</float>
+							<float name="RollOffMinDistance">10</float>
+							<token name="RollOffMode">0</token>
+							<Ref name="SoundGroup">null</Ref>
+							<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+							<double name="TimePosition">0</double>
+							<float name="Volume">0.5</float>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+							<string name="Name">glass_shatter_01</string>
+							<int64 name="SourceAssetId">118987440163311</int64>
+							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+							<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ee</UniqueId>
+						</Properties>
+						<Item class="Sound" referent="RBX74279445274B45A6B926B90D51EC4D2E">
+							<Properties>
+								<bool name="AcousticSimulationEnabled">true</bool>
+								<NumberRange name="LoopRegion">0 60000 </NumberRange>
+								<bool name="Looped">false</bool>
+								<bool name="PlayOnRemove">false</bool>
+								<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+								<bool name="PlaybackRegionsEnabled">false</bool>
+								<float name="PlaybackSpeed">1</float>
+								<bool name="Playing">false</bool>
+								<float name="RollOffMaxDistance">10000</float>
+								<float name="RollOffMinDistance">10</float>
+								<token name="RollOffMode">0</token>
+								<Ref name="SoundGroup">null</Ref>
+								<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+								<double name="TimePosition">0</double>
+								<float name="Volume">0.5</float>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+								<bool name="DefinesCapabilities">false</bool>
+								<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+								<string name="Name">glass_shatter_01</string>
+								<int64 name="SourceAssetId">118987440163311</int64>
+								<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+								<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ef</UniqueId>
+							</Properties>
+							<Item class="Sound" referent="RBX34686E61DEA54A0D95F7322BF4C7FBE5">
+								<Properties>
+									<bool name="AcousticSimulationEnabled">true</bool>
+									<NumberRange name="LoopRegion">0 60000 </NumberRange>
+									<bool name="Looped">false</bool>
+									<bool name="PlayOnRemove">false</bool>
+									<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+									<bool name="PlaybackRegionsEnabled">false</bool>
+									<float name="PlaybackSpeed">1</float>
+									<bool name="Playing">false</bool>
+									<float name="RollOffMaxDistance">10000</float>
+									<float name="RollOffMinDistance">10</float>
+									<token name="RollOffMode">0</token>
+									<Ref name="SoundGroup">null</Ref>
+									<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+									<double name="TimePosition">0</double>
+									<float name="Volume">0.5</float>
+									<BinaryString name="AttributesSerialize"></BinaryString>
+									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+									<bool name="DefinesCapabilities">false</bool>
+									<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+									<string name="Name">glass_shatter_01</string>
+									<int64 name="SourceAssetId">118987440163311</int64>
+									<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+									<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f0</UniqueId>
+								</Properties>
+								<Item class="Sound" referent="RBX646AB48E3A284277A29D083C98C6DFF0">
+									<Properties>
+										<bool name="AcousticSimulationEnabled">true</bool>
+										<NumberRange name="LoopRegion">0 60000 </NumberRange>
+										<bool name="Looped">false</bool>
+										<bool name="PlayOnRemove">false</bool>
+										<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+										<bool name="PlaybackRegionsEnabled">false</bool>
+										<float name="PlaybackSpeed">1</float>
+										<bool name="Playing">false</bool>
+										<float name="RollOffMaxDistance">10000</float>
+										<float name="RollOffMinDistance">10</float>
+										<token name="RollOffMode">0</token>
+										<Ref name="SoundGroup">null</Ref>
+										<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+										<double name="TimePosition">0</double>
+										<float name="Volume">0.5</float>
+										<BinaryString name="AttributesSerialize"></BinaryString>
+										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+										<bool name="DefinesCapabilities">false</bool>
+										<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+										<string name="Name">glass_shatter_01</string>
+										<int64 name="SourceAssetId">118987440163311</int64>
+										<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+										<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f1</UniqueId>
+									</Properties>
+									<Item class="Sound" referent="RBX8B199C55D1EF4EDAB7D8F032792373B9">
+										<Properties>
+											<bool name="AcousticSimulationEnabled">true</bool>
+											<NumberRange name="LoopRegion">0 60000 </NumberRange>
+											<bool name="Looped">false</bool>
+											<bool name="PlayOnRemove">false</bool>
+											<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+											<bool name="PlaybackRegionsEnabled">false</bool>
+											<float name="PlaybackSpeed">1</float>
+											<bool name="Playing">false</bool>
+											<float name="RollOffMaxDistance">10000</float>
+											<float name="RollOffMinDistance">10</float>
+											<token name="RollOffMode">0</token>
+											<Ref name="SoundGroup">null</Ref>
+											<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+											<double name="TimePosition">0</double>
+											<float name="Volume">0.5</float>
+											<BinaryString name="AttributesSerialize"></BinaryString>
+											<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+											<bool name="DefinesCapabilities">false</bool>
+											<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+											<string name="Name">glass_shatter_01</string>
+											<int64 name="SourceAssetId">118987440163311</int64>
+											<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+											<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f2</UniqueId>
+										</Properties>
+										<Item class="Sound" referent="RBX173EE071D9144CD78194043BB30C4C3A">
+											<Properties>
+												<bool name="AcousticSimulationEnabled">true</bool>
+												<NumberRange name="LoopRegion">0 60000 </NumberRange>
+												<bool name="Looped">false</bool>
+												<bool name="PlayOnRemove">false</bool>
+												<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+												<bool name="PlaybackRegionsEnabled">false</bool>
+												<float name="PlaybackSpeed">1</float>
+												<bool name="Playing">false</bool>
+												<float name="RollOffMaxDistance">10000</float>
+												<float name="RollOffMinDistance">10</float>
+												<token name="RollOffMode">0</token>
+												<Ref name="SoundGroup">null</Ref>
+												<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+												<double name="TimePosition">0</double>
+												<float name="Volume">0.5</float>
+												<BinaryString name="AttributesSerialize"></BinaryString>
+												<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+												<bool name="DefinesCapabilities">false</bool>
+												<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+												<string name="Name">glass_shatter_01</string>
+												<int64 name="SourceAssetId">118987440163311</int64>
+												<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+												<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f3</UniqueId>
+											</Properties>
+											<Item class="Sound" referent="RBX45D17EFCFF1A40D48BBC387659E6DCFC">
+												<Properties>
+													<bool name="AcousticSimulationEnabled">true</bool>
+													<NumberRange name="LoopRegion">0 60000 </NumberRange>
+													<bool name="Looped">false</bool>
+													<bool name="PlayOnRemove">false</bool>
+													<NumberRange name="PlaybackRegion">0 60000 </NumberRange>
+													<bool name="PlaybackRegionsEnabled">false</bool>
+													<float name="PlaybackSpeed">1</float>
+													<bool name="Playing">false</bool>
+													<float name="RollOffMaxDistance">10000</float>
+													<float name="RollOffMinDistance">10</float>
+													<token name="RollOffMode">0</token>
+													<Ref name="SoundGroup">null</Ref>
+													<Content name="SoundId"><url>rbxassetid://118987440163311</url></Content>
+													<double name="TimePosition">0</double>
+													<float name="Volume">0.5</float>
+													<BinaryString name="AttributesSerialize"></BinaryString>
+													<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+													<bool name="DefinesCapabilities">false</bool>
+													<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+													<string name="Name">glass_shatter_01</string>
+													<int64 name="SourceAssetId">118987440163311</int64>
+													<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+													<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f4</UniqueId>
+												</Properties>
+											</Item>
+										</Item>
+									</Item>
+								</Item>
+							</Item>
+						</Item>
+					</Item>
+				</Item>
 			</Item>
 		</Item>
 	</Item>

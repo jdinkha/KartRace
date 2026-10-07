@@ -15,3 +15,4 @@ Read before adding or changing hazards (lava, fire bars, frogs, tongues, geysers
 
   The server builds hazards static and never moves them. Each client animates the moving ones in step with `workspace:GetServerTimeNow()` (attributes `Origin`/`Speed`, `From`/`To`/`Period`/`Offset`, `Period`/`Active`/`Offset`/`Height`), so everyone sees the same thing.
 - Looks: a `Frog` feature's `look` uses another Mascots character instead of a frog (Moonlight Manor's pouncing cats, toy bunnies and owls). A `Boulder`'s `color`/`material` turn it into a glass marble or a rolling pin. Obstacles `Crate`, `Block` (toy block) and `Barrel` cost coins like rocks; a `Leg` (giant table leg) doesn't, like a tree, and bots steer round it.
+- `Banana`: a banana peel an item dropped on the road (a `BananaHit` part in a `Banana` model); see the items section of `docs/coins-items.md`.
