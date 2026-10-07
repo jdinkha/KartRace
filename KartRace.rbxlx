@@ -330,27 +330,27 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 		<Item class="Camera" referent="RBXEDC5FB6892514099A6FA28EFBF4B153A">
 			<Properties>
 				<CoordinateFrame name="CFrame">
-					<X>-569.776184</X>
-					<Y>55.0762482</Y>
-					<Z>901.14386</Z>
-					<R00>0.849952102</R00>
-					<R01>-0.201178789</R01>
-					<R02>-0.486938</R02>
+					<X>-502.459778</X>
+					<Y>34.4258499</Y>
+					<Z>786.80072</Z>
+					<R00>0.781517684</R00>
+					<R01>0.208799094</R01>
+					<R02>-0.587905645</R02>
 					<R10>-0</R10>
-					<R11>0.924226463</R11>
-					<R12>-0.381844789</R12>
-					<R20>0.526860118</R20>
-					<R21>0.324549794</R21>
-					<R22>0.785548091</R22>
+					<R11>0.942333102</R11>
+					<R12>0.334676623</R12>
+					<R20>0.623883128</R20>
+					<R21>-0.261555701</R21>
+					<R22>0.736449957</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-3.6427567</X>
-					<Y>499.024139</Y>
-					<Z>-12.1654987</Z>
+					<X>-501.283966</X>
+					<Y>33.7564964</Y>
+					<Z>785.32782</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -2934,9 +2934,10 @@ local function updateWeather()
 			weatherPart:Destroy()
 			weatherPart = nil
 		end
-		if kind == "Snow" or kind == "Embers" or kind == "Fireflies" then
+		if kind == "Snow" or kind == "Embers" or kind == "Fireflies" or kind == "Dust" then
 			local snow = kind == "Snow"
-			local flies = kind == "Fireflies" -- little glowing dots drifting around in the jungle
+			local dust = kind == "Dust" -- specks of dust floating in the candlelight (the mansion)
+			local flies = kind == "Fireflies" or dust -- little glowing dots drifting around in the jungle
 			local part = make("Part", {
 				Name = "Weather",
 				Anchored = true,
@@ -2947,11 +2948,11 @@ local function updateWeather()
 				Size = if flies then Vector3.new(140, 40, 140) else Vector3.new(160, 1, 160),
 			})
 			make("ParticleEmitter", {
-				Color = if snow then ColorSequence.new(WHITE) elseif flies then ColorSequence.new(Color3.fromRGB(210, 255, 120)) else ColorSequence.new(Color3.fromRGB(255, 200, 80), Color3.fromRGB(255, 80, 20)),
-				LightEmission = if snow then 0.3 else 1,
-				Size = if snow then NumberSequence.new(0.45) elseif flies then NumberSequence.new(0.3) else NumberSequence.new(0.4, 0),
+				Color = if snow then ColorSequence.new(WHITE) elseif dust then ColorSequence.new(Color3.fromRGB(240, 228, 205)) elseif flies then ColorSequence.new(Color3.fromRGB(210, 255, 120)) else ColorSequence.new(Color3.fromRGB(255, 200, 80), Color3.fromRGB(255, 80, 20)),
+				LightEmission = if snow then 0.3 elseif dust then 0.4 else 1,
+				Size = if snow then NumberSequence.new(0.45) elseif dust then NumberSequence.new(0.2) elseif flies then NumberSequence.new(0.3) else NumberSequence.new(0.4, 0),
 				Lifetime = if snow then NumberRange.new(5, 7) else NumberRange.new(3, 5),
-				Rate = if snow then 150 elseif flies then 40 else 60,
+				Rate = if snow then 150 elseif dust then 30 elseif flies then 40 else 60,
 				Speed = if snow then NumberRange.new(10, 15) elseif flies then NumberRange.new(0.5, 2) else NumberRange.new(4, 10),
 				SpreadAngle = if flies then Vector2.new(180, 180) else Vector2.new(20, 20),
 				Acceleration = if snow then Vector3.new(3, 0, 2) elseif flies then Vector3.zero else Vector3.new(0, 3, 0),
@@ -2963,7 +2964,7 @@ local function updateWeather()
 		end
 	end
 	if weatherPart then
-		local height = if weatherKind == "Snow" then 35 elseif weatherKind == "Fireflies" then 0 else -25
+		local height = if weatherKind == "Snow" then 35 elseif weatherKind == "Fireflies" or weatherKind == "Dust" then 0 else -25
 		weatherPart.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position + Vector3.new(0, height, 0))
 	end
 end
@@ -8499,6 +8500,7 @@ local TRACK = {
 	ARCH_SPACING = 260, -- gap between the glowing arches over the road (0 = no arches)
 	SCENERY_SEED = 7, -- change this number to shuffle the scenery around
 	FALL_DEPTH = 40, -- drop this far below the lowest bit of road and you're put back at your last checkpoint
+	PILLARS = true, -- support pillars down to the ground under raised road (false: something else holds it up)
 }
 
 ------------------------------------------------------------------------
@@ -8511,6 +8513,8 @@ local TRACKS = require(script:WaitForChild("Tracks"))
 local Mascots = require(ReplicatedStorage:WaitForChild("Mascots"))
 -- Every kart body and wheel set players can pick (shared with the client's garage menu)
 local Garage = require(ReplicatedStorage:WaitForChild("Garage"))
+-- Builds the giant house round Moonlight Manor's roads (any track with a MANSION table)
+local MansionBuilder = require(script:WaitForChild("MansionBuilder"))
 
 ------------------------------------------------------------------------
 -- LOBBY  —  the floating island players wait on between races
@@ -8732,6 +8736,45 @@ local THEMES = {
 		ClockTime = 17.7, -- sunset
 		Atmosphere = { Density = 0.45, Offset = 0.3, Color = Color3.fromRGB(190, 210, 170), Decay = Color3.fromRGB(80, 100, 70), Glare = 0.2, Haze = 2.6 }, -- thick swamp mist
 		Clouds = { Cover = 0.7, Density = 0.6, Color = Color3.fromRGB(215, 205, 190) },
+	},
+	-- Inside a giant spooky (but friendly) mansion at midnight: the house itself is
+	-- built by the Mansion module (see MANSION in the track)
+	Mansion = {
+		Road = Color3.fromRGB(125, 82, 50), -- polished wooden floorboards
+		RoadMaterial = Enum.Material.WoodPlanks,
+		CurbA = Color3.fromRGB(150, 35, 60), -- crimson and gold trim
+		CurbB = Color3.fromRGB(225, 185, 90),
+		Wall = Color3.fromRGB(70, 42, 34), -- dark wooden skirting boards
+		WallStripe = Color3.fromRGB(96, 58, 44),
+		WallMaterial = Enum.Material.Wood,
+		Pillar = Color3.fromRGB(80, 50, 40),
+		PillarMaterial = Enum.Material.Wood,
+		OffRoad = Color3.fromRGB(125, 38, 58), -- thick crimson carpet (slow)
+		OffRoadMaterial = Enum.Material.Fabric,
+		Gates = { Color3.fromRGB(190, 120, 255), Color3.fromRGB(255, 160, 60), Color3.fromRGB(120, 255, 170) },
+		Crowd = { "Cat", "Dog", "Bunny", "Owl" }, -- the house pets
+		Ground = Color3.fromRGB(28, 36, 58), -- the dark lake under the cliff
+		GroundMaterial = Enum.Material.Glass,
+		Hazard = Color3.fromRGB(225, 185, 90), -- open edges get banister posts
+		HazardDark = Color3.fromRGB(110, 68, 40),
+		EdgePostMaterial = Enum.Material.Wood,
+		Ice = Color3.fromRGB(190, 230, 255), -- soapy water and wet tiles
+		Rock = Color3.fromRGB(150, 140, 130),
+		RockMaterial = Enum.Material.Slate,
+		Tunnel = Color3.fromRGB(90, 72, 66), -- under the bed, inside pipes and secret passages
+		TunnelMaterial = Enum.Material.Brick,
+		TunnelLight = Color3.fromRGB(255, 190, 110),
+		Torch = Color3.fromRGB(255, 200, 120), -- candles
+		TorchFire = true,
+		GeyserColor = Color3.fromRGB(235, 240, 245), -- steam vents
+		GeyserVent = Color3.fromRGB(90, 90, 100),
+		Weather = "Dust",
+		ClockTime = 0, -- midnight, full moon
+		Ambient = Color3.fromRGB(145, 128, 160), -- (indoors: dim and purplish, lit by candles and chandeliers)
+		OutdoorAmbient = Color3.fromRGB(100, 110, 155), -- moonlight
+		Brightness = 1.2,
+		Atmosphere = { Density = 0.3, Offset = 0.2, Color = Color3.fromRGB(120, 110, 170), Decay = Color3.fromRGB(40, 35, 70), Glare = 0, Haze = 1.5 },
+		Clouds = { Cover = 0.5, Density = 0.4, Color = Color3.fromRGB(120, 115, 150) },
 	},
 }
 
@@ -9367,8 +9410,8 @@ local function buildSnowball(frame: CFrame, halfWidth: number, feature, hazards:
 		Shape = Enum.PartType.Ball,
 		Size = Vector3.one * radius * 2,
 		CFrame = CFrame.new(from),
-		Color = if boulder then Color3.fromRGB(125, 115, 100) else COLORS.White,
-		Material = if boulder then Enum.Material.Slate else Enum.Material.Snow,
+		Color = feature.color or (if boulder then Color3.fromRGB(125, 115, 100) else COLORS.White), -- (a `color` makes it a bowling ball, a ball of yarn...)
+		Material = feature.material or (if boulder then Enum.Material.Slate else Enum.Material.Snow),
 		CanCollide = false,
 		CanTouch = false,
 		-- the client rolls it between From and To, in step with the server clock
@@ -9398,7 +9441,7 @@ local function buildHopper(frame: CFrame, halfWidth: number, feature, hazards: I
 		Attributes = { Hazard = "Bonk" },
 	}, frog)
 	frog.PrimaryPart = body
-	Mascots.build("Frog", body.CFrame * CFrame.new(0, -2.4, 0), { parent = frog, scale = 1.6, cheer = true })
+	Mascots.build(feature.look or "Frog", body.CFrame * CFrame.new(0, -2.4, 0), { parent = frog, scale = 1.6, cheer = true }) -- (`look`: another character, like the mansion's pouncing cats)
 	frog:SetAttribute("From", from)
 	frog:SetAttribute("To", to)
 	frog:SetAttribute("Period", feature.period or 5)
@@ -9575,6 +9618,66 @@ local function buildObstacle(kind: string, cf: CFrame, size: number, style, wall
 				Material = Enum.Material.Grass,
 			}), decor)
 		end
+	elseif kind == "Crate" or kind == "Block" then
+		-- A wooden crate (Mansion cellar) or a giant toy block with a letter on it (playroom)
+		local block = kind == "Block"
+		local seed = math.floor(math.abs(cf.X) + math.abs(cf.Z))
+		local part = newPart("Part", {
+			Name = kind,
+			Attributes = { Obstacle = true },
+			Size = Vector3.one * size,
+			CFrame = cf * CFrame.new(0, size / 2 - 1, 0) * CFrame.Angles(0, math.rad(seed % 40 - 20), 0),
+			Color = if block then RAINBOW[seed % #RAINBOW + 1] else Color3.fromRGB(150, 105, 60),
+			Material = if block then Enum.Material.SmoothPlastic else Enum.Material.WoodPlanks,
+		}, walls)
+		if block then
+			for _, face in { Enum.NormalId.Front, Enum.NormalId.Back, Enum.NormalId.Left, Enum.NormalId.Right } do
+				newLabel({ Size = UDim2.fromScale(1, 1), Text = string.sub("ABCKRT", seed % 6 + 1, seed % 6 + 1), TextStrokeTransparency = 0.5 }, newSurfaceGui(part, face))
+			end
+		else
+			for _, y in { -0.3, 0.3 } do -- dark slats round the crate
+				newPart("Part", ghost({
+					Name = "CrateSlat",
+					Size = Vector3.new(size + 0.3, size * 0.12, size + 0.3),
+					CFrame = part.CFrame * CFrame.new(0, y * size, 0),
+					Color = Color3.fromRGB(95, 62, 35),
+					Material = Enum.Material.Wood,
+				}), decor)
+			end
+		end
+	elseif kind == "Barrel" then
+		local height = size * 1.3
+		local barrel = newPart("Part", {
+			Name = "Barrel",
+			Attributes = { Obstacle = true },
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(height, size, size),
+			CFrame = upright(cf * CFrame.new(0, height / 2 - 1, 0)),
+			Color = Color3.fromRGB(125, 75, 40),
+			Material = Enum.Material.Wood,
+		}, walls)
+		for _, x in { -0.32, 0.32 } do -- iron hoops
+			newPart("Part", ghost({
+				Name = "BarrelHoop",
+				Shape = Enum.PartType.Cylinder,
+				Size = Vector3.new(height * 0.08, size + 0.25, size + 0.25),
+				CFrame = barrel.CFrame * CFrame.new(x * height, 0, 0),
+				Color = Color3.fromRGB(60, 60, 66),
+				Material = Enum.Material.Metal,
+			}), decor)
+		end
+	elseif kind == "Leg" then
+		-- A giant chair or table leg, up to the underside of the furniture (like a
+		-- tree: bumping into it doesn't cost coins). `size` = how thick it is
+		local height = 21
+		newPart("Part", {
+			Name = "Leg",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(height + 1, size, size),
+			CFrame = upright(cf * CFrame.new(0, height / 2 - 1, 0)),
+			Color = Color3.fromRGB(105, 62, 38),
+			Material = Enum.Material.Wood,
+		}, walls)
 	else -- Rock
 		local height = size * 1.5
 		newPart("Part", {
@@ -9796,8 +9899,8 @@ end
 
 -- Feature kinds that cover a stretch of road (`from` / `to`), and the ones
 -- that respawn points must keep clear of
-local SECTION_KINDS = { Room = true, Ice = true, NoWalls = true, Tunnel = true, Wind = true, Rough = true, Bridge = true, Skippable = true, Flat = true }
-local HAZARD_KINDS = { LavaPool = true, Geyser = true, FireBar = true, Snowball = true, Boulder = true, Rock = true, Crystal = true, Snowman = true, Tree = true, Frog = true, Tongue = true }
+local SECTION_KINDS = { Room = true, Ice = true, NoWalls = true, Tunnel = true, Wind = true, Rough = true, Bridge = true, Skippable = true, Flat = true, Paint = true }
+local HAZARD_KINDS = { LavaPool = true, Geyser = true, FireBar = true, Snowball = true, Boulder = true, Rock = true, Crystal = true, Snowman = true, Tree = true, Frog = true, Tongue = true, Crate = true, Block = true, Barrel = true, Leg = true }
 
 -- Works out the shape of one road (the main road, or a branch): evenly spaced
 -- samples along it, how wide it is and how it leans at each one, and which
@@ -10069,10 +10172,12 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 			continue -- the hole a jump flies over
 		end
 		local grip = route.gripAt(m)
+		local paint = route.section("Paint", m)
 		local props = if grip
 			then { Name = "IceRoad", Color = style.Ice, Material = Enum.Material.Ice, Attributes = { Grip = grip } }
 			elseif route.section("Rough", m) then roughProps
 			elseif route.section("Bridge", m) then bridgeProps
+			elseif paint then { Name = "Road", Color = paint.feature.color or style.Road, Material = paint.feature.material or style.RoadMaterial }
 			else roadProps
 		local drop = 0
 		if route.isBranch then
@@ -10206,7 +10311,7 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 		return false
 	end
 	for i = 8, count, 16 do
-		if route.section("Gap", dist[i], 10) or (route.isBranch and onOtherRoad(samples[i], 0)) then
+		if not cfg.PILLARS or route.section("Gap", dist[i], 10) or (route.isBranch and onOtherRoad(samples[i], 0)) then
 			continue
 		end
 		local lanes = if halfWidth[i] > 34 then { -(halfWidth[i] - 12), 0, halfWidth[i] - 12 } else { 0 }
@@ -10272,7 +10377,7 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 			buildHopper(frame, half, feature, hazards)
 		elseif kind == "Tongue" then
 			buildTongue(frame, half, outer, feature, style, hazards, walls, decor)
-		elseif kind == "Rock" or kind == "Crystal" or kind == "Snowman" or kind == "Tree" then
+		elseif kind == "Rock" or kind == "Crystal" or kind == "Snowman" or kind == "Tree" or kind == "Crate" or kind == "Block" or kind == "Barrel" or kind == "Leg" then
 			buildObstacle(kind, spot, feature.size or 8, style, walls, decor)
 		end
 	end
@@ -10569,27 +10674,42 @@ end
 -- own shape over ROOM_EASE studs once it's clear. Without this, the slightest
 -- lean or slope in the main road leaves a lip at the junction, and a lip half
 -- a stud high stops karts like a wall.
-local function fitBranchEnds(cfg, branch, main)
-	-- The main road's surface frame nearest `pos`, and whether `pos` is on that road (or its off-road)
-	local function mainSurface(pos: Vector3): (CFrame, boolean)
-		local j = main.nearest(pos)
-		local d = main.dist[j] - main.frames[j]:PointToObjectSpace(pos).Z
-		local frame = main.frameAt(d)
+-- A branch can also split off (or rejoin) another branch listed before it:
+-- `candidates` = the main road plus those. `branch.joins[1 or count]` says
+-- which road each end joined.
+local function fitBranchEnds(cfg, branch, candidates: { any })
+	-- `road`'s surface frame nearest `pos`, and whether `pos` is on that road (or its off-road)
+	local function surface(road, pos: Vector3): (CFrame, boolean)
+		local j = road.nearest(pos)
+		local d = road.dist[j] - road.frames[j]:PointToObjectSpace(pos).Z
+		local frame = road.frameAt(d)
 		local rel = frame:PointToObjectSpace(pos)
-		return frame, math.abs(rel.X) <= main.edgeAt(d) + 2 and math.abs(rel.Y) < 6 and math.abs(rel.Z) < cfg.STEP / 2
+		return frame, math.abs(rel.X) <= road.edgeAt(d) + 2 and math.abs(rel.Y) < 6 and math.abs(rel.Z) < cfg.STEP / 2
 	end
-	-- `pos` moved straight up or down onto the main road's surface
-	local function onMain(pos: Vector3): Vector3
-		local frame = mainSurface(pos)
-		return pos + Vector3.yAxis * ((frame.Position - pos):Dot(frame.UpVector) / frame.UpVector.Y)
-	end
+	branch.joins = {}
 	local count = branch.count
 	for _, from in { 1, count } do
 		local inward = if from == 1 then 1 else -1
-		local _, joins = mainSurface(branch.samples[from])
-		if not joins then
-			warn("[RaceServer] " .. branch.name .. ": its " .. (if from == 1 then "first" else "last") .. " point isn't on the main road")
+		local main = nil -- the road this end joins ("main" below, even when it's another branch)
+		for _, road in candidates do
+			local _, joins = surface(road, branch.samples[from])
+			if joins then
+				main = road
+				break
+			end
+		end
+		if not main then
+			warn("[RaceServer] " .. branch.name .. ": its " .. (if from == 1 then "first" else "last") .. " point isn't on the main road (or a branch before it)")
 			continue
+		end
+		branch.joins[from] = main
+		local function mainSurface(pos: Vector3): (CFrame, boolean)
+			return surface(main, pos)
+		end
+		-- `pos` moved straight up or down onto that road's surface
+		local function onMain(pos: Vector3): Vector3
+			local frame = mainSurface(pos)
+			return pos + Vector3.yAxis * ((frame.Position - pos):Dot(frame.UpVector) / frame.UpVector.Y)
 		end
 		-- How far in from this end the branch still overlaps the main road
 		local overlap = 0
@@ -10646,21 +10766,34 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 	local main = planRoute(cfg, cfg.POINTS, cfg.FEATURES, cfg.ROAD_WIDTH)
 	main.name = "main road"
 	local branches = {}
+	local candidates = { main } -- roads a branch can split off: the main road and the branches before it
 	for _, branch in cfg.BRANCHES or {} do
 		local route = planRoute(cfg, branch.POINTS, branch.FEATURES or {}, branch.width or cfg.BRANCH_WIDTH)
 		route.isBranch = true
 		route.name = branch.name or "a branch"
 		route.noRespawns = branch.respawns == false
-		fitBranchEnds(cfg, route, main)
+		fitBranchEnds(cfg, route, candidates)
 		table.insert(branches, route)
+		table.insert(candidates, route)
 	end
 	local everyRoute = { main }
 	for _, route in branches do
 		table.insert(everyRoute, route)
 	end
-	buildRoute(cfg, main, branches, everyRoute, folders)
+	-- Which roads meet which (walls, curbs and off-road open up where they do)
+	for _, route in everyRoute do
+		route.linked = {}
+	end
 	for _, route in branches do
-		buildRoute(cfg, route, { main }, everyRoute, folders)
+		for _, parent in route.joins do
+			if not table.find(route.linked, parent) then
+				table.insert(route.linked, parent)
+				table.insert(parent.linked, route)
+			end
+		end
+	end
+	for _, route in everyRoute do
+		buildRoute(cfg, route, route.linked, everyRoute, folders)
 	end
 
 	local width = cfg.ROAD_WIDTH
@@ -10757,10 +10890,25 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 			table.insert(zones, { zone[1], zone[2] })
 		end
 	end
+	-- (a branch that splits off another branch skips everything that one does, too)
+	local function mainSpan(route): (number, number)
+		local from, to = math.huge, -math.huge
+		for i, parent in route.joins do
+			if parent == main then
+				local d = main.dist[main.nearest(route.samples[i])]
+				from, to = math.min(from, d), math.max(to, d)
+			else
+				local a, b = mainSpan(parent)
+				from, to = math.min(from, a), math.max(to, b)
+			end
+		end
+		return from, to
+	end
 	for _, route in branches do
-		local from = main.dist[main.nearest(route.samples[1])]
-		local to = main.dist[main.nearest(route.samples[route.count])]
-		table.insert(zones, { math.min(from, to) - 10, math.max(from, to) + 10 })
+		local from, to = mainSpan(route)
+		if from <= to then
+			table.insert(zones, { from - 10, to + 10 })
+		end
 	end
 	table.sort(zones, function(a, b)
 		return a[1] < b[1]
@@ -10842,7 +10990,11 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 			for _, zone in route.hazardZones do
 				safe = safe and not (d > zone[1] and d < zone[2])
 			end
-			if safe and not (route.isBranch and main.covers(route.frameAt(d).Position, 0)) then
+			local pos = route.frameAt(d).Position
+			for _, other in if route.isBranch then route.linked else {} do -- (not where it overlaps the road it splits off)
+				safe = safe and not other.covers(pos, 0)
+			end
+			if safe then
 				addRespawn(d)
 			end
 			d += cfg.RESPAWN_SPACING
@@ -11290,9 +11442,13 @@ end
 -- SCENERY  (sky, ground and decorations around each track — just for looks)
 ------------------------------------------------------------------------
 -- Time of day, haze and clouds to match a track's theme
+local DEFAULT_LIGHT = { Ambient = Lighting.Ambient, OutdoorAmbient = Lighting.OutdoorAmbient, Brightness = Lighting.Brightness }
 local function applyLighting(style)
 	Lighting.GlobalShadows = true
 	Lighting.ClockTime = style.ClockTime or 14.5
+	for key, default in DEFAULT_LIGHT do -- (a theme can change these; the rest go back to normal)
+		(Lighting :: any)[key] = style[key] or default
+	end
 	local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
 	for key, value in style.Atmosphere or {} do
 		(atmosphere :: any)[key] = value
@@ -11879,6 +12035,9 @@ local function buildScenery(cfg, track: Instance, samples: { Vector3 }, halfWidt
 	if style.Ground then
 		buildGround(samples, groundY, style, parent)
 	end
+	if cfg.MANSION then
+		MansionBuilder.build(cfg, track, parent, samples, halfWidths, { newPart = newPart, ghost = ghost, newFolder = newFolder, buildTree = buildTree, Mascots = Mascots })
+	end
 	-- A giant step-temple the road drives right through (Jungle, Swamp)
 	local temple = cfg.TEMPLE
 	if temple then
@@ -11986,6 +12145,8 @@ local function buildScenery(cfg, track: Instance, samples: { Vector3 }, halfWidt
 				buildTree(Vector3.new(spot.X, groundY, spot.Z), scale, LEAF_COLORS[rng:NextInteger(1, 3)], parent, false)
 			end
 		end
+	elseif cfg.theme == "Mansion" then
+		-- (the MansionBuilder, above, built the house, the garden and the moon)
 	else
 		local arc = cfg.RAINBOW_ARC
 		if arc then
@@ -12872,7 +13033,7 @@ local function scanForBots(track: Instance)
 	botHazardParams.FilterDescendantsInstances = { track:FindFirstChild("Hazards") }
 	local walls, hazards = track:FindFirstChild("Walls"), track:FindFirstChild("Hazards")
 	for _, part in if walls then walls:GetChildren() else {} do
-		if part:IsA("Part") and (part:GetAttribute("Obstacle") or part.Name == "Tree" or part.Name == "FireBarPost") then
+		if part:IsA("Part") and (part:GetAttribute("Obstacle") or part.Name == "Tree" or part.Name == "Leg" or part.Name == "FireBarPost") then
 			local across = if part.Shape == Enum.PartType.Cylinder then part.Size.Y else math.max(part.Size.X, part.Size.Z)
 			table.insert(botAvoid, { pos = part.Position, radius = across * 0.7 + 3 })
 		end
@@ -14050,7 +14211,9 @@ end
 	Its first and last points must sit inside a main-road Room, at about the
 	same height, so there's space for the junction. The builder lays the
 	branch's ends right onto the main road's surface, and walls open up by
-	themselves where the roads meet.
+	themselves where the roads meet. A branch can also split off (or rejoin)
+	another branch: put its end in a Room on that branch, and list it after
+	that branch (Moonlight Manor's Mouse Hole splits off the Wine Racks).
 
 	Every road has slow OFF-ROAD strips (grass, ash, snow, mud) between the
 	road and the walls, except where there are no walls.
@@ -14072,6 +14235,9 @@ end
 	  "Sign"      signpost with `text`, just outside the wall on `side` ("left"/"right")
 	  "Waterfall" a curtain of water right across the road (drive through it)
 	  "Rock" / "Crystal" / "Snowman" / "Tree"   solid obstacle to steer around. `size`
+	  "Crate" / "Block" / "Barrel"   more obstacles: a wooden crate, a toy block
+	              with a letter on it, a barrel. `size`
+	  "Leg"       a giant table or chair leg (bumping it doesn't cost coins). `size`
 	  "LavaPool"  touch it and you're back at your last checkpoint. `radius`
 	  "Geyser"    vent (lava, or water in the jungle) that erupts every few
 	              seconds and throws karts in the air. `radius`, `height`,
@@ -14080,7 +14246,8 @@ end
 	  "FireBar"   spinning bar of fireballs that knocks karts aside.
 	              `length`, `speed` (degrees per second, negative = other way)
 	  "Snowball" / "Boulder"   rolls from side to side across the road.
-	              `radius`, `period`, `offset`, optional `span` (how far it rolls)
+	              `radius`, `period`, `offset`, optional `span` (how far it rolls),
+	              `color` and `material` (a glass marble, a rolling pin...)
 	  "Frog"      hops across the road and back, crouching before each hop.
 	              `period` (seconds there and back), `hops` (each way),
 	              `height`, `offset`, optional `span`. `reverse = true` starts
@@ -14088,7 +14255,8 @@ end
 	              the same timing, and they pass each other in the middle.
 	              Or `gap` (average seconds from one hop to the next) to hop at
 	              random moments instead; give a pair the same `seed` to keep
-	              them moving together
+	              them moving together. `look` = another character (Mascots)
+	              instead of a frog: "Cat", "Bunny", "Owl"...
 	  "Tongue"    a frog-head idol beside the road (`side`) whose tongue lashes
 	              `reach` studs across it at random moments; its throat swells
 	              and it croaks first. `period` (average seconds between lashes,
@@ -14110,6 +14278,13 @@ end
 	              twisting the road as it starts to climb)
 	  "Skippable" main road that a drop or jump shortcut lets racers skip, so
 	              no checkpoints go there (branches do this by themselves)
+	  "Paint"     the road's surface in another `color` and `material` (a quilt
+	              on a bed, a marble worktop...)
+
+	TRACK settings can be changed per track too, e.g. PILLARS = false (no support
+	pillars under raised road) or MAX_BANK = 0 (roads don't lean into corners).
+	A track with a MANSION table gets a whole house built round it (see the
+	Mansion module inside this one, and MansionBuilder in RaceServer).
 ]]
 
 -- Adds a thick forest to a list of FEATURES: `rows` rows of trees across the
@@ -14131,6 +14306,9 @@ local function forest(features, point: number, rows: number, spacing: number, ga
 	end
 	return features
 end
+
+-- Moonlight Manor (the giant mansion) is big enough to have its own module, inside this one
+local mansion = require(script:WaitForChild("Mansion"))
 
 return {
 	--------------------------------------------------------------------
@@ -14945,13 +15123,13 @@ return {
 			-- halves with a clearing across the road between them)
 			{ kind = "Respawn", point = 28, ahead = 252 }, -- in the clearing (the trees keep the automatic ones away)
 			-- frogs hopping along the gaps between the rows of trees
-			{ kind = "Frog", point = 28, ahead = 60, span = 38, period = 5, hops = 4, offset = 0 },
-			{ kind = "Frog", point = 28, ahead = 108, span = 38, period = 5, hops = 4, offset = 2.5, reverse = true },
-			{ kind = "Frog", point = 28, ahead = 156, span = 38, period = 5, hops = 4, offset = 1.2, reverse = true },
-			{ kind = "Frog", point = 28, ahead = 204, span = 38, period = 5, hops = 4, offset = 2.4 },
-			{ kind = "Frog", point = 28, ahead = 300, span = 38, period = 5, hops = 4, offset = 4.2 },
-			{ kind = "Frog", point = 28, ahead = 348, span = 38, period = 5, hops = 4, offset = 3.6, reverse = true },
-			{ kind = "Frog", point = 28, ahead = 444, span = 38, period = 5, hops = 4, offset = 0.6 },
+			{ kind = "Frog", point = 28, ahead = 44, span = 38, period = 5, hops = 4, offset = 0 },
+			{ kind = "Frog", point = 28, ahead = 102, span = 38, period = 5, hops = 4, offset = 2.5, reverse = true },
+			{ kind = "Frog", point = 28, ahead = 160, span = 38, period = 5, hops = 4, offset = 1.2, reverse = true },
+			{ kind = "Frog", point = 28, ahead = 189, span = 38, period = 5, hops = 4, offset = 2.4 },
+			{ kind = "Frog", point = 28, ahead = 305, span = 38, period = 5, hops = 4, offset = 4.2 },
+			{ kind = "Frog", point = 28, ahead = 363, span = 38, period = 5, hops = 4, offset = 3.6, reverse = true },
+			{ kind = "Frog", point = 28, ahead = 450, span = 38, period = 5, hops = 4, offset = 0.6 },
 			-- Mushroom Glade
 			{ kind = "Banner", point = 34, ahead = -30, text = "MUSHROOM GLADE" },
 			{ kind = "Tunnel", from = 34, to = 41 },
@@ -14966,7 +15144,7 @@ return {
 			{ kind = "Boost", point = 43, lane = 0 },
 			{ kind = "Boost", point = 45, lane = 0 },
 			{ kind = "Boost", point = 50, lane = 0 },
-		}, 28, 22, 24, 28, 42, { 10, 11 }), -- THE OVERGROWTH: 22 rows of trees from point 28, 24 studs apart, out to 42 either side, minus rows 10 and 11 (the clearing)
+		}, 28, 18, 29, 28, 42, { 8, 9 }), -- THE OVERGROWTH: 18 rows of trees from point 28, 29 studs apart, out to 42 either side, minus rows 8 and 9 (the clearing): 56 trees
 		BRANCHES = {
 			{
 				name = "Boardwalk", -- rickety planks straight across the open water: no mud, but no rails either
@@ -15049,6 +15227,8 @@ return {
 			},
 		},
 	},
+
+	mansion,
 }
 ]]></ProtectedString>
 					<string name="ScriptGuid">{B19D094D-AF02-4B59-AD97-7C4A165BF806}</string>
@@ -15060,6 +15240,1342 @@ return {
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9f</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXB4F1DF3F635B430C9277E8D0B612A45C">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[--[[
+	MOONLIGHT MANOR  -  the Mansion track. It lives in its own module (inside
+	Tracks) because it's big. Karts are puppy-sized here: 1 metre of house is
+	about 30 studs, so chairs are cliffs, the dining table is a bridge and the
+	stairs are mountains.
+
+	The race climbs the whole house: the cellar (Y 0), the ground floor (90),
+	the bedrooms (180), the attic (270), then over the roof (330) and a leap
+	off the porch roof into the garden. On every floor the road splits in a
+	room into several routes (some split again) that all meet up before that
+	floor's staircase:
+	  Cellar     Wine Cellar: main road through the Boiler Room (steam vents),
+	             the Wine Racks (which split again: the Mouse Hole), or the
+	             Heating Pipe. They meet in the Coal Cellar. Laundry, stairs.
+	  Ground     Kitchen: main road under the Dining Table (a forest of table
+	             legs, pouncing cats), the Tabletop (jump off the end), or the
+	             Countertop (which splits again: the Stovetop, hot rings!).
+	             They meet in the Grand Foyer. Grand Staircase.
+	  Bedrooms   Upstairs Hall: main road through the Playroom (toy blocks,
+	             marbles, hopping bunnies), or the Master Bedroom: across the
+	             bed, or Under the Bed. They meet on the Landing. Gym, stairs.
+	  Attic      main road among the trunks and dust sheets (owls), or the
+	             Rafters (which split again: the Tightrope). Up the ladder.
+	  Roof       main road between the chimneys (wind), or the Skylights.
+	             Down the porch roof and the LEAP OF FAITH into the garden.
+
+	The roads are drawn with a "turtle": go forward, turn, climb. Its points
+	come out evenly spaced (so curves stay smooth and climbs stay steady), and
+	`mark` names the point it has reached, so FEATURES can say
+	`point = M.at.kitchen` instead of counting points.
+	MANSION (at the bottom) describes the house itself; the MansionBuilder
+	module in RaceServer builds it around the roads.
+]]
+
+local V = Vector3.new
+local C = Color3.fromRGB
+
+-- Height along a climb: eases in, holds a steady slope, eases out (s = 0..1)
+local function ease(s: number): number
+	local e = 0.2
+	if s < e then
+		return s * s / (2 * e * (1 - e))
+	elseif s > 1 - e then
+		return 1 - (1 - s) ^ 2 / (2 * e * (1 - e))
+	end
+	return (s - e / 2) / (1 - e)
+end
+
+-- A road drawn like a turtle, starting at `start` facing `heading` degrees
+-- (0 = +Z, 90 = +X). Points come out about 30 studs apart.
+local function turtle(start: Vector3, heading: number)
+	local GAP = 30
+	local t = { POINTS = { start }, at = {} }
+	local pos, h = start, math.rad(heading)
+	local function forward(a: number): Vector3
+		return V(math.sin(a), 0, math.cos(a))
+	end
+	local function right(a: number): Vector3
+		return V(math.cos(a), 0, -math.sin(a))
+	end
+	-- Straight ahead `length` studs, climbing `rise` (eased in and out)
+	function t.go(length: number, rise: number?)
+		local n = math.max(1, math.round(length / GAP))
+		local from = pos
+		for k = 1, n do
+			pos = from + forward(h) * length * k / n + Vector3.yAxis * (rise or 0) * ease(k / n)
+			table.insert(t.POINTS, pos)
+		end
+		return t
+	end
+	-- Turn `angle` degrees (+ = right) round a circle of `radius`, staying level
+	function t.turn(angle: number, radius: number)
+		local side = if angle > 0 then 1 else -1
+		local n = math.max(2, math.round(math.rad(math.abs(angle)) * radius / GAP))
+		local center = pos + right(h) * side * radius
+		local h0 = h
+		for k = 1, n do
+			table.insert(t.POINTS, center - right(h0 + math.rad(angle) * k / n) * side * radius)
+		end
+		h = h0 + math.rad(angle)
+		pos = t.POINTS[#t.POINTS]
+		return t
+	end
+	-- Names the point the turtle has just reached
+	function t.mark(name: string)
+		t.at[name] = #t.POINTS
+		return t
+	end
+	-- The last point's number
+	function t.last(): number
+		return #t.POINTS
+	end
+	return t
+end
+
+-- A stretch of road that looks like the furniture it's on
+local function paint(from: number, to: number, color: Color3, material: Enum.Material)
+	return { kind = "Paint", from = from, to = to, color = color, material = material }
+end
+local QUILT, TABLECLOTH, MARBLE, IRON = C(175, 70, 95), C(235, 230, 215), C(225, 222, 215), C(45, 45, 52)
+local BEAM, RUNNER, SLATE, GRAVEL = C(100, 68, 42), C(150, 30, 45), C(62, 60, 78), C(175, 165, 140)
+
+------------------------------------------------------------------------
+-- THE MAIN ROAD
+------------------------------------------------------------------------
+local M = turtle(V(0, 0, -80), 0)
+-- THE CELLAR (Y 0)
+M.go(140).mark("start") -- the dock at the foot of the cliff
+M.go(150).mark("cellarDoor") -- in through the cellar doors (z 150)
+M.turn(90, 200).mark("wine") -- WINE CELLAR: the first fork
+M.go(60).mark("wineEnd")
+M.go(40).mark("boiler") -- BOILER ROOM
+M.turn(15, 300).turn(-15, 300).go(100).mark("coal") -- COAL CELLAR: everyone meets again
+M.go(150).mark("coalEnd")
+M.turn(40, 200).mark("laundry") -- LAUNDRY ROOM
+M.go(130).mark("laundryEnd").turn(-40, 200).go(40).mark("cellarStairs")
+M.turn(-90, 60).go(40).mark("stairsUp")
+M.go(360, 90).mark("groundFloor") -- the creaky cellar stairs
+-- THE GROUND FLOOR (Y 90)
+M.go(80).turn(-90, 110).mark("kitchen") -- KITCHEN: the second fork
+M.go(150).mark("kitchenEnd")
+M.go(40).mark("dining") -- DINING HALL: under the table
+M.go(300).mark("diningEnd")
+M.go(60).mark("foyer").go(90).mark("foyerEnd") -- GRAND FOYER: everyone meets again
+M.turn(-90, 140).go(40).mark("grandStairs")
+M.go(360, 90).mark("upstairs") -- the grand staircase
+-- THE BEDROOMS (Y 180)
+M.turn(-90, 60).go(60).mark("hall") -- UPSTAIRS HALL: the third fork
+M.go(150).mark("hallEnd")
+M.go(40).turn(-25, 250).go(80).turn(25, 250).mark("landing") -- PLAYROOM, then the LANDING
+M.go(150).mark("landingEnd")
+M.go(60).mark("gym") -- GYM
+M.go(80).mark("gymEnd")
+M.turn(-90, 60).go(40).mark("atticStairs")
+M.go(360, 90).mark("attic") -- up to the attic
+-- THE ATTIC (Y 270)
+M.go(40).turn(-90, 110).mark("atticHall") -- ATTIC: the fourth fork
+M.go(150).mark("atticHallEnd")
+M.go(60).turn(-25, 300).turn(25, 300).mark("sheets") -- among the dust sheets
+M.go(150).mark("sheetsEnd")
+M.go(60).mark("window").turn(-90, 140).go(40).mark("ladder")
+M.go(240, 60).mark("roof") -- up the ladder and out of the hatch
+-- THE ROOF (Y 330)
+M.turn(-90, 60).go(60).mark("rooftop") -- the fifth fork
+M.go(150).mark("rooftopEnd")
+M.go(380).mark("chimneys")
+M.go(150).mark("chimneysEnd")
+M.go(210).mark("descent")
+M.go(450, -130).mark("porchRoof") -- down the slope of the porch roof...
+M.go(60).mark("leap")
+M.go(160, -110).mark("garden") -- ...and LEAP into the garden
+M.go(60).turn(-90, 150).go(250).mark("gates")
+M.go(70)
+
+local FEATURES = {
+	-- The Cellar
+	{ kind = "Boost", point = M.at.start, ahead = -20, lane = 0 },
+	{ kind = "Banner", point = M.at.cellarDoor, ahead = -40, text = "THE CELLAR" },
+	{ kind = "Room", from = M.at.cellarDoor, to = M.at.wineEnd, width = 120 },
+	{ kind = "Sign", point = M.at.cellarDoor, ahead = 40, side = "left", text = "< WINE RACKS" },
+	{ kind = "Sign", point = M.at.cellarDoor, ahead = 60, side = "right", text = "HEATING PIPE >" },
+	{ kind = "Barrel", point = M.at.cellarDoor, ahead = 70, lane = 42, size = 11 },
+	{ kind = "Barrel", point = M.at.cellarDoor, ahead = 150, lane = -44, size = 11 },
+	{ kind = "Banner", point = M.at.boiler, ahead = 10, text = "BOILER ROOM" },
+	-- steam vents puffing in turn
+	{ kind = "Geyser", point = M.at.boiler, ahead = 60, lane = -10, radius = 6, height = 26, period = 4, active = 1.2, offset = 0 },
+	{ kind = "Geyser", point = M.at.boiler, ahead = 130, lane = 11, radius = 6, height = 26, period = 4, active = 1.2, offset = 1.3 },
+	{ kind = "Geyser", point = M.at.boiler, ahead = 200, lane = -6, radius = 6, height = 26, period = 4, active = 1.2, offset = 2.6 },
+	{ kind = "Room", from = M.at.coal, to = M.at.coalEnd, width = 120 },
+	{ kind = "Banner", point = M.at.coal, ahead = 70, text = "COAL CELLAR" },
+	{ kind = "Banner", point = M.at.laundry, text = "LAUNDRY ROOM" },
+	{ kind = "Ice", from = M.at.laundry, to = M.at.laundryEnd, grip = 0.35 }, -- soapy floor
+	{ kind = "Crate", point = M.at.laundry, ahead = 50, lane = 11, size = 10 }, -- laundry baskets
+	{ kind = "Crate", point = M.at.laundry, ahead = 110, lane = -12, size = 10 },
+	{ kind = "Flat", from = M.at.cellarStairs, to = M.at.groundFloor },
+	{ kind = "Banner", point = M.at.stairsUp, text = "CELLAR STAIRS" },
+	{ kind = "Boost", point = M.at.stairsUp, ahead = 10, lane = 0 },
+	-- The Ground Floor
+	{ kind = "Room", from = M.at.kitchen, to = M.at.kitchenEnd, width = 130 },
+	{ kind = "NoWalls", from = M.at.kitchen, to = M.at.foyerEnd }, -- (fall off the table or counter and you can drive back on)
+	{ kind = "Banner", point = M.at.kitchen, ahead = -30, text = "KITCHEN" },
+	{ kind = "Sign", point = M.at.kitchen, ahead = 20, side = "right", text = "< TABLETOP" },
+	{ kind = "Sign", point = M.at.kitchen, ahead = 40, side = "left", text = "COUNTERTOP >" },
+	{ kind = "Banner", point = M.at.kitchenEnd, ahead = 10, text = "UNDER THE TABLE" },
+	-- a forest of table legs to weave between...
+	{ kind = "Leg", point = M.at.dining, ahead = 30, lane = -14, size = 6 },
+	{ kind = "Leg", point = M.at.dining, ahead = 75, lane = 14, size = 6 },
+	{ kind = "Leg", point = M.at.dining, ahead = 165, lane = -14, size = 6 },
+	{ kind = "Leg", point = M.at.dining, ahead = 210, lane = 14, size = 6 },
+	-- ...and the house cats pouncing across between them
+	{ kind = "Frog", look = "Cat", point = M.at.dining, ahead = 115, hops = 2, period = 4, offset = 0 },
+	{ kind = "Frog", look = "Cat", point = M.at.dining, ahead = 123, hops = 2, period = 4, offset = 0, reverse = true },
+	{ kind = "Room", from = M.at.foyer, to = M.at.foyerEnd, width = 130 },
+	{ kind = "Banner", point = M.at.foyer, ahead = 10, text = "GRAND FOYER" },
+	{ kind = "Flat", from = M.at.foyerEnd, to = M.at.upstairs },
+	{ kind = "Room", from = M.at.grandStairs, to = M.at.upstairs, width = 70 },
+	{ kind = "Banner", point = M.at.grandStairs, text = "GRAND STAIRCASE" },
+	paint(M.at.grandStairs, M.at.upstairs, RUNNER, Enum.Material.Fabric), -- a red carpet runner up the middle
+	{ kind = "Boost", point = M.at.grandStairs, ahead = 10, lane = 0 },
+	-- The Bedrooms
+	{ kind = "Room", from = M.at.hall, to = M.at.hallEnd, width = 120 },
+	{ kind = "Banner", point = M.at.hall, ahead = -20, text = "UPSTAIRS HALL" },
+	{ kind = "Sign", point = M.at.hall, ahead = 20, side = "left", text = "< MASTER BEDROOM" },
+	{ kind = "Banner", point = M.at.hallEnd, ahead = 25, text = "PLAYROOM" },
+	{ kind = "Block", point = M.at.hallEnd, ahead = 90, lane = -12, size = 9 },
+	{ kind = "Block", point = M.at.hallEnd, ahead = 150, lane = 13, size = 9 },
+	{ kind = "Boulder", point = M.at.hallEnd, ahead = 205, radius = 5, period = 3.2, color = C(90, 170, 255), material = Enum.Material.Glass }, -- a rolling marble
+	{ kind = "Block", point = M.at.hallEnd, ahead = 255, lane = -8, size = 9 },
+	{ kind = "Frog", look = "Bunny", point = M.at.landing, ahead = -60, hops = 2, period = 4, offset = 1 }, -- toy bunnies
+	{ kind = "Frog", look = "Bunny", point = M.at.landing, ahead = -52, hops = 2, period = 4, offset = 1, reverse = true },
+	{ kind = "Room", from = M.at.landing, to = M.at.landingEnd, width = 100 },
+	{ kind = "Banner", point = M.at.landing, ahead = 30, text = "THE LANDING" },
+	{ kind = "Banner", point = M.at.gym, text = "GYM" },
+	{ kind = "Boost", point = M.at.gym, ahead = 10, lane = -12, time = 1.4 }, -- treadmills
+	{ kind = "Boost", point = M.at.gym, ahead = 10, lane = 12, time = 1.4 },
+	{ kind = "Wind", from = M.at.landingEnd, to = M.at.gymEnd, push = -45, period = 4, active = 1.5 }, -- a giant fan
+	{ kind = "Flat", from = M.at.gymEnd, to = M.at.attic },
+	{ kind = "Banner", point = M.at.atticStairs, text = "ATTIC STAIRS" },
+	-- The Attic
+	{ kind = "Room", from = M.at.atticHall, to = M.at.atticHallEnd, width = 120 },
+	{ kind = "Banner", point = M.at.atticHall, ahead = -20, text = "THE ATTIC" },
+	{ kind = "Sign", point = M.at.atticHall, ahead = 30, side = "left", text = "< THE RAFTERS" },
+	{ kind = "Crate", point = M.at.atticHallEnd, ahead = 70, lane = 13, size = 11 }, -- old trunks
+	{ kind = "Crate", point = M.at.atticHallEnd, ahead = 150, lane = -14, size = 11 },
+	{ kind = "Frog", look = "Owl", point = M.at.atticHallEnd, ahead = 215, hops = 2, period = 4, offset = 2 }, -- owls hopping about
+	{ kind = "Frog", look = "Owl", point = M.at.atticHallEnd, ahead = 223, hops = 2, period = 4, offset = 2, reverse = true },
+	{ kind = "Room", from = M.at.sheets, to = M.at.sheetsEnd, width = 120 },
+	{ kind = "Wind", from = M.at.sheetsEnd, to = M.at.window, push = 50, period = 5, active = 1.5 }, -- a draught through the broken window
+	{ kind = "Flat", from = M.at.window, to = M.at.roof },
+	{ kind = "Banner", point = M.at.ladder, text = "UP THE HATCH" },
+	{ kind = "Boost", point = M.at.ladder, ahead = 5, lane = 0 },
+	-- The Roof
+	{ kind = "Room", from = M.at.rooftop, to = M.at.rooftopEnd, width = 110 },
+	{ kind = "Banner", point = M.at.rooftop, text = "ROOFTOP ESCAPE" },
+	{ kind = "Sign", point = M.at.rooftop, ahead = 30, side = "right", text = "SKYLIGHTS >" },
+	{ kind = "Wind", from = M.at.rooftopEnd, to = M.at.chimneys, push = 45, period = 5, active = 1.5 },
+	{ kind = "Rock", point = M.at.rooftopEnd, ahead = 70, lane = -14, size = 12 }, -- chimney stacks
+	{ kind = "Rock", point = M.at.rooftopEnd, ahead = 160, lane = 13, size = 12 },
+	{ kind = "Rock", point = M.at.rooftopEnd, ahead = 250, lane = -10, size = 12 },
+	{ kind = "Rock", point = M.at.rooftopEnd, ahead = 330, lane = 14, size = 12 },
+	{ kind = "Room", from = M.at.chimneys, to = M.at.chimneysEnd, width = 110 },
+	{ kind = "Flat", from = M.at.descent, to = M.at.garden },
+	paint(M.at.descent, M.at.leap, SLATE, Enum.Material.Slate), -- roof tiles
+	{ kind = "Banner", point = M.at.porchRoof, ahead = -80, text = "LEAP OF FAITH" },
+	{ kind = "Boost", point = M.at.porchRoof, ahead = -30, lane = 0, time = 1.6 },
+	{ kind = "Ramp", point = M.at.leap, ahead = -10, angle = 14, length = 26, gap = 120 },
+	paint(M.at.garden, M.last(), GRAVEL, Enum.Material.Pebble), -- the gravel drive
+	{ kind = "NoWalls", from = M.at.garden, to = M.at.gates }, -- (land short of the drive and you can still drive onto it)
+	{ kind = "Banner", point = M.at.gates, text = "FRONT GATES" },
+}
+
+------------------------------------------------------------------------
+-- THE BRANCHES (a branch that starts or ends on another branch is listed after it)
+------------------------------------------------------------------------
+-- The Cellar
+local wineRacks = turtle(V(140, 0, 432), 75)
+wineRacks.go(20).turn(-45, 100).turn(60, 100).mark("racks")
+wineRacks.go(90).mark("racksEnd").go(30).mark("racks2").go(80).mark("racks2End")
+wineRacks.turn(60, 90).go(10).turn(-50, 90).go(10)
+
+local mouseHole = turtle(V(335, 0, 545), 70)
+mouseHole.turn(-40, 60).turn(90, 60).turn(30, 60).turn(-25, 60)
+
+local heatingPipe = turtle(V(91, 0, 340), 60)
+heatingPipe.turn(70, 90).go(30).turn(-30, 150).go(130).turn(-55, 150).go(20).turn(25, 150).go(20)
+
+-- The Ground Floor
+-- (both leave the kitchen floor before they start to climb, so their ramps don't
+-- stick up out of the main road)
+local tabletop = turtle(V(1035, 90, 922), 300)
+tabletop.go(40).turn(-30, 100).go(90, 22).mark("table").go(215).mark("tableEdge").go(70, -22).turn(-30, 120).go(40)
+
+local countertop = turtle(V(1000, 90, 812), 200)
+countertop.go(30).turn(70, 70).mark("stool").go(110, 27).mark("counter").go(40).mark("counterEnd").go(130).mark("counter2").go(40).mark("counter2End")
+countertop.go(80, -27).turn(60, 90).go(20)
+
+local stovetop = turtle(V(800, 117, 732), 270)
+stovetop.turn(-50, 55).turn(50, 55).turn(50, 55).turn(-50, 55)
+
+-- The Bedrooms
+local bedroom = turtle(V(420, 180, 290), 60)
+bedroom.turn(-60, 90).turn(90, 90).mark("bedroom").go(60).mark("bedroomEnd").go(80, 24).mark("bed").go(60).mark("bedEnd")
+bedroom.go(80, -24).mark("bedroom2").go(60).mark("bedroom2End").turn(45, 90).go(40)
+
+local underBed = turtle(V(575, 180, 488), 45)
+underBed.go(30).turn(45, 60).go(180).turn(45, 60).turn(-20, 60)
+
+-- The Attic
+-- (off the attic floor before climbing, and back down before the next room)
+local rafters = turtle(V(1090, 270, 915), 225)
+rafters.go(70).turn(25, 100).go(90, 24).turn(20, 120).mark("rafters").go(50).mark("raftersEnd")
+rafters.go(40).go(80, -24).mark("landing").go(40).mark("landingEnd").turn(30, 150).go(20)
+
+local tightrope = turtle(V(860, 294, 792), 245)
+tightrope.go(33).turn(25, 100).go(80, -24).go(20) -- (comes down alongside the Rafters, at the same height)
+
+-- The Roof
+local skylights = turtle(V(500, 330, 390), 150)
+skylights.go(40).turn(-60, 120).go(260).turn(-50, 120).go(40).turn(30, 120)
+
+local BRANCHES = {
+	{
+		name = "Wine Racks", -- between towering racks of barrels
+		width = 30,
+		POINTS = wineRacks.POINTS,
+		FEATURES = {
+			{ kind = "Banner", point = 3, text = "WINE RACKS" },
+			{ kind = "Room", from = wineRacks.at.racks, to = wineRacks.at.racksEnd, width = 70 },
+			{ kind = "Room", from = wineRacks.at.racks2, to = wineRacks.at.racks2End, width = 70 },
+			{ kind = "Barrel", point = wineRacks.at.racks2End, ahead = 35, lane = 6, size = 9 },
+			{ kind = "Boost", point = wineRacks.at.racks2, ahead = 20, lane = -8 },
+		},
+	},
+	{
+		name = "Mouse Hole", -- splits off the Wine Racks: through a hole in the wall, low and narrow
+		width = 24,
+		POINTS = mouseHole.POINTS,
+		FEATURES = {
+			{ kind = "Tunnel", from = 2, to = mouseHole.last() - 1 },
+			{ kind = "Boost", point = 4, lane = 0 },
+		},
+	},
+	{
+		name = "Heating Pipe", -- inside a giant pipe
+		width = 28,
+		POINTS = heatingPipe.POINTS,
+		FEATURES = {
+			{ kind = "Tunnel", from = 2, to = heatingPipe.last() - 1 },
+			paint(2, heatingPipe.last() - 1, C(120, 120, 130), Enum.Material.Metal),
+			{ kind = "Boost", point = 6, lane = 0 },
+		},
+	},
+	{
+		name = "Tabletop", -- up onto the dining table, between the cups, and jump off the end
+		width = 30,
+		POINTS = tabletop.POINTS,
+		FEATURES = {
+			{ kind = "NoWalls", from = 3, to = tabletop.at.tableEdge }, -- (open from the start of the climb, so its edge stays clear of the main road)
+			paint(tabletop.at.table, tabletop.at.tableEdge, TABLECLOTH, Enum.Material.Fabric),
+			{ kind = "Barrel", point = tabletop.at.table, ahead = 80, lane = 7, size = 8 }, -- cups
+			{ kind = "Barrel", point = tabletop.at.table, ahead = 170, lane = -7, size = 8 },
+			{ kind = "Boost", point = tabletop.at.tableEdge, ahead = -70, lane = 0 },
+			{ kind = "Ramp", point = tabletop.at.tableEdge, ahead = -30, angle = 12, length = 26, gap = 40 },
+		},
+	},
+	{
+		name = "Countertop", -- up a step stool onto the kitchen counter
+		width = 30,
+		POINTS = countertop.POINTS,
+		FEATURES = {
+			{ kind = "NoWalls", from = countertop.at.counter, to = countertop.at.counter2End },
+			paint(countertop.at.counter, countertop.at.counter2End, MARBLE, Enum.Material.Marble),
+			{ kind = "Room", from = countertop.at.counter, to = countertop.at.counterEnd, width = 70 },
+			{ kind = "Room", from = countertop.at.counter2, to = countertop.at.counter2End, width = 70 },
+			{ kind = "Boulder", point = countertop.at.counterEnd, ahead = 40, radius = 4, period = 3, color = C(205, 160, 110), material = Enum.Material.Wood }, -- a rolling pin
+		},
+	},
+	{
+		name = "Stovetop", -- splits off the Countertop: across the stove, round the hot rings
+		width = 26,
+		POINTS = stovetop.POINTS,
+		FEATURES = {
+			{ kind = "NoWalls", from = 1, to = stovetop.last() },
+			paint(1, stovetop.last(), IRON, Enum.Material.Metal),
+			{ kind = "LavaPool", point = 1, ahead = 55, lane = 6, radius = 5 }, -- hot rings
+			{ kind = "LavaPool", point = 1, ahead = 105, lane = -6, radius = 5 },
+			{ kind = "LavaPool", point = 1, ahead = 155, lane = 6, radius = 5 },
+		},
+	},
+	{
+		name = "Master Bedroom", -- across the giant bed
+		width = 30,
+		POINTS = bedroom.POINTS,
+		FEATURES = {
+			{ kind = "Banner", point = 3, text = "MASTER BEDROOM" },
+			{ kind = "Room", from = bedroom.at.bedroom, to = bedroom.at.bedroomEnd, width = 70 },
+			{ kind = "Room", from = bedroom.at.bedroom2, to = bedroom.at.bedroom2End, width = 64 },
+			{ kind = "NoWalls", from = bedroom.at.bedroomEnd, to = bedroom.at.bedroom2 },
+			paint(bedroom.at.bedroomEnd, bedroom.at.bedroom2, QUILT, Enum.Material.Fabric),
+			{ kind = "Boost", point = bedroom.at.bed, lane = 0 },
+		},
+	},
+	{
+		name = "Under the Bed", -- splits off the Master Bedroom: dusty, dark, full of lost toys
+		width = 26,
+		POINTS = underBed.POINTS,
+		FEATURES = {
+			{ kind = "Tunnel", from = 2, to = underBed.last() - 1 },
+			{ kind = "Rough", from = 5, to = 7 }, -- dust bunnies
+			{ kind = "Block", point = 4, lane = 6, size = 7 },
+			{ kind = "Block", point = 8, lane = -6, size = 7 },
+		},
+	},
+	{
+		name = "The Rafters", -- along the beams high above the attic floor
+		width = 28,
+		POINTS = rafters.POINTS,
+		FEATURES = {
+			{ kind = "Banner", point = rafters.at.rafters, ahead = -20, text = "THE RAFTERS" },
+			{ kind = "NoWalls", from = 2, to = rafters.last() - 1 },
+			paint(2, rafters.last() - 1, BEAM, Enum.Material.Wood),
+			{ kind = "Room", from = rafters.at.rafters, to = rafters.at.raftersEnd, width = 60 },
+			{ kind = "Room", from = rafters.at.landing, to = rafters.at.landingEnd, width = 80 }, -- (the Tightrope comes back in here)
+			{ kind = "Boost", point = rafters.at.raftersEnd, ahead = 10, lane = 0 },
+		},
+	},
+	{
+		name = "Tightrope", -- splits off the Rafters: a narrow beam on its own
+		width = 20,
+		POINTS = tightrope.POINTS,
+		FEATURES = {
+			{ kind = "NoWalls", from = 1, to = tightrope.last() },
+			paint(1, tightrope.last(), C(125, 88, 56), Enum.Material.Wood),
+			{ kind = "Boost", point = 4, lane = 0 },
+		},
+	},
+	{
+		name = "Skylights", -- across the glass skylights over the attic
+		width = 30,
+		POINTS = skylights.POINTS,
+		FEATURES = {
+			{ kind = "Banner", point = 4, text = "SKYLIGHTS" },
+			{ kind = "NoWalls", from = 2, to = skylights.last() - 1 },
+			paint(2, skylights.last() - 1, C(170, 210, 255), Enum.Material.Glass),
+			{ kind = "Boost", point = 6, lane = 0 },
+			{ kind = "Boost", point = 11, lane = 0 },
+		},
+	},
+}
+
+------------------------------------------------------------------------
+-- THE HOUSE (built by RaceServer's MansionBuilder, in the same numbers as POINTS)
+------------------------------------------------------------------------
+local MANSION = {
+	x = { -150, 1300 }, -- the house's walls
+	z = { 150, 1050 },
+	floors = { 0, 90, 180, 270 }, -- cellar, ground floor, bedrooms, attic
+	roof = 330,
+	ground = 90, -- the lawn round the house (the cellar is underground)
+	cliffBottom = -34, -- down to the lake
+	garden = { x = { -800, 2500 }, z = { 150, 1500 } },
+	-- each floor's carpet (off the road) and wallpaper
+	looks = {
+		{ floor = C(95, 88, 82), floorMaterial = Enum.Material.Cobblestone, wall = C(105, 95, 88), wallMaterial = Enum.Material.Brick },
+		{ floor = C(110, 70, 45), floorMaterial = Enum.Material.WoodPlanks, wall = C(52, 88, 70) },
+		{ floor = C(95, 70, 130), floorMaterial = Enum.Material.Fabric, wall = C(160, 120, 160) },
+		{ floor = C(115, 88, 62), floorMaterial = Enum.Material.WoodPlanks, wall = C(100, 78, 58), wallMaterial = Enum.Material.Wood },
+	},
+	roofLook = { floor = SLATE, floorMaterial = Enum.Material.Slate },
+	-- rooms with their own floor (level = which floor)
+	areas = {
+		{ level = 1, x = { 760, 1300 }, z = { 150, 650 }, floor = C(170, 185, 195), floorMaterial = Enum.Material.Marble }, -- laundry tiles
+		{ level = 2, x = { 900, 1300 }, z = { 650, 1050 }, floor = C(225, 225, 228), floorMaterial = Enum.Material.Marble }, -- kitchen tiles
+		{ level = 2, x = { 300, 580 }, z = { 650, 1050 }, floor = C(210, 205, 195), floorMaterial = Enum.Material.Marble }, -- foyer
+		{ level = 3, x = { 580, 900 }, z = { 150, 400 }, floor = C(80, 150, 90), floorMaterial = Enum.Material.Fabric }, -- playroom mat
+		{ level = 3, x = { 900, 1300 }, z = { 150, 400 }, floor = C(60, 60, 68), floorMaterial = Enum.Material.Rubber }, -- gym mats
+	},
+	-- inner walls: level, then x/z of each end (doorways are cut where roads go through)
+	walls = {
+		{ level = 1, 280, 150, 280, 1050 },
+		{ level = 1, 560, 150, 560, 650 },
+		{ level = 1, 760, 150, 760, 650 },
+		{ level = 1, 280, 650, 1300, 650 },
+		{ level = 2, 900, 650, 900, 1050 },
+		{ level = 2, 580, 650, 580, 1050 },
+		{ level = 2, 300, 650, 1300, 650 },
+		{ level = 3, 300, 400, 820, 400 },
+		{ level = 3, 830, 400, 830, 1050 },
+		{ level = 3, 1100, 150, 1100, 400 },
+	},
+	-- blocks under raised road: staircases, ramps onto furniture, the porch roof
+	fills = {
+		{ from = V(1162, 0, 312), to = V(1162, 0, 672), base = 0, width = 90, color = C(110, 75, 48) }, -- cellar stairs
+		{ from = V(272, 0, 682), to = V(272, 0, 322), base = 90, width = 120, color = C(225, 220, 210), material = Enum.Material.Marble }, -- grand staircase
+		{ from = V(1216, 0, 443), to = V(1216, 0, 803), base = 180, width = 90, color = C(95, 62, 42) }, -- attic stairs
+		{ from = V(292, 0, 717), to = V(292, 0, 477), base = 270, width = 50, color = C(120, 85, 52) }, -- the ladder
+		{ from = V(955, 0, 955), to = V(860, 0, 955), base = 90, width = 40, color = C(140, 30, 45), material = Enum.Material.Fabric }, -- a chair onto the table
+		{ from = V(930, 0, 738), to = V(814, 0, 738), base = 90, width = 40, color = C(175, 185, 165) }, -- a step stool onto the counter
+		{ from = V(604, 0, 738), to = V(524, 0, 738), base = 90, width = 40, color = C(175, 185, 165) },
+		{ from = V(615, 0, 458), to = V(695, 0, 458), base = 180, width = 70, color = QUILT, material = Enum.Material.Fabric }, -- the quilt hanging over the bed
+		{ from = V(755, 0, 458), to = V(835, 0, 458), base = 180, width = 70, color = QUILT, material = Enum.Material.Fabric },
+		{ from = V(1040, 0, 866), to = V(900, 0, 812), base = 270, width = 34, depth = 6, color = BEAM }, -- the rafters
+		{ from = V(900, 0, 804), to = V(708, 0, 804), base = 270, width = 34, depth = 6, color = BEAM },
+		{ from = V(860, 0, 792), to = V(690, 0, 772), base = 270, width = 26, depth = 6, color = BEAM }, -- the tightrope
+		{ from = V(1302, 0, 417), to = V(1795, 0, 417), base = 90, width = 80, color = C(60, 55, 75), material = Enum.Material.Slate }, -- the porch roof
+	},
+	props = {
+		-- Cellar
+		{ "WineRack", V(-125, 0, 520), -90, length = 320 },
+		{ "WineRack", V(110, 0, 650), 0, length = 240 },
+		{ "Boiler", V(430, 0, 750) },
+		{ "Boiler", V(470, 0, 210), 180 },
+		{ "Washer", V(890, 0, 480), 180 },
+		{ "Washer", V(925, 0, 475), 180 },
+		{ "Washer", V(960, 0, 470), 180 },
+		{ "Washer", V(995, 0, 465), 180 },
+		{ "Trunk", V(620, 0, 820), 20 },
+		{ "Trunk", V(700, 0, 780), -15 },
+		{ "Sheet", V(820, 0, 860), 0 },
+		{ "Portrait", V(160, 45, 157), 180, kind = "Fred", color = C(70, 100, 60) },
+		-- Ground floor
+		{ "Table", V(750, 90, 900), 0, size = V(220, 22, 170) },
+		{ "Counter", V(705, 90, 715), 0, size = V(210, 27, 90) },
+		{ "Counter", V(1050, 90, 1020), 180, size = V(240, 27, 50) },
+		{ "Fridge", V(1240, 90, 1005), 0 },
+		{ "Chandelier", V(487, 160, 862), range = 110 },
+		{ "Chandelier", V(720, 160, 890) },
+		{ "Chandelier", V(1050, 160, 860) },
+		{ "Armor", V(500, 90, 1000), 180 },
+		{ "Armor", V(420, 90, 1000), 180 },
+		{ "Clock", V(620, 90, 1030), 180 },
+		{ "Bookshelf", V(-140, 90, 700), -90, size = V(500, 75, 20) },
+		{ "Portrait", V(487, 140, 1046), 0, kind = "GrandDad", color = C(60, 70, 130) },
+		-- Bedrooms
+		{ "Bed", V(725, 180, 495), 90, size = V(140, 24, 70) },
+		{ "Wardrobe", V(1000, 180, 1020), 180 },
+		{ "Blocks", V(700, 180, 200), 0 },
+		{ "Blocks", V(820, 180, 230), 0, count = 4 },
+		{ "Dumbbell", V(1150, 180, 200), 30 },
+		{ "Dumbbell", V(1200, 180, 230), -20 },
+		{ "Chandelier", V(725, 250, 700) },
+		{ "Portrait", V(600, 225, 1046), 0, kind = "Cat", color = C(120, 60, 90) },
+		-- Attic
+		{ "Trunk", V(300, 270, 300), 10 },
+		{ "Trunk", V(420, 270, 260), -25 },
+		{ "Sheet", V(600, 270, 300), 0 },
+		{ "Sheet", V(760, 270, 250), 0, size = V(60, 40, 40) },
+		{ "Mannequin", V(900, 270, 300), 0 },
+		{ "Sheet", V(1050, 270, 330), 0 },
+		{ "Mannequin", V(150, 270, 1000), 0 },
+		{ "Trunk", V(-50, 270, 1000), 5 },
+		{ "Beam", V(575, 293, 600), 90, length = 880 },
+		{ "Post", V(450, 270, 600), 0, height = 60 },
+		{ "Post", V(700, 270, 600), 0, height = 60 },
+		{ "Post", V(1000, 270, 600), 0, height = 60 },
+		-- Roof: a steep slate roof over the back half (the roads use the front half)
+		{ "Gable", V(575, 330, 825), 0, length = 1450, depth = 450, height = 90 },
+		{ "Chimney", V(200, 330, 870), 0, height = 125 },
+		{ "Chimney", V(700, 330, 900), 0, height = 135 },
+		{ "Chimney", V(1100, 330, 870), 0, height = 120 },
+		{ "Turret", V(-150, 330, 1050), 0, radius = 45, height = 90 },
+		{ "Turret", V(1300, 330, 1050), 0, radius = 45, height = 110 },
+		{ "Turret", V(-150, 330, 150), 0, radius = 50, height = 130 },
+		{ "Bat", V(400, 420, 600), 30, scale = 3 },
+		{ "Bat", V(900, 450, 700), -40, scale = 3 },
+		{ "Bat", V(1500, 380, 500), 70, scale = 3 },
+		{ "Moon", V(600, 800, 2600), 0, size = 320 },
+		-- The garden
+		{ "Hedge", V(2125, 90, 700), 90, length = 230 },
+		{ "Hedge", V(2240, 90, 700), 90, length = 230 },
+		{ "GatePost", V(2130, 90, 845), 0 },
+		{ "GatePost", V(2234, 90, 845), 0 },
+		{ "Fence", V(1715, 90, 845), 0, length = 830 },
+		{ "Fence", V(2367, 90, 845), 0, length = 260 },
+		{ "Topiary", V(1900, 90, 650), 0 },
+		{ "Topiary", V(2000, 90, 250), 0 },
+		{ "Topiary", V(1600, 90, 250), 0 },
+		{ "Oak", V(1650, 90, 700), 0, scale = 9 },
+		{ "Pumpkin", V(1900, 90, 330), 0, scale = 1.6, light = true },
+		{ "Pumpkin", V(2050, 90, 520), 0, scale = 1.3 },
+		{ "Pumpkin", V(2290, 90, 600), 0, scale = 1.4, light = true },
+		{ "Pumpkin", V(2080, 90, 820), 0, scale = 1.2 },
+		{ "Pumpkin", V(-60, 90, 1200), 0, scale = 2, light = true },
+	},
+}
+
+return {
+	id = "Mansion",
+	name = "Moonlight Manor",
+	blurb = "Climb a giant haunted mansion from the creepy cellar to the roof, then leap into the garden!",
+	theme = "Mansion",
+	color = C(170, 120, 255),
+	ARCH_SPACING = 0, -- (no glowing arches indoors)
+	PILLARS = false, -- the house holds the roads up
+	MAX_BANK = 0, -- roads don't lean into corners indoors (a leaning road dips under the floor on the inside of the bend)
+	POINTS = M.POINTS,
+	FEATURES = FEATURES,
+	BRANCHES = BRANCHES,
+	MANSION = MANSION,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{E281F34E-3838-44A8-A655-FD052292A90D}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">Mansion</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+						<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85000dcf88</UniqueId>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="ModuleScript" referent="RBX6268891265984B93B1B2F1B5D326E883">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[--[[
+	MansionBuilder  -  builds the giant house around Moonlight Manor's roads
+	(RaceServer calls it for any track with a MANSION table; see the Mansion
+	module inside Tracks).
+
+	  floors   one slab per floor, holes cut where a staircase comes up through it.
+	           Slabs are solid, slow carpet you can drive on (RaceTrack.Walkable):
+	           fall off a table or a bed and you land on the floor, and can
+	           drive back onto the road. The slab above is the ceiling.
+	  walls    the outside walls (with lit windows) and the inner walls between
+	           rooms. Both are solid. Doorways are cut wherever a road goes
+	           through a wall, just big enough for it.
+	  props    furniture and decorations: { "Kind", position, yaw, ... } in the
+	           track's own numbers (like POINTS). Furniture is see-through for
+	           karts (nothing to snag on); the roads on top of tables, counters
+	           and beds are what you drive on.
+	  fills    solid-looking blocks under a stretch of road (staircases, the
+	           ramps up onto furniture, the porch roof)
+	Outside: the cliff under the house, the lawn (solid, slow), the garden,
+	the moon. In Studio it also warns if a wall stands in the way of a road.
+]]
+
+local RunService = game:GetService("RunService")
+
+local MansionBuilder = {}
+
+local function hsv(h, s, v)
+	return Color3.fromHSV(h, s, v)
+end
+local C = Color3.fromRGB
+local DARK_WOOD = C(70, 42, 30)
+local WOOD = C(120, 78, 46)
+local GOLD = C(225, 185, 90)
+local STONE = C(88, 84, 100) -- the outside of the house
+local CANDLE = C(255, 210, 130)
+
+function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: { Vector3 }, halves: { number }, h)
+	local spec = cfg.MANSION
+	local origin = cfg.ORIGIN
+	local walls = track:FindFirstChild("Walls") :: Instance
+	local walkable = track:FindFirstChild("Walkable") or h.newFolder("Walkable", track)
+	local function W(x: number, y: number, z: number): Vector3
+		return origin + Vector3.new(x, y, z)
+	end
+	-- A decoration (karts go through it)
+	local function deco(props): BasePart
+		local wedge = props.Shape == "Wedge"
+		if wedge then
+			props.Shape = nil
+		end
+		return h.newPart(if wedge then "WedgePart" else "Part", h.ghost(props), parent)
+	end
+	local function ball(cf: CFrame, size: Vector3, color: Color3, material: Enum.Material?): BasePart
+		local p = deco({ Size = size, CFrame = cf, Color = color, Material = material or Enum.Material.SmoothPlastic })
+		local mesh = Instance.new("SpecialMesh")
+		mesh.MeshType = Enum.MeshType.Sphere
+		mesh.Parent = p
+		return p
+	end
+	local function cylinder(cf: CFrame, length: number, diameter: number, color: Color3, material: Enum.Material?): BasePart
+		-- `cf` points along the cylinder's length (its X axis)
+		return deco({ Shape = Enum.PartType.Cylinder, Size = Vector3.new(length, diameter, diameter), CFrame = cf, Color = color, Material = material or Enum.Material.SmoothPlastic })
+	end
+	local function upright(cf: CFrame): CFrame
+		return cf * CFrame.Angles(0, 0, math.rad(90))
+	end
+	local function light(part: BasePart, range: number, brightness: number, color: Color3?)
+		local l = Instance.new("PointLight")
+		l.Range = range
+		l.Brightness = brightness
+		l.Color = color or CANDLE
+		l.Shadows = false
+		l.Parent = part
+	end
+
+	local x0, x1, z0, z1 = spec.x[1], spec.x[2], spec.z[1], spec.z[2]
+	local levels = table.clone(spec.floors)
+	table.insert(levels, spec.roof)
+
+	--------------------------------------------------------------------
+	-- FLOORS: one slab per level, built in strips; tiles where a road comes
+	-- up from below (the top of a staircase) are left out
+	--------------------------------------------------------------------
+	local TILE = 30
+	local floorParts: { BasePart } = {} -- (checked against the roads at the end, like the walls)
+	for k, y in levels do
+		local look = spec.looks[k] or spec.roofLook
+		local worldY = origin.Y + y
+		local rising = {} -- road samples that come up through this floor
+		for i, p in samples do
+			if p.Y > worldY - 32 and p.Y < worldY - 0.05 then
+				table.insert(rising, i)
+			end
+		end
+		local function hole(ax: number, az: number, bx: number, bz: number): boolean
+			for _, i in rising do
+				local p, e = samples[i], halves[i] + 3
+				if p.X > ax - e and p.X < bx + e and p.Z > az - e and p.Z < bz + e then
+					return true
+				end
+			end
+			return false
+		end
+		local function lookAt(x: number, z: number)
+			for _, area in spec.areas do
+				if area.level == k and x >= area.x[1] and x <= area.x[2] and z >= area.z[1] and z <= area.z[2] then
+					return area
+				end
+			end
+			return look
+		end
+		local cols = math.ceil((x1 - x0) / TILE)
+		local rows = math.ceil((z1 - z0) / TILE)
+		for r = 0, rows - 1 do
+			local az, bz = z0 + r * TILE, math.min(z1, z0 + (r + 1) * TILE)
+			local runStart, runLook = nil, nil
+			local function finish(c: number)
+				if runStart then
+					local ax, bx = x0 + runStart * TILE, math.min(x1, x0 + c * TILE)
+					local a, b = W(ax, y, az), W(bx, y, bz)
+					table.insert(floorParts, h.newPart("Part", {
+						Name = "Floor",
+						Size = Vector3.new(b.X - a.X, 6, b.Z - a.Z),
+						CFrame = CFrame.new((a.X + b.X) / 2, worldY - 3.25, (a.Z + b.Z) / 2),
+						Color = runLook.floor,
+						Material = runLook.floorMaterial or Enum.Material.Fabric,
+						CanTouch = false,
+						Attributes = { OffRoad = true }, -- slow, like the carpet beside the road
+					}, walkable))
+				end
+				runStart = nil
+			end
+			for c = 0, cols - 1 do
+				local ax, bx = x0 + c * TILE, math.min(x1, x0 + (c + 1) * TILE)
+				local tileLook = lookAt((ax + bx) / 2, (az + bz) / 2)
+				local keep = not hole(ax + origin.X, az + origin.Z, bx + origin.X, bz + origin.Z)
+				if not keep or tileLook ~= runLook then
+					finish(c)
+				end
+				if keep and not runStart then
+					runStart, runLook = c, tileLook
+				end
+			end
+			finish(cols)
+		end
+	end
+
+	--------------------------------------------------------------------
+	-- WALLS with doorways where roads go through them
+	--------------------------------------------------------------------
+	local wallParts: { BasePart } = {}
+	-- How steeply the road climbs at sample i (0 = flat; sample lists of different roads
+	-- follow on from each other, so a big jump to the next one doesn't count)
+	local function grade(i: number): number
+		local a, b = samples[i - 1], samples[i + 1]
+		if not a or not b then
+			return 0
+		end
+		local flat = Vector3.new(b.X - a.X, 0, b.Z - a.Z).Magnitude
+		return if flat > 1 and flat < 40 then math.abs(b.Y - a.Y) / flat else 0
+	end
+	-- A wall from (ax, az) to (bx, bz) (track numbers), from height y0 to y1
+	local function wall(ax: number, az: number, bx: number, bz: number, y0: number, y1: number, thick: number, color: Color3, material: Enum.Material, solid: boolean, out: number?, panels: boolean?)
+		local a, b = Vector3.new(ax, 0, az), Vector3.new(bx, 0, bz)
+		local along = (b - a).Unit
+		local outward = Vector3.new(along.Z, 0, -along.X) -- (the house's sides go round anticlockwise, so this points outside)
+		a += outward * (out or 0)
+		local length = (b - a).Magnitude
+		-- The doorways: { from, to (along the wall), sill, top (heights) }
+		local doors = {}
+		for i, p in samples do
+			local rel = Vector3.new(p.X - origin.X, 0, p.Z - origin.Z) - a
+			local s, t = rel:Dot(along), rel:Dot(outward)
+			local half = halves[i] + 6
+			local py = p.Y - origin.Y
+			if math.abs(t) < thick / 2 + 14 and s > -half and s < length + half and py + 40 > y0 and py - 2 < y1 then
+				-- (a road climbing through at an angle is lower at one edge than in the middle)
+				table.insert(doors, { s - half, s + half, py - 1.5 - halves[i] * grade(i), py + 40 })
+			end
+		end
+		local cuts = { 0, length }
+		for _, door in doors do
+			for _, x in { door[1], door[2] } do
+				if x > 0 and x < length then
+					table.insert(cuts, x)
+				end
+			end
+		end
+		table.sort(cuts)
+		local function block(s0: number, s1: number, b0: number, b1: number)
+			if s1 - s0 < 0.2 or b1 - b0 < 0.2 then
+				return
+			end
+			local mid = a + along * ((s0 + s1) / 2)
+			local props = {
+				Name = "HouseWall",
+				Size = Vector3.new(s1 - s0, b1 - b0, thick),
+				CFrame = CFrame.fromMatrix(W(mid.X, (b0 + b1) / 2, mid.Z), along, Vector3.yAxis), -- (its length runs along X)
+				Color = color,
+				Material = material,
+			}
+			if solid then
+				props.CanTouch = false
+				table.insert(wallParts, h.newPart("Part", props, walls))
+			else
+				deco(props)
+			end
+			-- dark wooden panelling along the bottom of the wall, with a gold rail on top
+			if panels and b0 < y0 + 1 then
+				local tall = math.min(20, b1 - b0)
+				local spot = CFrame.fromMatrix(W(mid.X, b0 + tall / 2, mid.Z), along, Vector3.yAxis)
+				deco({ Name = "Panelling", Size = Vector3.new(s1 - s0, tall, thick + 1), CFrame = spot, Color = DARK_WOOD, Material = Enum.Material.Wood })
+				if tall >= 20 then
+					deco({ Name = "Rail", Size = Vector3.new(s1 - s0, 1.2, thick + 1.6), CFrame = spot * CFrame.new(0, tall / 2, 0), Color = GOLD, Material = Enum.Material.Wood })
+				end
+			end
+		end
+		for c = 1, #cuts - 1 do
+			local s0, s1 = cuts[c], cuts[c + 1]
+			local mid = (s0 + s1) / 2
+			local gaps = {}
+			for _, door in doors do
+				if door[1] < mid and door[2] > mid then
+					table.insert(gaps, door)
+				end
+			end
+			table.sort(gaps, function(p, q)
+				return p[3] < q[3]
+			end)
+			local yy = y0
+			for _, gap in gaps do
+				block(s0, s1, yy, math.min(gap[3], y1))
+				yy = math.max(yy, gap[4])
+			end
+			block(s0, s1, yy, y1)
+		end
+		return doors, a, along, outward, length
+	end
+
+	-- Outside walls, level by level: wallpaper inside, stone outside, lit windows
+	local sides = { { x0, z0, x1, z0 }, { x1, z0, x1, z1 }, { x1, z1, x0, z1 }, { x0, z1, x0, z0 } } -- (anticlockwise seen from above, so `outward` points out)
+	for k, y in spec.floors do
+		local top = levels[k + 1] - 6.25
+		local look = spec.looks[k]
+		for _, side in sides do
+			local doors, a, along, outward, length = wall(side[1], side[2], side[3], side[4], y - 6.25, top, 6, look.wall, look.wallMaterial or Enum.Material.SmoothPlastic, true, nil, k > 1)
+			wall(side[1], side[2], side[3], side[4], y - 6.25, top, 2, STONE, Enum.Material.Slate, false, 4)
+			-- a stone band round the outside at each floor
+			local mid = a + along * (length / 2)
+			deco({ Name = "Cornice", Size = Vector3.new(length + 12, 5, 4), CFrame = CFrame.fromMatrix(W(mid.X, y - 4, mid.Z), along, Vector3.yAxis) + outward * 6, Color = C(120, 115, 135), Material = Enum.Material.Slate })
+			-- windows every 90 studs, away from doorways
+			for s = 60, length - 60, 90 do
+				local clear = true
+				for _, door in doors do
+					clear = clear and (s < door[1] - 30 or s > door[2] + 30 or door[3] > y + 70)
+				end
+				if clear then
+					local spot = a + along * s
+					-- (cellar windows are little ones up by the ceiling; the attic is lower)
+					local high = if k == 1 then y + 60 elseif k == #spec.floors then y + 28 else y + 42
+					local cf = CFrame.fromMatrix(W(spot.X, high, spot.Z), along, Vector3.yAxis)
+					local size = if k == 1 then Vector3.new(30, 16, 0.6) elseif k == #spec.floors then Vector3.new(26, 28, 0.6) else Vector3.new(28, 44, 0.6)
+					deco({ Name = "WindowFrame", Size = Vector3.new(size.X + 6, size.Y + 6, 12), CFrame = cf, Color = DARK_WOOD, Material = Enum.Material.Wood })
+					-- outside: warm light glowing from inside; inside: cold moonlight
+					deco({ Name = "WindowGlow", Size = size, CFrame = cf + outward * 6.2, Color = C(255, 205, 120), Material = Enum.Material.Neon })
+					deco({ Name = "WindowMoon", Size = size, CFrame = cf - outward * 6.2, Color = C(120, 140, 210), Material = Enum.Material.Neon, Transparency = 0.2 })
+					for _, sign in { -1, 1 } do
+						deco({ Name = "WindowBar", Size = Vector3.new(2, size.Y, 1), CFrame = cf + outward * sign * 6.5, Color = DARK_WOOD })
+						deco({ Name = "WindowBar", Size = Vector3.new(size.X, 2, 1), CFrame = cf + outward * sign * 6.5, Color = DARK_WOOD })
+					end
+				end
+			end
+		end
+	end
+	-- A low parapet round the roof (with gaps where the roads go)
+	for _, side in sides do
+		wall(side[1], side[2], side[3], side[4], spec.roof - 6.25, spec.roof + 5, 4, STONE, Enum.Material.Slate, true)
+	end
+	-- Inner walls between rooms
+	for _, w in spec.walls do
+		local y = spec.floors[w.level]
+		local look = spec.looks[w.level]
+		wall(w[1], w[2], w[3], w[4], y - 0.25, levels[w.level + 1] - 6.25, 5, look.wall, look.wallMaterial or Enum.Material.SmoothPlastic, true, nil, w.level > 1)
+	end
+
+	--------------------------------------------------------------------
+	-- FILLS: blocks under a stretch of road, from `base` up to just under it
+	--------------------------------------------------------------------
+	for _, fill in spec.fills do
+		local a, b = fill.from, fill.to
+		local seg = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
+		for i, p in samples do
+			local rel = Vector3.new(p.X - origin.X - a.X, 0, p.Z - origin.Z - a.Z)
+			local t = rel:Dot(seg) / seg:Dot(seg)
+			local across = (rel - seg * t).Magnitude
+			local roadY = p.Y - origin.Y
+			if t >= 0 and t <= 1 and across < 20 and roadY > fill.base + 1 and roadY < fill.base + (fill.reach or 200) then
+				local nextP = samples[i + 1] or p
+				local prevP = samples[i - 1] or p
+				local dir = Vector3.new(nextP.X - prevP.X, 0, nextP.Z - prevP.Z)
+				if dir.Magnitude < 1 then
+					continue
+				end
+				local bottom = if fill.depth then roadY - 0.6 - fill.depth else fill.base
+				local height = roadY - 0.6 - bottom
+				deco({
+					Name = fill.name or "Fill",
+					Size = Vector3.new(fill.width, height, 13),
+					CFrame = CFrame.lookAt(W(p.X - origin.X, bottom + height / 2, p.Z - origin.Z), W(p.X - origin.X, bottom + height / 2, p.Z - origin.Z) + dir),
+					Color = fill.color,
+					Material = fill.material or Enum.Material.Wood,
+				})
+			end
+		end
+	end
+
+	--------------------------------------------------------------------
+	-- PROPS
+	--------------------------------------------------------------------
+	local BUILD = {}
+	-- A long table: top `size.X` by `size.Z`, `size.Y` high, legs at the corners, chairs along both sides
+	function BUILD.Table(cf: CFrame, p)
+		local size = p.size
+		deco({ Name = "TableTop", Size = Vector3.new(size.X, 3, size.Z), CFrame = cf * CFrame.new(0, size.Y - 1.75, 0), Color = WOOD, Material = Enum.Material.Wood })
+		deco({ Name = "TableCloth", Size = Vector3.new(size.X + 1, 8, size.Z * 0.5), CFrame = cf * CFrame.new(0, size.Y - 4.4, size.Z * 0.18), Color = C(235, 228, 215), Material = Enum.Material.Fabric, Transparency = 0.05 })
+		for _, sx in { -1, 1 } do
+			for _, sz in { -1, 1 } do
+				deco({ Name = "TableLeg", Size = Vector3.new(8, size.Y - 3, 8), CFrame = cf * CFrame.new(sx * (size.X / 2 - 6), (size.Y - 3) / 2, sz * (size.Z / 2 - 4)), Color = WOOD, Material = Enum.Material.Wood })
+			end
+		end
+		for _, sz in { -1, 1 } do -- chairs pushed in along both sides
+			for x = -size.X / 2 + 40, size.X / 2 - 40, 60 do
+				local chair = cf * CFrame.new(x, 0, sz * (size.Z / 2 + 18)) * CFrame.Angles(0, if sz > 0 then math.pi else 0, 0)
+				deco({ Name = "ChairSeat", Size = Vector3.new(30, 3, 28), CFrame = chair * CFrame.new(0, 13.5, 0), Color = C(140, 30, 45), Material = Enum.Material.Fabric })
+				deco({ Name = "ChairBack", Size = Vector3.new(30, 34, 3), CFrame = chair * CFrame.new(0, 30, 13), Color = WOOD, Material = Enum.Material.Wood })
+				for _, lx in { -12, 12 } do
+					for _, lz in { -11, 11 } do
+						deco({ Name = "ChairLeg", Size = Vector3.new(3, 12, 3), CFrame = chair * CFrame.new(lx, 6, lz), Color = WOOD, Material = Enum.Material.Wood })
+					end
+				end
+			end
+		end
+		-- dinner on the table: plates and candlesticks down the middle
+		for x = -size.X / 2 + 30, size.X / 2 - 30, 55 do
+			local spot = cf * CFrame.new(x, size.Y, -size.Z * 0.3)
+			cylinder(upright(spot * CFrame.new(0, 0.3, 0)), 0.6, 18, C(240, 240, 245))
+			cylinder(upright(spot * CFrame.new(18, 6, 0)), 12, 3, GOLD, Enum.Material.Metal)
+			local flame = ball(spot * CFrame.new(18, 13.5, 0), Vector3.new(2, 3, 2), CANDLE, Enum.Material.Neon)
+			if x < -size.X / 2 + 90 or x > size.X / 2 - 90 then
+				light(flame, 50, 1.2)
+			end
+		end
+	end
+	-- Kitchen counters: a long block with cupboard doors, worktop on top
+	function BUILD.Counter(cf: CFrame, p)
+		local size = p.size
+		deco({ Name = "Cupboards", Size = Vector3.new(size.X, size.Y - 2, size.Z), CFrame = cf * CFrame.new(0, (size.Y - 2) / 2, 0), Color = C(200, 205, 190), Material = Enum.Material.Wood })
+		deco({ Name = "Worktop", Size = Vector3.new(size.X + 2, 2, size.Z + 2), CFrame = cf * CFrame.new(0, size.Y - 1.25, 0), Color = C(225, 222, 215), Material = Enum.Material.Marble })
+		for x = -size.X / 2 + 15, size.X / 2 - 15, 30 do
+			for _, sz in { -1, 1 } do
+				deco({ Name = "CupboardDoor", Size = Vector3.new(26, size.Y - 8, 0.6), CFrame = cf * CFrame.new(x, (size.Y - 2) / 2, sz * size.Z / 2), Color = C(175, 185, 165), Material = Enum.Material.Wood })
+				deco({ Name = "Knob", Size = Vector3.new(2, 2, 1.2), CFrame = cf * CFrame.new(x + 9, size.Y - 9, sz * size.Z / 2), Color = GOLD, Material = Enum.Material.Metal })
+			end
+		end
+	end
+	function BUILD.Fridge(cf: CFrame, p)
+		local size = p.size or Vector3.new(50, 85, 40)
+		deco({ Name = "Fridge", Size = size, CFrame = cf * CFrame.new(0, size.Y / 2, 0), Color = C(220, 230, 235), Material = Enum.Material.SmoothPlastic })
+		deco({ Name = "FridgeLine", Size = Vector3.new(size.X + 0.2, 1, size.Z + 0.2), CFrame = cf * CFrame.new(0, size.Y * 0.62, 0), Color = C(150, 160, 170) })
+		deco({ Name = "Handle", Size = Vector3.new(2, 18, 3), CFrame = cf * CFrame.new(size.X / 2 - 6, size.Y * 0.78, -size.Z / 2 - 1.5), Color = C(160, 165, 175), Material = Enum.Material.Metal })
+	end
+	function BUILD.Bookshelf(cf: CFrame, p)
+		local size = p.size
+		deco({ Name = "Bookshelf", Size = Vector3.new(size.X, size.Y, 4), CFrame = cf * CFrame.new(0, size.Y / 2, size.Z / 2 - 2), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		local rng = Random.new(math.floor(cf.X + cf.Z))
+		for y = 2, size.Y - 14, 16 do
+			deco({ Name = "Shelf", Size = Vector3.new(size.X, 2, size.Z), CFrame = cf * CFrame.new(0, y, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+			local x = -size.X / 2 + 2
+			while x < size.X / 2 - 6 do
+				local w = rng:NextNumber(2.5, 5)
+				local tall = rng:NextNumber(9, 13.5)
+				deco({ Name = "Book", Size = Vector3.new(w, tall, size.Z - 6), CFrame = cf * CFrame.new(x + w / 2, y + 1 + tall / 2, 0), Color = hsv(rng:NextNumber(), rng:NextNumber(0.4, 0.75), rng:NextNumber(0.35, 0.7)) })
+				x += w + 0.3
+			end
+		end
+	end
+	function BUILD.Clock(cf: CFrame, p) -- a grandfather clock
+		deco({ Name = "ClockCase", Size = Vector3.new(26, 80, 16), CFrame = cf * CFrame.new(0, 40, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		cylinder(cf * CFrame.new(0, 66, -8.2) * CFrame.Angles(0, math.rad(90), 0), 0.6, 20, C(245, 235, 210))
+		deco({ Name = "ClockHand", Size = Vector3.new(1, 8, 0.5), CFrame = cf * CFrame.new(0, 69, -8.6) * CFrame.Angles(0, 0, math.rad(30)), Color = C(30, 30, 30) })
+		cylinder(upright(cf * CFrame.new(0, 30, -8.3)) * CFrame.Angles(0, math.rad(90), 0), 0.5, 9, GOLD, Enum.Material.Metal)
+	end
+	function BUILD.Armor(cf: CFrame, p) -- a suit of armour on a stand
+		local steel, m = C(175, 180, 190), Enum.Material.Metal
+		deco({ Name = "Plinth", Size = Vector3.new(22, 4, 22), CFrame = cf * CFrame.new(0, 2, 0), Color = DARK_WOOD })
+		for _, s in { -1, 1 } do
+			deco({ Name = "ArmorLeg", Size = Vector3.new(6, 22, 7), CFrame = cf * CFrame.new(s * 4.5, 15, 0), Color = steel, Material = m })
+			deco({ Name = "ArmorArm", Size = Vector3.new(5, 18, 5), CFrame = cf * CFrame.new(s * 11, 34, 0), Color = steel, Material = m })
+		end
+		deco({ Name = "ArmorBody", Size = Vector3.new(16, 18, 10), CFrame = cf * CFrame.new(0, 35, 0), Color = steel, Material = m })
+		ball(cf * CFrame.new(0, 49, 0), Vector3.new(11, 12, 11), steel, m)
+		deco({ Name = "Visor", Size = Vector3.new(8, 1.5, 1), CFrame = cf * CFrame.new(0, 50, -5.4), Color = C(30, 30, 35) })
+		deco({ Name = "Plume", Size = Vector3.new(2, 8, 8), CFrame = cf * CFrame.new(0, 57, 2), Color = C(170, 30, 50) })
+	end
+	function BUILD.Chandelier(cf: CFrame, p) -- hangs from the ceiling: `cf` is where its ring is
+		cylinder(upright(cf * CFrame.new(0, 14, 0)), 26, 1, GOLD, Enum.Material.Metal)
+		for k = 0, 7 do
+			local a = k / 8 * math.pi * 2
+			local spot = cf * CFrame.new(math.cos(a) * 14, 0, math.sin(a) * 14)
+			deco({ Name = "Arm", Size = Vector3.new(15, 1, 1), CFrame = cf * CFrame.Angles(0, -a, 0) * CFrame.new(7, 0, 0), Color = GOLD, Material = Enum.Material.Metal })
+			cylinder(upright(spot * CFrame.new(0, 2.5, 0)), 5, 1.6, C(250, 245, 230))
+			ball(spot * CFrame.new(0, 6, 0), Vector3.new(1.6, 2.4, 1.6), CANDLE, Enum.Material.Neon)
+		end
+		local hub = ball(cf, Vector3.new(6, 8, 6), GOLD, Enum.Material.Metal)
+		light(hub, p.range or 90, 1.6)
+	end
+	-- A giant four-poster bed: mattress top at `size.Y`, pillows at the head (-X end)
+	function BUILD.Bed(cf: CFrame, p)
+		local size = p.size
+		deco({ Name = "Mattress", Size = Vector3.new(size.X, 5, size.Z), CFrame = cf * CFrame.new(0, size.Y - 2.75, 0), Color = C(245, 240, 235), Material = Enum.Material.Fabric })
+		deco({ Name = "Quilt", Size = Vector3.new(size.X * 0.7, 5.4, size.Z + 1), CFrame = cf * CFrame.new(size.X * 0.15, size.Y - 2.95, 0), Color = C(175, 70, 95), Material = Enum.Material.Fabric })
+		deco({ Name = "BedFrame", Size = Vector3.new(size.X + 4, 5, size.Z + 4), CFrame = cf * CFrame.new(0, size.Y - 7.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		for _, sx in { -1, 1 } do
+			for _, sz in { -1, 1 } do
+				deco({ Name = "BedPost", Size = Vector3.new(6, size.Y + 55, 6), CFrame = cf * CFrame.new(sx * (size.X / 2 + 2), (size.Y + 55) / 2, sz * (size.Z / 2 + 2)), Color = DARK_WOOD, Material = Enum.Material.Wood })
+			end
+		end
+		deco({ Name = "Headboard", Size = Vector3.new(4, 40, size.Z), CFrame = cf * CFrame.new(-size.X / 2 - 2, size.Y + 10, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		deco({ Name = "Canopy", Size = Vector3.new(size.X + 10, 3, size.Z + 10), CFrame = cf * CFrame.new(0, size.Y + 55, 0), Color = C(120, 40, 70), Material = Enum.Material.Fabric })
+	end
+	function BUILD.Wardrobe(cf: CFrame, p)
+		deco({ Name = "Wardrobe", Size = Vector3.new(60, 75, 25), CFrame = cf * CFrame.new(0, 37.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		for _, s in { -1, 1 } do
+			deco({ Name = "WardrobeDoor", Size = Vector3.new(27, 66, 0.6), CFrame = cf * CFrame.new(s * 14.5, 39, -12.6), Color = C(95, 58, 40), Material = Enum.Material.Wood })
+		end
+		-- a pair of glowing eyes peeking out of the gap (only a cat, honest)
+		for _, s in { -1, 1 } do
+			ball(cf * CFrame.new(s * 1.6, 45, -13), Vector3.new(1.4, 1.4, 0.6), C(200, 255, 120), Enum.Material.Neon)
+		end
+	end
+	function BUILD.Blocks(cf: CFrame, p) -- a heap of toy blocks
+		local rng = Random.new(math.floor(cf.X * 7 + cf.Z))
+		for _ = 1, p.count or 6 do
+			local s = rng:NextNumber(8, 14)
+			deco({ Name = "ToyBlock", Size = Vector3.one * s, CFrame = cf * CFrame.new(rng:NextNumber(-25, 25), s / 2, rng:NextNumber(-25, 25)) * CFrame.Angles(0, rng:NextNumber(0, 6), 0), Color = hsv(rng:NextNumber(), 0.6, 0.95) })
+		end
+	end
+	function BUILD.Dumbbell(cf: CFrame, p)
+		cylinder(cf * CFrame.new(0, 5, 0), 30, 3, C(60, 60, 66), Enum.Material.Metal)
+		for _, s in { -1, 1 } do
+			cylinder(cf * CFrame.new(s * 12, 5, 0), 5, 12, C(40, 40, 45), Enum.Material.Metal)
+		end
+	end
+	function BUILD.Trunk(cf: CFrame, p) -- an old travelling trunk
+		deco({ Name = "Trunk", Size = Vector3.new(40, 22, 26), CFrame = cf * CFrame.new(0, 11, 0), Color = C(110, 60, 40), Material = Enum.Material.Wood })
+		for _, x in { -12, 12 } do
+			deco({ Name = "TrunkBand", Size = Vector3.new(3, 22.4, 26.4), CFrame = cf * CFrame.new(x, 11, 0), Color = C(60, 60, 66), Material = Enum.Material.Metal })
+		end
+		deco({ Name = "TrunkLock", Size = Vector3.new(4, 4, 1), CFrame = cf * CFrame.new(0, 17, -13.4), Color = GOLD, Material = Enum.Material.Metal })
+	end
+	function BUILD.Sheet(cf: CFrame, p) -- furniture under a dust sheet (it looks a bit like a ghost)
+		local size = p.size or Vector3.new(40, 35, 30)
+		ball(cf * CFrame.new(0, size.Y * 0.45, 0), size, C(225, 225, 232), Enum.Material.Fabric)
+		deco({ Name = "SheetHem", Size = Vector3.new(size.X * 0.9, size.Y * 0.4, size.Z * 0.9), CFrame = cf * CFrame.new(0, size.Y * 0.2, 0), Color = C(215, 215, 225), Material = Enum.Material.Fabric })
+	end
+	function BUILD.Mannequin(cf: CFrame, p)
+		cylinder(upright(cf * CFrame.new(0, 14, 0)), 28, 2, DARK_WOOD, Enum.Material.Wood)
+		ball(cf * CFrame.new(0, 38, 0), Vector3.new(16, 24, 12), C(200, 180, 150), Enum.Material.Fabric)
+		deco({ Name = "Dress", Size = Vector3.new(18, 6, 13), CFrame = cf * CFrame.new(0, 30, 0), Color = C(110, 60, 140), Material = Enum.Material.Fabric })
+	end
+	function BUILD.Beam(cf: CFrame, p) -- a rafter running across the attic
+		deco({ Name = "Rafter", Size = Vector3.new(p.length or 300, 8, 8), CFrame = cf, Color = C(100, 68, 42), Material = Enum.Material.Wood })
+	end
+	function BUILD.Post(cf: CFrame, p) -- an upright post (floor to ceiling)
+		deco({ Name = "Post", Size = Vector3.new(8, p.height or 60, 8), CFrame = cf * CFrame.new(0, (p.height or 60) / 2, 0), Color = C(100, 68, 42), Material = Enum.Material.Wood })
+	end
+	function BUILD.WineRack(cf: CFrame, p) -- shelves of barrels and bottles along a wall
+		local length = p.length or 200
+		deco({ Name = "RackBack", Size = Vector3.new(length, 70, 3), CFrame = cf * CFrame.new(0, 35, 12), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		for x = -length / 2 + 14, length / 2 - 14, 28 do
+			for _, y in { 12, 38 } do
+				local barrel = cylinder(cf * CFrame.new(x, y, 0) * CFrame.Angles(0, math.rad(90), 0), 22, 22, C(125, 75, 40), Enum.Material.Wood)
+				cylinder(barrel.CFrame * CFrame.new(-11, 0, 0), 0.6, 8, C(60, 40, 30))
+			end
+			for k = 0, 3 do
+				cylinder(cf * CFrame.new(x - 9 + k * 6, 60, 0) * CFrame.Angles(0, math.rad(90), 0), 14, 3.4, C(40, 90 + k * 20, 60), Enum.Material.Glass)
+			end
+		end
+	end
+	function BUILD.Boiler(cf: CFrame, p) -- a huge round boiler with a glowing furnace door
+		cylinder(upright(cf * CFrame.new(0, 35, 0)), 70, 50, C(150, 80, 50), Enum.Material.Metal)
+		ball(cf * CFrame.new(0, 70, 0), Vector3.new(50, 24, 50), C(150, 80, 50), Enum.Material.Metal)
+		local door = deco({ Name = "FurnaceDoor", Size = Vector3.new(18, 14, 3), CFrame = cf * CFrame.new(0, 12, -25), Color = C(255, 120, 40), Material = Enum.Material.Neon })
+		light(door, 60, 2, C(255, 140, 60))
+		for _, s in { -1, 1 } do -- pipes up to the ceiling
+			cylinder(upright(cf * CFrame.new(s * 16, 80, 8)), 20, 7, C(110, 110, 118), Enum.Material.Metal)
+		end
+		ball(cf * CFrame.new(18, 45, -22), Vector3.new(10, 10, 3), C(245, 240, 230))
+		deco({ Name = "GaugeNeedle", Size = Vector3.new(0.6, 4, 0.4), CFrame = cf * CFrame.new(18, 46, -23.6) * CFrame.Angles(0, 0, math.rad(-40)), Color = C(200, 30, 30) })
+	end
+	function BUILD.Washer(cf: CFrame, p) -- a washing machine
+		deco({ Name = "Washer", Size = Vector3.new(30, 34, 30), CFrame = cf * CFrame.new(0, 17, 0), Color = C(235, 238, 240) })
+		cylinder(cf * CFrame.new(0, 15, -15.2) * CFrame.Angles(0, math.rad(90), 0), 0.6, 20, C(110, 140, 170), Enum.Material.Glass)
+		deco({ Name = "Suds", Size = Vector3.new(14, 5, 0.4), CFrame = cf * CFrame.new(0, 11, -15.6), Color = C(250, 252, 255), Material = Enum.Material.Neon, Transparency = 0.3 })
+	end
+	function BUILD.Portrait(cf: CFrame, p) -- a framed portrait of one of the characters, on a wall
+		deco({ Name = "Frame", Size = Vector3.new(36, 44, 2), CFrame = cf, Color = GOLD, Material = Enum.Material.Metal })
+		deco({ Name = "Canvas", Size = Vector3.new(30, 38, 2.4), CFrame = cf, Color = p.color or C(60, 45, 75) })
+		-- (the portrait's front faces the way `cf` looks; the character looks out of the frame)
+		local bust = h.Mascots.build(p.kind or "Cat", cf * CFrame.new(0, -13.5, -3), { parent = parent, scale = 4.5, cheer = false })
+		for _, part in bust:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.CanCollide = false
+				part.CanQuery = false
+				part.CanTouch = false
+				if part.Position.Y < cf.Y - 17 then
+					part:Destroy() -- (head and shoulders only)
+				end
+			end
+		end
+	end
+	function BUILD.Rug(cf: CFrame, p)
+		local size = p.size or Vector3.new(160, 0, 100)
+		deco({ Name = "Rug", Size = Vector3.new(size.X, 0.2, size.Z), CFrame = cf * CFrame.new(0, -0.15, 0), Color = p.color or C(110, 30, 50), Material = Enum.Material.Fabric })
+		deco({ Name = "RugBorder", Size = Vector3.new(size.X - 10, 0.25, size.Z - 10), CFrame = cf * CFrame.new(0, -0.12, 0), Color = GOLD, Material = Enum.Material.Fabric })
+		deco({ Name = "RugMiddle", Size = Vector3.new(size.X - 14, 0.3, size.Z - 14), CFrame = cf * CFrame.new(0, -0.1, 0), Color = p.color or C(110, 30, 50), Material = Enum.Material.Fabric })
+	end
+	-- OUTSIDE ---------------------------------------------------------
+	function BUILD.Hedge(cf: CFrame, p)
+		deco({ Name = "Hedge", Size = Vector3.new(p.length or 80, 22, 16), CFrame = cf * CFrame.new(0, 11, 0), Color = C(40, 80, 50), Material = Enum.Material.Grass })
+	end
+	function BUILD.Topiary(cf: CFrame, p) -- a hedge trimmed into a ball on a stalk
+		cylinder(upright(cf * CFrame.new(0, 6, 0)), 12, 3, C(90, 60, 40), Enum.Material.Wood)
+		ball(cf * CFrame.new(0, 20, 0), Vector3.one * 22, C(45, 95, 55), Enum.Material.Grass)
+		ball(cf * CFrame.new(0, 35, 0), Vector3.one * 14, C(45, 95, 55), Enum.Material.Grass)
+	end
+	function BUILD.Pumpkin(cf: CFrame, p) -- a glowing jack-o'-lantern
+		local s = p.scale or 1
+		ball(cf * CFrame.new(0, 6 * s, 0), Vector3.new(16, 12, 16) * s, C(240, 130, 30))
+		deco({ Name = "Stalk", Size = Vector3.new(2, 4, 2) * s, CFrame = cf * CFrame.new(0, 13 * s, 0), Color = C(80, 110, 50) })
+		for _, x in { -3, 3 } do
+			deco({ Name = "PumpkinEye", Size = Vector3.new(3, 3, 1) * s, CFrame = cf * CFrame.new(x * s, 7.5 * s, -7.6 * s), Color = C(255, 230, 120), Material = Enum.Material.Neon })
+		end
+		local mouth = deco({ Name = "PumpkinGrin", Size = Vector3.new(8, 2, 1) * s, CFrame = cf * CFrame.new(0, 3.5 * s, -7.4 * s), Color = C(255, 230, 120), Material = Enum.Material.Neon })
+		if p.light then
+			light(mouth, 30, 1, C(255, 170, 70))
+		end
+	end
+	function BUILD.Oak(cf: CFrame, p) -- a giant gnarled tree
+		h.buildTree(cf.Position, p.scale or 9, C(55, 75, 50), parent, false)
+	end
+	function BUILD.GatePost(cf: CFrame, p)
+		deco({ Name = "GatePost", Size = Vector3.new(14, 46, 14), CFrame = cf * CFrame.new(0, 23, 0), Color = STONE, Material = Enum.Material.Slate })
+		local lamp = ball(cf * CFrame.new(0, 52, 0), Vector3.new(7, 9, 7), CANDLE, Enum.Material.Neon)
+		light(lamp, 50, 1.4)
+	end
+	function BUILD.Fence(cf: CFrame, p) -- an iron railing `length` long
+		local length = p.length or 200
+		deco({ Name = "FenceRail", Size = Vector3.new(length, 1.5, 1.5), CFrame = cf * CFrame.new(0, 20, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
+		deco({ Name = "FenceRail", Size = Vector3.new(length, 1.5, 1.5), CFrame = cf * CFrame.new(0, 4, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
+		for x = -length / 2, length / 2, 8 do
+			deco({ Name = "FenceSpike", Size = Vector3.new(1.2, 26, 1.2), CFrame = cf * CFrame.new(x, 13, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
+		end
+	end
+	function BUILD.Turret(cf: CFrame, p) -- a round tower with a pointy roof on a corner of the house
+		local radius, height = p.radius or 50, p.height or 120
+		cylinder(upright(cf * CFrame.new(0, height / 2, 0)), height, radius * 2, STONE, Enum.Material.Slate)
+		for k = 0, 2 do
+			local cone = deco({ Name = "TurretRoof", Shape = Enum.PartType.Cylinder, Size = Vector3.new(14, radius * 2.3 * (1 - k * 0.3), radius * 2.3 * (1 - k * 0.3)), CFrame = upright(cf * CFrame.new(0, height + 7 + k * 14, 0)), Color = C(45, 40, 70), Material = Enum.Material.Slate })
+			cone.Name = "TurretRoof"
+		end
+		deco({ Name = "Spire", Size = Vector3.new(3, 30, 3), CFrame = cf * CFrame.new(0, height + 60, 0), Color = C(45, 40, 70) })
+		for k = 0, 3 do -- lit windows round it
+			local a = k / 4 * math.pi * 2
+			deco({ Name = "TurretWindow", Size = Vector3.new(10, 18, 2), CFrame = cf * CFrame.Angles(0, a, 0) * CFrame.new(0, height * 0.7, -radius - 0.5), Color = C(255, 205, 120), Material = Enum.Material.Neon })
+		end
+	end
+	-- A steep slate roof: `length` long (X), `depth` deep (Z), its ridge `height` up,
+	-- with dormer windows on the front (-Z) slope
+	function BUILD.Gable(cf: CFrame, p)
+		local length, depth, height = p.length, p.depth, p.height
+		local slate = C(45, 40, 70)
+		for _, side in { -1, 1 } do -- (a wedge's high edge is its +Z side)
+			deco({ Name = "RoofSlope", Shape = "Wedge", Size = Vector3.new(length, height, depth / 2), CFrame = cf * CFrame.new(0, height / 2, side * depth / 4) * CFrame.Angles(0, if side > 0 then math.pi else 0, 0), Color = slate, Material = Enum.Material.Slate })
+		end
+		cylinder(cf * CFrame.new(0, height, 0), length + 4, 5, C(70, 62, 95), Enum.Material.Slate)
+		for x = -length / 2 + 120, length / 2 - 120, 200 do
+			local dormer = cf * CFrame.new(x, height * 0.35, -depth * 0.32)
+			deco({ Name = "Dormer", Size = Vector3.new(34, 34, 40), CFrame = dormer, Color = STONE, Material = Enum.Material.Slate })
+			deco({ Name = "DormerRoof", Shape = "Wedge", Size = Vector3.new(40, 14, 44), CFrame = dormer * CFrame.new(0, 24, 0) * CFrame.Angles(0, math.rad(90), 0), Color = slate, Material = Enum.Material.Slate })
+			deco({ Name = "DormerWindow", Size = Vector3.new(20, 22, 1), CFrame = dormer * CFrame.new(0, -2, -20.2), Color = C(255, 205, 120), Material = Enum.Material.Neon })
+		end
+	end
+	function BUILD.Chimney(cf: CFrame, p)
+		local height = p.height or 50
+		deco({ Name = "Chimney", Size = Vector3.new(24, height, 24), CFrame = cf * CFrame.new(0, height / 2, 0), Color = C(120, 60, 50), Material = Enum.Material.Brick })
+		deco({ Name = "ChimneyTop", Size = Vector3.new(28, 4, 28), CFrame = cf * CFrame.new(0, height, 0), Color = C(90, 80, 80), Material = Enum.Material.Slate })
+	end
+	function BUILD.Bat(cf: CFrame, p)
+		local s = p.scale or 1
+		ball(cf, Vector3.new(4, 4, 5) * s, C(25, 20, 30))
+		for _, side in { -1, 1 } do
+			deco({ Name = "BatWing", Shape = "Wedge", Size = Vector3.new(0.5, 4 * s, 8 * s), CFrame = cf * CFrame.new(side * 5 * s, 0, 0) * CFrame.Angles(0, math.rad(90 * side), math.rad(-90)), Color = C(25, 20, 30) })
+			ball(cf * CFrame.new(side * 0.9 * s, 0.6 * s, -2.4 * s), Vector3.new(0.7, 0.7, 0.4) * s, C(255, 80, 80), Enum.Material.Neon)
+		end
+	end
+	function BUILD.Moon(cf: CFrame, p)
+		local moon = ball(cf, Vector3.one * (p.size or 260), C(245, 240, 215), Enum.Material.Neon)
+		light(moon, 60, 0.5, C(200, 210, 255))
+		ball(cf * CFrame.new(-30, 40, -10), Vector3.one * 50, C(225, 220, 195), Enum.Material.Neon) -- craters
+		ball(cf * CFrame.new(50, -20, -20), Vector3.one * 34, C(225, 220, 195), Enum.Material.Neon)
+	end
+
+	for _, p in spec.props do
+		local build = BUILD[p[1]]
+		if not build then
+			warn("[MansionBuilder] no prop called " .. tostring(p[1]))
+			continue
+		end
+		local at = p[2]
+		build(CFrame.new(W(at.X, at.Y, at.Z)) * CFrame.Angles(0, math.rad(p[3] or 0), 0), p)
+	end
+
+	--------------------------------------------------------------------
+	-- OUTSIDE: the cliff under the house, the lawn, the lake shore
+	--------------------------------------------------------------------
+	local ground = spec.ground -- height of the lawn
+	local g = spec.garden -- { x = {..}, z = {..} }: the lawn round the house
+	-- The lawn: solid and slow (you can drive on it after the leap), in tiles
+	-- round the house (none under it)
+	local lawnTiles = {
+		{ g.x[1], g.z[1], x0, g.z[2] },
+		{ x1, g.z[1], g.x[2], g.z[2] },
+		{ x0, z1, x1, g.z[2] },
+	}
+	for _, t in lawnTiles do
+		local ax, az, bx, bz = t[1], t[2], t[3], t[4]
+		local nx, nz = math.ceil((bx - ax) / 1000), math.ceil((bz - az) / 1000)
+		for i = 0, nx - 1 do
+			for j = 0, nz - 1 do
+				local cx0, cx1 = ax + (bx - ax) * i / nx, ax + (bx - ax) * (i + 1) / nx
+				local cz0, cz1 = az + (bz - az) * j / nz, az + (bz - az) * (j + 1) / nz
+				h.newPart("Part", {
+					Name = "Lawn",
+					Size = Vector3.new(cx1 - cx0, 8, cz1 - cz0),
+					CFrame = CFrame.new(W((cx0 + cx1) / 2, ground - 4.25, (cz0 + cz1) / 2)),
+					Color = C(50, 78, 52),
+					Material = Enum.Material.Grass,
+					CanTouch = false,
+					Attributes = { OffRoad = true },
+				}, walkable)
+			end
+		end
+	end
+	-- The cliff face below the lawn on the lake side, from the water up
+	local cliffTop = ground - 8
+	local cliffBottom = spec.cliffBottom
+	local rng = Random.new(5)
+	for x = g.x[1], g.x[2] - 1, 120 do
+		if x + 120 > x0 and x < x1 then
+			continue -- (under the house, its own cellar wall is the cliff face)
+		end
+		local depth = rng:NextNumber(40, 80)
+		deco({
+			Name = "Cliff",
+			Size = Vector3.new(124, cliffTop - cliffBottom, depth),
+			CFrame = CFrame.new(W(x + 60, (cliffTop + cliffBottom) / 2, g.z[1] + 10 - depth / 2 + rng:NextNumber(0, 15))),
+			Color = C(70, 66, 80),
+			Material = Enum.Material.Slate,
+		})
+	end
+	-- the house's foundations, down to the water
+	deco({ Name = "Foundation", Size = Vector3.new(x1 - x0, -6.25 - cliffBottom, z1 - z0), CFrame = CFrame.new(W((x0 + x1) / 2, (cliffBottom - 6.25) / 2, (z0 + z1) / 2)), Color = C(70, 66, 80), Material = Enum.Material.Slate })
+	-- (and a solid block of earth under the lawn, so the cellar is underground)
+	for _, t in lawnTiles do
+		deco({ Name = "Earth", Size = Vector3.new(t[3] - t[1], cliffTop - cliffBottom, t[4] - t[2]), CFrame = CFrame.new(W((t[1] + t[3]) / 2, (cliffTop + cliffBottom) / 2, (t[2] + t[4]) / 2)), Color = C(60, 50, 45), Material = Enum.Material.Ground })
+	end
+
+	--------------------------------------------------------------------
+	-- STUDIO CHECK: no house wall may stand in a road's way
+	--------------------------------------------------------------------
+	-- (it feels across the road's whole width at each sample, just above the road
+	-- and at kart height, for any house wall or floor there)
+	if RunService:IsStudio() then
+		for _, part in floorParts do
+			table.insert(wallParts, part)
+		end
+		local found = 0
+		for i, p in samples do
+			local a, b = samples[i - 1], samples[i + 1]
+			local dir = if a and b then Vector3.new(b.X - a.X, 0, b.Z - a.Z) else Vector3.zero
+			if dir.Magnitude < 1 or dir.Magnitude > 40 then
+				continue
+			end
+			local right = dir.Unit:Cross(Vector3.yAxis)
+			for _, part in wallParts do
+				local half = part.Size / 2
+				local reach = math.max(half.X, half.Z) + halves[i] + 2
+				local pos = part.Position
+				if math.abs(pos.X - p.X) > reach or math.abs(pos.Z - p.Z) > reach or math.abs(pos.Y - p.Y) > half.Y + 8 then
+					continue
+				end
+				local hit = false
+				for u = -1, 1, 0.5 do
+					for _, up in { 0.4, 6 } do
+						local rel = part.CFrame:PointToObjectSpace(p + right * u * halves[i] + Vector3.new(0, up, 0))
+						hit = hit or (math.abs(rel.X) < half.X and math.abs(rel.Y) < half.Y and math.abs(rel.Z) < half.Z + 3)
+					end
+				end
+				if hit then
+					found += 1
+					if found <= 8 then
+						local q = p - origin
+						warn(string.format("[MansionCheck] a %s is in the way of the road at (%.0f, %.0f, %.0f)", if part.Name == "Floor" then "floor" else "wall", q.X, q.Y, q.Z))
+					end
+					break
+				end
+			end
+		end
+		if found == 0 then
+			print("[MansionCheck] no walls or floors in the way of the roads")
+		end
+	end
+end
+
+return MansionBuilder
+]]></ProtectedString>
+					<string name="ScriptGuid">{A8499483-49BE-449B-B828-E410CD2544F5}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">MansionBuilder</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85000dcf8d</UniqueId>
 				</Properties>
 			</Item>
 		</Item>
@@ -41503,8 +43019,8 @@ return function(id: string): string
 					if a == b and math.abs(ra.dist[i] - rb.dist[j]) < reach * 2.5 then
 						continue -- just the next bit of the same road
 					end
-					if b > 1 and a == 1 and (rb.dist[j] < 150 or rb.dist[j] > rb.total - 150) then
-						continue -- where a branch joins the main road
+					if a ~= b and ((b > 1 and (rb.dist[j] < 150 or rb.dist[j] > rb.total - 150)) or (a > 1 and (ra.dist[i] < 150 or ra.dist[i] > ra.total - 150))) then
+						continue -- where a branch joins the main road (or the branch it splits off)
 					end
 					if math.abs(pa.Y - pb.Y) < 20 and (flat(pa) - flat(pb)).Magnitude < reach and ra.dist[i] - lastReported > 60 then
 						lastReported = ra.dist[i]

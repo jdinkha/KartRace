@@ -30,3 +30,18 @@ Read before changing how roads, branches, rooms, scenery, checkpoints, respawn p
 ## Jumps and grid
 - Gap jumps (`Ramp` with `gap`): gap sizes were tuned by test: full speed clears by ~12 studs, below ~60 studs/s at the lip falls.
 - Grid spacing: `GRID_SIDE` (13) and `GRID_ROW` (16) are roomy on purpose, so bigger or customised karts still fit. A 12×16-stud kart fits on road at every slot on all tracks. The back row sits ~68 studs behind the start line, so keep it under `PRE_START` (80).
+
+## Branches of branches, Paint, per-track settings
+- A branch can split off or rejoin another branch, not just the main road. `fitBranchEnds` tries the main road, then every branch listed before it, and fits each end onto whichever road it lands on (`route.joins`). Walls, curbs and off-road open up between linked roads (`route.linked`). The checkpoint gap on the main road covers the whole family: a branch off a branch skips everything its parent skips (`mainSpan`). TrackCheck skips the ends of every branch when looking for crashes, so junctions between two branches don't count.
+- A branch that climbs onto furniture (or any raised road) must stay at the room's height until it's clear of the main road's room, and be back down before entering the next one. Otherwise its ramp sits on the main road's surface and RoadCheck reports steps on the main road. Two branches coming down side by side must descend over the same stretch at the same rate (the Rafters and the Tightrope).
+- `Paint` (from/to) gives a stretch of road another `color` and `material`.
+- Any `TRACK` setting can be set per track: Moonlight Manor uses `PILLARS = false` (no support pillars; the house holds the roads up) and `MAX_BANK = 0` (a road leaning into a corner dips up to ~4 studs on the inside, under the floor slab).
+
+## Moonlight Manor's house (MansionBuilder)
+- The track lives in `Tracks.Mansion` and is drawn with a turtle: `go(length, rise)`, `turn(angle, radius)`, `mark(name)`. Points come out ~30 studs apart; climbs ease in, hold a steady grade (~0.31 for a 90-stud floor over 360 studs) and ease out. FEATURES use `point = M.at.kitchen`.
+- `RaceServer.MansionBuilder` builds the house from the track's `MANSION` table, in track numbers:
+  - **floors**: one solid slab per level, in 30-stud tiles merged into strips, in `RaceTrack.Walkable` with `OffRoad`, so the client drives on them, slowly. A tile is left out wherever a road comes up through that floor from below (the top of each staircase). The slab above is the ceiling.
+  - **walls**: outside walls with lit windows and a stone skin, inner `walls` between rooms, and a parapet round the roof. All solid. Doorways are cut wherever a road crosses a wall, with the sill lowered for a road climbing through at an angle.
+  - **fills** (blocks under a stretch of road: staircases, the climbs onto furniture, the porch roof), **areas** (rooms with their own floor), **props** (`{ "Kind", position, yaw, ... }`: Table, Counter, Bed, Bookshelf, Chandelier, Portrait (a character's bust in a frame), Gable roof, Turret, Moon...; see `BUILD` in the module). Props are decoration that karts pass through.
+  - Outside: the cliff, the house's foundations, the lawn (solid, slow) and the garden.
+- In Studio it prints `[MansionCheck] no walls or floors in the way of the roads`, or warns where a wall or floor slab pokes into a road (it feels across each road's width, just above the surface and at kart height). Fix every one, like RoadCheck warnings.
