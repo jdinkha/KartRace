@@ -333,24 +333,24 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 					<X>-569.776184</X>
 					<Y>55.0762482</Y>
 					<Z>901.14386</Z>
-					<R00>0.846843243</R00>
-					<R01>-0.119625591</R01>
-					<R02>-0.518214524</R02>
-					<R10>-7.4505806e-09</R10>
-					<R11>0.974375725</R11>
-					<R12>-0.224926695</R12>
-					<R20>0.531842589</R20>
-					<R21>0.190477654</R21>
-					<R22>0.825143456</R22>
+					<R00>0.849952102</R00>
+					<R01>-0.201178789</R01>
+					<R02>-0.486938</R02>
+					<R10>-0</R10>
+					<R11>0.924226463</R11>
+					<R12>-0.381844789</R12>
+					<R20>0.526860118</R20>
+					<R21>0.324549794</R21>
+					<R22>0.785548091</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-6.98234749</X>
-					<Y>299.352203</Y>
-					<Z>5.01765251</Z>
+					<X>-3.6427567</X>
+					<Y>499.024139</Y>
+					<Z>-12.1654987</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -895,7 +895,8 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 	  • chase camera
 	  • race HUD: status bar, countdown, position, timer, results
 	  • lobby fun: bounce pads and the spinning display karts
-	  • the track vote cards you tap while waiting in the lobby
+	  • the RACE menu (pick a track to start a race) and the banner to JOIN someone's,
+	    or the track vote cards when the server's LOBBY_MODE is "Vote"
 	  • weather (falling snow / floating embers) on tracks that have it
 
 	The server (RaceServer) owns the rules: who races, checkpoints, finishing, wins.
@@ -2772,6 +2773,153 @@ local function updateVote(phase: any, racing: boolean)
 end
 
 ------------------------------------------------------------------------
+-- RACE MENU  (LobbyMode "Pick"): the RACE button opens the list of tracks; pick
+-- one to start a race. Everyone else in the lobby gets a banner to JOIN it.
+------------------------------------------------------------------------
+local GO_COLOR = Color3.fromRGB(90, 255, 120)
+local MENU_COLOR = Color3.fromRGB(20, 20, 32)
+
+local raceButton = make("TextButton", {
+	Name = "RaceButton",
+	AnchorPoint = Vector2.new(0, 0.5),
+	Position = UDim2.new(0, 16, 0.5, -56), -- just above the GARAGE button
+	Size = UDim2.fromOffset(130, 46),
+	BackgroundColor3 = MENU_COLOR,
+	BackgroundTransparency = 0.12,
+	Font = FONT,
+	Text = "RACE",
+	TextColor3 = GO_COLOR,
+	TextSize = 26,
+	Visible = false,
+}, gui) :: TextButton
+make("UICorner", { CornerRadius = UDim.new(0, 12) }, raceButton)
+make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = GO_COLOR, Thickness = 2 }, raceButton)
+
+local trackMenu = make("Frame", {
+	Name = "TrackMenu",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.9, 0.8),
+	BackgroundColor3 = MENU_COLOR,
+	BackgroundTransparency = 0.06,
+	Visible = false,
+}, gui) :: Frame
+make("UISizeConstraint", { MaxSize = Vector2.new(640, 480) }, trackMenu)
+make("UICorner", { CornerRadius = UDim.new(0, 14) }, trackMenu)
+make("UIPadding", { PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) }, trackMenu)
+textLabel({ Text = "PICK A TRACK", Size = UDim2.new(1, -50, 0, 34), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PLACE_COLORS[1] }, trackMenu)
+local closeMenu = make("TextButton", {
+	AnchorPoint = Vector2.new(1, 0),
+	Position = UDim2.fromScale(1, 0),
+	Size = UDim2.fromOffset(36, 36),
+	BackgroundColor3 = Color3.fromRGB(42, 42, 60),
+	Font = FONT,
+	Text = "X",
+	TextColor3 = WHITE,
+	TextSize = 22,
+}, trackMenu) :: TextButton
+make("UICorner", { CornerRadius = UDim.new(0, 10) }, closeMenu)
+local trackList = make("ScrollingFrame", {
+	Position = UDim2.new(0, 0, 0, 46),
+	Size = UDim2.new(1, 0, 1, -46),
+	BackgroundTransparency = 1,
+	BorderSizePixel = 0,
+	AutomaticCanvasSize = Enum.AutomaticSize.Y,
+	CanvasSize = UDim2.new(),
+	ScrollBarThickness = 4,
+}, trackMenu) :: ScrollingFrame
+make("UIGridLayout", { CellSize = UDim2.new(0.5, -6, 0, 100), CellPadding = UDim2.fromOffset(8, 8), SortOrder = Enum.SortOrder.LayoutOrder }, trackList)
+make("UIPadding", { PaddingTop = UDim.new(0, 3), PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 6) }, trackList)
+for _, info in raceState:WaitForChild("Tracks"):GetChildren() do
+	local color = trackColor(info)
+	local card = make("TextButton", {
+		Name = info.Name,
+		LayoutOrder = numberAttr(info, "Order"),
+		BackgroundColor3 = Color3.fromRGB(42, 42, 60),
+		Text = "",
+	}, trackList) :: TextButton
+	make("UICorner", { CornerRadius = UDim.new(0, 12) }, card)
+	make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = color, Thickness = 2 }, card)
+	textLabel({ Text = tostring(info:GetAttribute("DisplayName")), TextColor3 = color, Position = UDim2.fromScale(0.05, 0.08), Size = UDim2.fromScale(0.9, 0.36) }, card)
+	textLabel({
+		Text = tostring(info:GetAttribute("Blurb")),
+		Position = UDim2.fromScale(0.05, 0.5),
+		Size = UDim2.fromScale(0.9, 0.42),
+		TextWrapped = true,
+		TextColor3 = Color3.fromRGB(205, 205, 220),
+		TextStrokeTransparency = 1,
+	}, card)
+	card.Activated:Connect(function()
+		raceEvent:FireServer("Start", info.Name) -- (the server checks it's a real track)
+		trackMenu.Visible = false
+	end)
+end
+raceButton.Activated:Connect(function()
+	trackMenu.Visible = not trackMenu.Visible
+end)
+closeMenu.Activated:Connect(function()
+	trackMenu.Visible = false
+end)
+
+local joinBanner = make("Frame", {
+	Name = "JoinBanner",
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.new(0.5, 0, 0, 52),
+	Size = UDim2.new(0.9, 0, 0, 90),
+	BackgroundColor3 = MENU_COLOR,
+	BackgroundTransparency = 0.12,
+	Visible = false,
+}, gui) :: Frame
+make("UISizeConstraint", { MaxSize = Vector2.new(520, 90) }, joinBanner)
+make("UICorner", { CornerRadius = UDim.new(0, 12) }, joinBanner)
+local joinStroke = make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Thickness = 2 }, joinBanner) :: UIStroke
+local joinTitle = textLabel({ Position = UDim2.fromScale(0.04, 0.1), Size = UDim2.fromScale(0.62, 0.42), TextXAlignment = Enum.TextXAlignment.Left }, joinBanner)
+local joinInfo = textLabel({
+	Position = UDim2.fromScale(0.04, 0.56),
+	Size = UDim2.fromScale(0.62, 0.3),
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextColor3 = Color3.fromRGB(205, 205, 220),
+	TextStrokeTransparency = 1,
+}, joinBanner)
+local joinButton = make("TextButton", {
+	AnchorPoint = Vector2.new(1, 0.5),
+	Position = UDim2.fromScale(0.97, 0.5),
+	Size = UDim2.fromScale(0.28, 0.62),
+	BackgroundColor3 = GO_COLOR,
+	Font = FONT,
+	TextScaled = true,
+	TextColor3 = MENU_COLOR,
+}, joinBanner) :: TextButton
+make("UICorner", { CornerRadius = UDim.new(0, 10) }, joinButton)
+make("UIPadding", { PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6) }, joinButton)
+joinButton.Activated:Connect(function()
+	raceEvent:FireServer("Join", player:GetAttribute("Joined") ~= true)
+end)
+
+-- Shows the RACE button, or the banner for the race someone has started
+local function updateRaceMenu(phase: any, racing: boolean)
+	local pick = raceState:GetAttribute("LobbyMode") == "Pick"
+	local info = trackInfo(raceState:GetAttribute("NextTrack"))
+	raceButton.Visible = pick and not racing and info == nil
+	if not raceButton.Visible then
+		trackMenu.Visible = false
+	end
+	joinBanner.Visible = pick and not racing and info ~= nil
+	if not info or not joinBanner.Visible then
+		return
+	end
+	local color = trackColor(info)
+	joinTitle.Text = string.upper(tostring(info:GetAttribute("DisplayName")))
+	joinTitle.TextColor3 = color
+	joinStroke.Color = color
+	local when = if phase == "Joining" then string.format("starts in %d", numberAttr(raceState, "Countdown")) else "starts after this race"
+	joinInfo.Text = string.format("%s's race %s  •  %d joined", tostring(raceState:GetAttribute("Host")), when, numberAttr(raceState, "JoinedCount"))
+	local joined = player:GetAttribute("Joined") == true
+	joinButton.Text = if joined then "LEAVE" else "JOIN"
+	joinButton.BackgroundColor3 = if joined then Color3.fromRGB(150, 150, 170) else GO_COLOR
+end
+
+------------------------------------------------------------------------
 -- WEATHER  (falling snow or floating embers around you, on tracks that have it)
 ------------------------------------------------------------------------
 local weatherKind: any = nil
@@ -2830,13 +2978,15 @@ RunService.RenderStepped:Connect(function()
 	local now = workspace:GetServerTimeNow()
 
 	if phase == "Waiting" then
-		statusLabel.Text = "Waiting for players..."
+		statusLabel.Text = if raceState:GetAttribute("LobbyMode") == "Pick" then "Press RACE to start a race!" else "Waiting for players..."
+	elseif phase == "Joining" then
+		statusLabel.Text = string.format("Race starting in %d!", numberAttr(raceState, "Countdown"))
 	elseif phase == "Intermission" then
 		statusLabel.Text = string.format("Next race in %d — vote for a track!", numberAttr(raceState, "Countdown"))
 	elseif phase == "Reveal" then
 		statusLabel.Text = "Next track: " .. tostring(raceState:GetAttribute("TrackName") or "?")
 	elseif phase == "Countdown" then
-		statusLabel.Text = if racing then "Get ready!" else "Race starting — you're in the next one!"
+		statusLabel.Text = if racing then "Get ready!" else "A race is starting!"
 	elseif phase == "Racing" then
 		local left = formatClock(numberAttr(raceState, "RaceEnd") - now)
 		if racing and finished then
@@ -2844,7 +2994,7 @@ RunService.RenderStepped:Connect(function()
 		elseif racing then
 			statusLabel.Text = "Time left: " .. left
 		else
-			statusLabel.Text = "Race in progress (" .. left .. " left) — you're in the next one!"
+			statusLabel.Text = "Race in progress (" .. left .. " left)"
 		end
 	elseif phase == "Results" then
 		statusLabel.Text = "Race over!"
@@ -2886,6 +3036,7 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	updateVote(phase, racing)
+	updateRaceMenu(phase, racing)
 	updateWeather()
 end)
 
@@ -3222,11 +3373,12 @@ end)
 	GarageClient  —  a LocalScript in StarterPlayer > StarterPlayerScripts
 
 	The GARAGE button (left side, whenever you're not racing) opens a menu where
-	you pick your kart and your wheels. Every card shows a 3D preview, and the big
-	one at the top shows your combo turning round. A pick is sent to the server
-	("Equip" on RaceEvent), which checks it, saves it and uses it from your next
-	race. The karts and wheels themselves are listed in the Garage module
-	(ReplicatedStorage).
+	you pick who you drive as (your own avatar or one of the characters), your
+	kart and your wheels. Every card shows a 3D preview, and the big one at the
+	top shows your combo turning round. A pick is sent to the server ("Equip" on
+	RaceEvent), which checks it, saves it and uses it from your next race. The
+	karts and wheels are listed in the Garage module, the characters in the
+	Mascots module (both in ReplicatedStorage).
 ]]
 
 local Players = game:GetService("Players")
@@ -3235,6 +3387,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ContentProvider = game:GetService("ContentProvider")
 
 local Garage = require(ReplicatedStorage:WaitForChild("Garage"))
+local Mascots = require(ReplicatedStorage:WaitForChild("Mascots"))
 -- Load the karts' meshes first: a ViewportFrame never shows a mesh that
 -- finished loading after it was put in.
 ContentProvider:PreloadAsync({ ReplicatedStorage:WaitForChild("Garage") })
@@ -3251,6 +3404,7 @@ local SPIN_SPEED = 0.6 -- how fast the big preview turns (radians per second)
 -- Where the cameras look from (front of a kart is -Z, wheels' axles are along X)
 local KART_VIEW = Vector3.new(0.8, 0.55, -1)
 local WHEEL_VIEW = Vector3.new(1, 0.3, -0.45)
+local CHARACTER_VIEW = Vector3.new(0.45, 0.25, -1) -- (characters face -Z too)
 
 local function make(className: string, props: { [string]: any }, parent: Instance?): any
 	local instance = Instance.new(className)
@@ -3334,7 +3488,7 @@ local panel = make("Frame", {
 	BackgroundTransparency = 0.06,
 	Visible = false,
 }, gui) :: Frame
-make("UISizeConstraint", { MaxSize = Vector2.new(720, 640) }, panel)
+make("UISizeConstraint", { MaxSize = Vector2.new(720, 760) }, panel)
 make("UICorner", { CornerRadius = UDim.new(0, 14) }, panel)
 make("UIPadding", { PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) }, panel)
 
@@ -3355,15 +3509,15 @@ make("UICorner", { CornerRadius = UDim.new(0, 10) }, closeButton)
 local preview = viewport({
 	Name = "Preview",
 	Position = UDim2.fromScale(0, 0.09),
-	Size = UDim2.fromScale(1, 0.38),
+	Size = UDim2.fromScale(1, 0.26),
 	BackgroundColor3 = Color3.fromRGB(34, 34, 50),
 	BackgroundTransparency = 0,
 }, panel)
 make("UICorner", { CornerRadius = UDim.new(0, 12) }, preview)
-local comboLabel = textLabel({ Position = UDim2.fromScale(0, 0.48), Size = UDim2.fromScale(1, 0.055) }, panel)
+local comboLabel = textLabel({ Position = UDim2.fromScale(0, 0.355), Size = UDim2.fromScale(1, 0.05) }, panel)
 textLabel({
 	Text = "You'll drive it from your next race",
-	Position = UDim2.fromScale(0, 0.535),
+	Position = UDim2.fromScale(0, 0.405),
 	Size = UDim2.fromScale(1, 0.035),
 	TextColor3 = Color3.fromRGB(180, 180, 200),
 }, panel)
@@ -3373,14 +3527,14 @@ local function row(title: string, y: number): ScrollingFrame
 	textLabel({
 		Text = title,
 		Position = UDim2.fromScale(0, y),
-		Size = UDim2.fromScale(1, 0.045),
+		Size = UDim2.fromScale(1, 0.04),
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Color3.fromRGB(205, 205, 220),
 	}, panel)
 	local list = make("ScrollingFrame", {
 		Name = title,
-		Position = UDim2.fromScale(0, y + 0.05),
-		Size = UDim2.fromScale(1, 0.155),
+		Position = UDim2.fromScale(0, y + 0.045),
+		Size = UDim2.fromScale(1, 0.135),
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollingDirection = Enum.ScrollingDirection.X,
@@ -3411,8 +3565,39 @@ local function card(list: ScrollingFrame, name: string, order: number, onPick: (
 	return { view = view, stroke = stroke }
 end
 
+-- Characters: your own avatar (its headshot) or one of the Mascots, A to Z
+local characterCards: { [string]: Card } = {}
+local characterList = row("CHARACTER", 0.445)
+local avatarCard = card(characterList, "My Avatar", 0, function()
+	raceEvent:FireServer("Equip", "Character", "Avatar")
+end)
+characterCards.Avatar = avatarCard
+task.spawn(function()
+	local ok, image = pcall(Players.GetUserThumbnailAsync, Players, player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+	if ok then
+		make("ImageLabel", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), Image = image, ScaleType = Enum.ScaleType.Fit }, avatarCard.view)
+	end
+end)
+local function characterName(kind: string): string
+	return Mascots.KINDS[kind].name or kind
+end
+local kinds = {}
+for kind in Mascots.KINDS do
+	table.insert(kinds, kind)
+end
+table.sort(kinds, function(a, b)
+	return characterName(a) < characterName(b)
+end)
+for order, kind in kinds do
+	local c = card(characterList, characterName(kind), order, function()
+		raceEvent:FireServer("Equip", "Character", kind)
+	end)
+	characterCards[kind] = c
+	show(c.view, Mascots.build(kind, CFrame.identity, {} :: any), CHARACTER_VIEW)
+end
+
 local kartCards: { [string]: Card } = {}
-local kartList = row("KARTS", 0.585)
+local kartList = row("KARTS", 0.63)
 for order, kart in Garage.KARTS do
 	kartCards[kart.id] = card(kartList, kart.name, order, function()
 		raceEvent:FireServer("Equip", "Kart", kart.id)
@@ -3420,7 +3605,7 @@ for order, kart in Garage.KARTS do
 end
 
 local wheelCards: { [string]: Card } = {}
-local wheelList = row("WHEELS", 0.795)
+local wheelList = row("WHEELS", 0.815)
 for order, wheels in Garage.WHEELS do
 	local c = card(wheelList, wheels.name, order, function()
 		raceEvent:FireServer("Equip", "Wheels", wheels.id)
@@ -3449,11 +3634,20 @@ local function refresh()
 	for id, c in wheelCards do
 		c.stroke.Color = if id == wheelsId then PICKED else CARD
 	end
+	local characterId = player:GetAttribute("Character")
+	for id, c in characterCards do
+		c.stroke.Color = if id == characterId then PICKED else CARD
+	end
 	previewModel = Garage.build(kartId, wheelsId, PREVIEW_COLOR)
+	local character = if typeof(characterId) == "string" then Mascots.KINDS[characterId] else nil
+	if character then -- (your own avatar isn't shown: the kart's empty)
+		Mascots.build(characterId, Mascots.SEAT, { parent = previewModel :: Model })
+	end
 	show(preview, previewModel :: Model, KART_VIEW)
 	local kart = Garage.find(Garage.KARTS, kartId)
 	local wheels = Garage.find(Garage.WHEELS, wheelsId)
-	comboLabel.Text = (if kart then kart.name else "?") .. "  +  " .. (if wheels then wheels.name else "?") .. " wheels"
+	comboLabel.Text = (if character then characterName(characterId) .. "  •  " else "")
+		.. (if kart then kart.name else "?") .. "  +  " .. (if wheels then wheels.name else "?") .. " wheels"
 end
 
 local function setOpen(open: boolean)
@@ -3469,7 +3663,7 @@ end)
 closeButton.Activated:Connect(function()
 	setOpen(false)
 end)
-for _, slot in { "Kart", "Wheels" } do
+for _, slot in { "Kart", "Wheels", "Character" } do
 	player:GetAttributeChangedSignal(slot):Connect(function()
 		if panel.Visible then
 			refresh()
@@ -7711,6 +7905,424 @@ return Garage
 				</Item>
 			</Item>
 		</Item>
+		<Item class="ModuleScript" referent="RBX16FD667544634566BA20170A14FE1EF3">
+			<Properties>
+				<Content name="LinkedSource"><null></null></Content>
+				<ProtectedString name="Source"><![CDATA[--[[
+	MASCOTS  —  the cartoon characters (ModuleScript in ReplicatedStorage): CPU racers
+	drive as them, players can pick one in the garage menu to drive as instead of
+	their own avatar, and they cheer in the grandstands. RaceServer builds them with
+	Mascots.build(); GarageClient uses it for the menu's 3D previews.
+
+	Every character gets the same simple body: a round body, two arms, a head and
+	two eyes. What makes each one different is listed in its entry:
+	  name       what the garage menu calls it (default: its id, like "Fox")
+	  kart       colour of its kart (and racing suit)
+	  fur        colour of its head (and hands)
+	  body       colour of its body, if it isn't wearing a racing suit (a penguin is black)
+	  hands      colour of its hands (default: fur)
+	  head       size of its head (default 2.2 wide, 2 tall, 2 deep)
+	  headShape  "Block" for a boxy head (the robot)
+	  eyes       false = no standard eyes (it lists its own, like the frog's)
+	  eyeY / eyeSpread / eyeZ / eyeScale   move and size the standard eyes
+	  extras     ears, noses, tails...: { s = shape, size, at = position, color, rot, pair, mat, alpha }
+	             s: "Egg" (a ball you can stretch), "Ball", "Block", "Cylinder" or "Wedge"
+	             at: studs from the middle of the head; -Z is the way it faces
+	             rot: degrees to turn it (x, y, z)
+	             pair = true adds a mirror copy on the other side (ears, eyes, whiskers)
+	             color: a Color3, or "Fur"
+	BOTS.MASCOTS in RaceServer says which racer is which character, and THEMES
+	say which characters cheer in each track's grandstand.
+]]
+
+local V = Vector3.new
+local C = Color3.fromRGB
+local WHITE = C(250, 250, 250)
+local BLACK = C(30, 30, 36)
+local PINK = C(255, 165, 190)
+local DARK_MOUTH = C(110, 35, 40)
+
+local KINDS = {
+	Fox = {
+		kart = C(250, 130, 30),
+		fur = C(245, 135, 45),
+		extras = {
+			{ s = "Egg", size = V(0.6, 1.2, 0.35), at = V(0.6, 1, 0.05), rot = V(0, 0, -18), color = "Fur", pair = true }, -- pointy ears
+			{ s = "Egg", size = V(0.36, 0.45, 0.37), at = V(0.76, 1.45, 0.05), rot = V(0, 0, -18), color = C(60, 40, 35), pair = true }, -- dark ear tips
+			{ s = "Egg", size = V(1.3, 0.8, 1.1), at = V(0, -0.38, -0.65), color = WHITE }, -- muzzle
+			{ s = "Ball", size = V(0.36, 0.36, 0.36), at = V(0, -0.22, -1.2), color = BLACK }, -- nose
+			{ s = "Egg", size = V(0.9, 0.9, 2.2), at = V(0, -2, 1.4), rot = V(-35, 0, 0), color = "Fur" }, -- bushy tail
+			{ s = "Egg", size = V(0.65, 0.65, 0.8), at = V(0, -1.37, 2.3), rot = V(-35, 0, 0), color = WHITE }, -- tail tip
+		},
+	},
+	Bee = {
+		kart = C(250, 200, 40),
+		fur = C(255, 210, 50),
+		body = C(255, 210, 50),
+		hands = BLACK,
+		extras = {
+			{ s = "Egg", size = V(2.16, 0.4, 1.76), at = V(0, -1.8, 0), color = BLACK }, -- stripes
+			{ s = "Egg", size = V(1.88, 0.35, 1.53), at = V(0, -1.25, 0), color = BLACK },
+			{ s = "Cylinder", size = V(1.1, 0.12, 0.12), at = V(0.35, 1.3, -0.2), rot = V(0, 0, 70), color = BLACK, pair = true }, -- antennae
+			{ s = "Ball", size = V(0.35, 0.35, 0.35), at = V(0.54, 1.85, -0.2), color = BLACK, pair = true },
+			{ s = "Egg", size = V(0.15, 1.2, 1.6), at = V(0.8, -1.2, 0.95), rot = V(0, 30, 0), color = C(230, 245, 255), alpha = 0.3, pair = true }, -- wings
+			{ s = "Egg", size = V(0.6, 0.12, 0.12), at = V(0, -0.42, -0.94), color = DARK_MOUTH }, -- smile
+		},
+	},
+	Turtle = {
+		kart = C(70, 200, 90),
+		fur = C(130, 215, 170),
+		head = V(1.9, 1.8, 2),
+		eyeY = 0.05,
+		extras = {
+			{ s = "Egg", size = V(2.5, 2.4, 1.3), at = V(0, -1.6, 0.85), color = C(60, 120, 50) }, -- shell
+			{ s = "Egg", size = V(0.8, 0.8, 0.2), at = V(0, -1.3, 1.48), color = C(110, 170, 80) }, -- shell pattern
+			{ s = "Egg", size = V(0.6, 0.6, 0.2), at = V(0.62, -2, 1.32), color = C(110, 170, 80), pair = true },
+			{ s = "Egg", size = V(1.66, 0.28, 1.74), at = V(0, 0.5, 0), color = C(255, 140, 30) }, -- headband
+			{ s = "Egg", size = V(0.2, 0.35, 0.7), at = V(0.18, 0.4, 0.95), rot = V(30, 0, 20), color = C(255, 140, 30), pair = true }, -- headband ends
+			{ s = "Egg", size = V(0.6, 0.09, 0.12), at = V(0, -0.42, -0.89), color = C(50, 70, 50) }, -- smile
+		},
+	},
+	Penguin = {
+		kart = C(60, 130, 240),
+		fur = C(35, 38, 50),
+		body = C(35, 38, 50),
+		eyeZ = -0.95,
+		extras = {
+			{ s = "Egg", size = V(1.5, 1.8, 0.6), at = V(0, -1.75, -0.6), color = WHITE }, -- tummy
+			{ s = "Egg", size = V(1.7, 1.3, 0.5), at = V(0, 0, -0.78), color = WHITE }, -- face
+			{ s = "Egg", size = V(0.65, 0.32, 0.7), at = V(0, -0.3, -1.15), color = C(255, 160, 40) }, -- beak
+			{ s = "Cylinder", size = V(0.35, 1.9, 1.9), at = V(0, -0.85, 0), rot = V(0, 0, 90), color = C(230, 50, 60) }, -- scarf
+			{ s = "Block", size = V(0.4, 0.9, 0.12), at = V(0.5, -1.3, -0.82), rot = V(0, 0, 10), color = C(230, 50, 60) },
+		},
+	},
+	Frog = {
+		kart = C(140, 230, 60),
+		fur = C(110, 200, 70),
+		head = V(2.6, 1.5, 2),
+		eyes = false,
+		extras = {
+			{ s = "Egg", size = V(0.85, 0.85, 0.85), at = V(0.62, 0.65, -0.3), color = "Fur", pair = true }, -- bumps the eyes sit on
+			{ s = "Ball", size = V(0.85, 0.85, 0.85), at = V(0.62, 0.85, -0.62), color = WHITE, pair = true }, -- big round eyes, wide open
+			{ s = "Ball", size = V(0.42, 0.42, 0.42), at = V(0.6, 0.85, -0.95), color = BLACK, pair = true },
+			{ s = "Ball", size = V(0.13, 0.13, 0.13), at = V(0.54, 0.95, -1.13), color = WHITE, pair = true },
+			{ s = "Egg", size = V(0.9, 0.1, 0.2), at = V(0, -0.32, -0.92), color = C(40, 90, 40) }, -- little smile
+			{ s = "Egg", size = V(0.35, 0.12, 0.3), at = V(0, -0.38, -0.93), color = C(255, 120, 140) }, -- tongue
+			{ s = "Cylinder", size = V(0.45, 0.9, 0.9), at = V(0, 0.85, 0.15), rot = V(0, 0, 90), color = C(255, 205, 50) }, -- a little gold crown
+			{ s = "Ball", size = V(0.22, 0.22, 0.22), at = V(0.32, 1.12, 0.15), color = C(255, 205, 50), pair = true },
+			{ s = "Ball", size = V(0.24, 0.24, 0.24), at = V(0, 1.12, -0.18), color = C(255, 70, 90) },
+			{ s = "Egg", size = V(0.45, 0.3, 0.15), at = V(0.85, -0.1, -0.76), color = PINK, pair = true }, -- cheeks
+			{ s = "Egg", size = V(1.5, 1.6, 0.5), at = V(0, -1.75, -0.65), color = C(200, 240, 150) }, -- tummy
+		},
+	},
+	-- Feelsgood Fred: a laid-back swamp frog with big droopy eyes and wide lips.
+	-- He's the king of Croaker Swamp (that's his temple).
+	Fred = {
+		name = "Feelsgood Fred",
+		kart = C(110, 175, 70),
+		fur = C(95, 155, 62),
+		body = C(55, 95, 180), -- his comfy blue t-shirt
+		head = V(2.9, 2, 2.3),
+		eyes = false,
+		extras = {
+			{ s = "Egg", size = V(1.15, 1.05, 0.95), at = V(0.56, 0.8, -0.55), color = WHITE, pair = true }, -- big bulging eyes...
+			{ s = "Egg", size = V(0.5, 0.36, 0.3), at = V(0.5, 0.72, -1), color = BLACK, pair = true }, -- pupils peeking out from under...
+			{ s = "Egg", size = V(1.24, 0.62, 1.04), at = V(0.56, 1.1, -0.56), rot = V(0, 0, -8), color = "Fur", pair = true }, -- ...heavy, droopy lids
+			{ s = "Egg", size = V(1.22, 0.07, 0.96), at = V(0.56, 0.84, -0.6), rot = V(0, 0, -8), color = C(55, 95, 40), pair = true }, -- the lids' edge
+			{ s = "Egg", size = V(2.3, 0.42, 0.8), at = V(0, -0.36, -0.95), color = C(175, 85, 60) }, -- big wide lips
+			{ s = "Egg", size = V(2.1, 0.38, 0.72), at = V(0, -0.68, -0.88), color = C(175, 85, 60) },
+			{ s = "Egg", size = V(2.05, 0.07, 0.6), at = V(0, -0.52, -1.1), color = C(90, 35, 30) }, -- the line of his mouth
+		},
+	},
+	-- Grand Dad: the hero of the old "7 Grand Dad" bootleg game, in its colours: rust cap
+	-- and shirt, white face and gloves, a big blue moustache, bright orange overalls.
+	GrandDad = {
+		name = "Grand Dad",
+		kart = C(255, 121, 48),
+		fur = C(255, 240, 230), -- his face (and white gloves)
+		body = C(162, 47, 0), -- rust shirt (and sleeves)
+		eyes = false,
+		extras = {
+			{ s = "Egg", size = V(2.4, 1.35, 2.3), at = V(0, 0.72, 0.08), color = C(162, 47, 0) }, -- cap
+			{ s = "Egg", size = V(1.7, 0.2, 1.3), at = V(0, 0.42, -0.95), color = C(162, 47, 0) }, -- cap's peak
+			{ s = "Egg", size = V(0.78, 0.78, 0.14), at = V(0, 0.95, -1), rot = V(22, 0, 0), color = WHITE }, -- badge on the cap, with a 7
+			{ s = "Block", size = V(0.4, 0.1, 0.06), at = V(0, 1.145, -1.03), rot = V(22, 0, 0), color = C(255, 121, 48) },
+			{ s = "Block", size = V(0.1, 0.46, 0.06), at = V(-0.085, 0.94, -1.11), rot = V(22, 0, 22), color = C(255, 121, 48) },
+			{ s = "Egg", size = V(2.15, 0.9, 1.5), at = V(0, 0.05, 0.4), color = C(64, 96, 247) }, -- blue hair below the cap
+			{ s = "Egg", size = V(0.24, 0.6, 0.45), at = V(1.0, 0.02, -0.1), color = C(64, 96, 247), pair = true }, -- sideburns
+			{ s = "Egg", size = V(0.42, 0.62, 0.25), at = V(0.33, 0.22, -0.88), color = WHITE, pair = true }, -- eyes
+			{ s = "Egg", size = V(0.2, 0.32, 0.12), at = V(0.31, 0.2, -1.01), color = C(40, 60, 200), pair = true },
+			{ s = "Egg", size = V(0.72, 0.6, 0.7), at = V(0, -0.15, -1.02), color = C(255, 215, 200) }, -- big round nose
+			{ s = "Egg", size = V(0.95, 0.42, 0.5), at = V(0.4, -0.47, -0.9), rot = V(0, 0, 14), color = C(64, 96, 247), pair = true }, -- big blue moustache
+			{ s = "Egg", size = V(0.7, 0.24, 0.2), at = V(0, -0.78, -0.86), color = C(200, 60, 40) }, -- open smile
+			{ s = "Egg", size = V(2.2, 1.5, 1.8), at = V(0, -2.25, 0), color = C(255, 121, 48) }, -- overalls
+			{ s = "Egg", size = V(1.2, 0.9, 0.3), at = V(0, -1.6, -0.74), color = C(255, 121, 48) }, -- bib
+			{ s = "Block", size = V(0.26, 0.9, 0.12), at = V(0.5, -1.05, -0.66), rot = V(-12, 0, 0), color = C(255, 121, 48), pair = true }, -- straps
+			{ s = "Ball", size = V(0.24, 0.24, 0.24), at = V(0.45, -1.4, -0.85), color = WHITE, pair = true }, -- buttons
+		},
+	},
+	Monkey = {
+		kart = C(150, 100, 60),
+		fur = C(140, 90, 50),
+		eyeZ = -0.95,
+		extras = {
+			{ s = "Egg", size = V(1.6, 1.3, 0.6), at = V(0, -0.05, -0.75), color = C(240, 200, 150) }, -- face
+			{ s = "Egg", size = V(1.15, 0.7, 0.6), at = V(0, -0.5, -0.9), color = C(240, 200, 150) }, -- muzzle
+			{ s = "Egg", size = V(0.6, 0.12, 0.1), at = V(0, -0.62, -1.18), color = DARK_MOUTH }, -- smile
+			{ s = "Egg", size = V(0.3, 0.85, 0.85), at = V(1.15, 0.05, 0), color = "Fur", pair = true }, -- ears
+			{ s = "Egg", size = V(0.12, 0.55, 0.55), at = V(1.3, 0.05, -0.02), color = C(240, 200, 150), pair = true },
+			{ s = "Egg", size = V(0.4, 0.6, 0.4), at = V(0, 1.05, -0.2), rot = V(20, 0, 0), color = "Fur" }, -- tuft of hair
+			{ s = "Egg", size = V(0.3, 0.3, 1.8), at = V(0, -1.9, 1.3), rot = V(-50, 0, 0), color = "Fur" }, -- tail
+		},
+	},
+	Owl = {
+		kart = C(170, 80, 230),
+		fur = C(150, 95, 210),
+		body = C(150, 95, 210),
+		head = V(2.4, 2.1, 2),
+		eyeScale = 1.45,
+		eyeSpread = 0.5,
+		eyeY = 0.15,
+		eyeZ = -0.95,
+		extras = {
+			{ s = "Egg", size = V(2, 1.5, 0.4), at = V(0, 0.05, -0.8), color = C(215, 190, 240) }, -- face
+			{ s = "Egg", size = V(0.35, 0.55, 0.35), at = V(0, -0.35, -1.05), rot = V(15, 0, 0), color = C(255, 190, 50) }, -- beak
+			{ s = "Egg", size = V(0.4, 0.9, 0.3), at = V(0.8, 1.05, -0.05), rot = V(0, 0, -25), color = "Fur", pair = true }, -- ear tufts
+			{ s = "Egg", size = V(1.5, 1.7, 0.5), at = V(0, -1.8, -0.6), color = C(215, 190, 240) }, -- tummy
+		},
+	},
+	Robot = {
+		kart = C(40, 210, 210),
+		fur = C(190, 200, 215),
+		headShape = "Block",
+		head = V(2, 1.8, 1.8),
+		mat = Enum.Material.Metal,
+		eyes = false,
+		extras = {
+			{ s = "Block", size = V(1.6, 0.6, 0.1), at = V(0, 0.2, -0.92), color = C(30, 30, 40) }, -- visor
+			{ s = "Ball", size = V(0.35, 0.35, 0.35), at = V(0.4, 0.2, -0.95), color = C(80, 255, 255), mat = Enum.Material.Neon, pair = true }, -- glowing eyes
+			{ s = "Block", size = V(0.9, 0.22, 0.08), at = V(0, -0.45, -0.92), color = C(60, 60, 70) }, -- mouth grille
+			{ s = "Cylinder", size = V(0.8, 0.12, 0.12), at = V(0, 1.3, 0), rot = V(0, 0, 90), color = C(150, 150, 160) }, -- antenna
+			{ s = "Ball", size = V(0.4, 0.4, 0.4), at = V(0, 1.75, 0), color = C(255, 230, 60), mat = Enum.Material.Neon },
+			{ s = "Cylinder", size = V(0.3, 0.7, 0.7), at = V(1.08, 0, 0), color = C(250, 200, 40), pair = true }, -- ear bolts
+		},
+	},
+	Bunny = {
+		kart = C(120, 220, 150),
+		fur = C(248, 248, 248),
+		head = V(2.1, 1.9, 1.9),
+		eyeY = 0.15,
+		extras = {
+			{ s = "Egg", size = V(0.5, 1.8, 0.3), at = V(0.42, 1.55, 0.05), rot = V(0, 0, -8), color = "Fur", pair = true }, -- long ears
+			{ s = "Egg", size = V(0.3, 1.3, 0.3), at = V(0.43, 1.5, -0.05), rot = V(0, 0, -8), color = PINK, pair = true },
+			{ s = "Ball", size = V(0.28, 0.28, 0.28), at = V(0, -0.18, -0.95), color = PINK }, -- nose
+			{ s = "Egg", size = V(0.55, 0.45, 0.45), at = V(0.25, -0.4, -0.8), color = C(250, 240, 230), pair = true }, -- cheeks
+			{ s = "Block", size = V(0.3, 0.25, 0.08), at = V(0, -0.62, -0.88), color = WHITE }, -- teeth
+			{ s = "Cylinder", size = V(0.5, 0.1, 0.1), at = V(0, 1.15, 0), rot = V(0, 0, 90), color = C(80, 170, 60) }, -- a little sprout
+			{ s = "Egg", size = V(0.55, 0.18, 0.3), at = V(0.25, 1.4, 0), rot = V(0, 0, 25), color = C(110, 210, 80), pair = true },
+		},
+	},
+	Panda = {
+		kart = C(240, 240, 240),
+		fur = C(248, 248, 248),
+		body = C(35, 35, 40),
+		eyes = false,
+		extras = {
+			{ s = "Egg", size = V(0.75, 0.75, 0.4), at = V(0.8, 0.85, 0), color = BLACK, pair = true }, -- ears
+			{ s = "Egg", size = V(0.6, 0.8, 0.3), at = V(0.45, 0.12, -0.83), rot = V(0, 0, 25), color = BLACK, pair = true }, -- eye patches
+			{ s = "Ball", size = V(0.36, 0.36, 0.36), at = V(0.45, 0.2, -0.98), color = WHITE, pair = true },
+			{ s = "Ball", size = V(0.2, 0.2, 0.2), at = V(0.45, 0.2, -1.1), color = BLACK, pair = true },
+			{ s = "Egg", size = V(0.45, 0.28, 0.28), at = V(0, -0.3, -0.98), color = BLACK }, -- nose
+		},
+	},
+	Dragon = {
+		kart = C(230, 60, 60),
+		fur = C(225, 70, 60),
+		body = C(225, 70, 60),
+		head = V(2.2, 1.9, 2.1),
+		eyeY = 0.25,
+		extras = {
+			{ s = "Egg", size = V(1, 0.7, 1.4), at = V(0, -0.45, -0.8), color = C(240, 95, 75) }, -- long snout
+			{ s = "Ball", size = V(0.15, 0.15, 0.15), at = V(0.2, -0.2, -1.38), color = DARK_MOUTH, pair = true }, -- nostrils
+			{ s = "Wedge", size = V(0.1, 0.18, 0.13), at = V(0.25, -0.8, -1.15), rot = V(180, 0, 0), color = WHITE, pair = true }, -- little fangs
+			{ s = "Egg", size = V(0.12, 1.4, 1.7), at = V(1.05, -0.9, 0.85), rot = V(0, 35, -30), color = C(170, 40, 50), pair = true }, -- wings
+			{ s = "Egg", size = V(0.3, 0.9, 0.3), at = V(0.55, 1, 0.25), rot = V(-25, 0, -15), color = C(255, 235, 180), pair = true }, -- horns
+			{ s = "Egg", size = V(0.25, 0.6, 0.5), at = V(0, 0.8, 0.7), rot = V(-40, 0, 0), color = C(255, 200, 60) }, -- spikes down its back
+			{ s = "Egg", size = V(0.25, 0.6, 0.5), at = V(0, 0.15, 1.05), rot = V(-70, 0, 0), color = C(255, 200, 60) },
+			{ s = "Egg", size = V(1.4, 1.6, 0.5), at = V(0, -1.8, -0.62), color = C(255, 200, 90) }, -- tummy
+			{ s = "Egg", size = V(0.5, 0.5, 2), at = V(0, -2.1, 1.4), rot = V(-30, 0, 0), color = "Fur" }, -- tail
+			{ s = "Egg", size = V(0.3, 0.6, 0.6), at = V(0, -1.6, 2.35), color = C(255, 200, 60) },
+		},
+	},
+	Dog = {
+		kart = C(50, 80, 190),
+		fur = C(215, 170, 110),
+		extras = {
+			{ s = "Egg", size = V(0.45, 1.3, 0.75), at = V(1.05, -0.05, 0.05), rot = V(0, 0, 15), color = C(130, 85, 50), pair = true }, -- floppy ears
+			{ s = "Egg", size = V(1.1, 0.75, 0.85), at = V(0, -0.42, -0.72), color = C(245, 225, 190) }, -- muzzle
+			{ s = "Egg", size = V(0.5, 0.35, 0.35), at = V(0, -0.25, -1.15), color = BLACK }, -- nose
+			{ s = "Egg", size = V(0.35, 0.5, 0.15), at = V(0, -0.8, -1), color = C(255, 120, 140) }, -- tongue
+			{ s = "Egg", size = V(0.75, 0.75, 0.25), at = V(0.45, 0.22, -0.82), color = C(130, 85, 50) }, -- patch round one eye
+			{ s = "Cylinder", size = V(0.3, 1.9, 1.9), at = V(0, -0.9, 0), rot = V(0, 0, 90), color = C(230, 50, 60) }, -- collar
+			{ s = "Ball", size = V(0.3, 0.3, 0.3), at = V(0, -1.05, -0.92), color = C(255, 210, 60), mat = Enum.Material.Neon }, -- name tag
+		},
+	},
+	Cat = {
+		kart = C(240, 100, 180),
+		fur = C(250, 238, 215),
+		head = V(2.2, 1.9, 1.9),
+		extras = {
+			{ s = "Wedge", size = V(0.25, 0.85, 0.75), at = V(0.6, 0.95, 0), rot = V(0, -90, 0), color = "Fur", pair = true }, -- pointy ears
+			{ s = "Wedge", size = V(0.26, 0.55, 0.45), at = V(0.525, 0.875, -0.05), rot = V(0, -90, 0), color = PINK, pair = true },
+			{ s = "Block", size = V(0.9, 0.05, 0.05), at = V(0.75, -0.3, -0.8), rot = V(0, 0, 10), color = BLACK, pair = true }, -- whiskers
+			{ s = "Block", size = V(0.9, 0.05, 0.05), at = V(0.75, -0.45, -0.78), rot = V(0, 0, -5), color = BLACK, pair = true },
+			{ s = "Egg", size = V(0.25, 0.18, 0.15), at = V(0, -0.2, -0.97), color = PINK }, -- nose
+			{ s = "Egg", size = V(0.4, 0.1, 0.12), at = V(0, -0.4, -0.94), color = C(120, 60, 60) }, -- smile
+			{ s = "Egg", size = V(0.9, 0.8, 0.5), at = V(0.55, 0.5, -0.6), color = C(240, 150, 60) }, -- ginger patch
+			{ s = "Wedge", size = V(0.27, 0.86, 0.76), at = V(0.6, 0.95, 0.01), rot = V(0, -90, 0), color = C(240, 150, 60) }, -- (a ginger ear)
+			{ s = "Cylinder", size = V(0.3, 1.9, 1.9), at = V(0, -0.9, 0), rot = V(0, 0, 90), color = C(60, 150, 230) }, -- collar
+			{ s = "Ball", size = V(0.4, 0.4, 0.4), at = V(0, -1.1, -0.92), color = C(255, 210, 60) }, -- bell
+			{ s = "Egg", size = V(0.35, 0.35, 2), at = V(0, -1.9, 1.3), rot = V(-55, 0, 0), color = "Fur" }, -- tail
+		},
+	},
+	Bear = {
+		kart = C(180, 80, 40),
+		fur = C(170, 95, 50),
+		extras = {
+			{ s = "Egg", size = V(0.75, 0.75, 0.4), at = V(0.8, 0.85, 0), color = "Fur", pair = true }, -- round ears
+			{ s = "Egg", size = V(0.4, 0.4, 0.42), at = V(0.8, 0.85, -0.03), color = C(230, 180, 140), pair = true },
+			{ s = "Egg", size = V(1.05, 0.75, 0.7), at = V(0, -0.42, -0.78), color = C(230, 180, 140) }, -- muzzle
+			{ s = "Egg", size = V(0.5, 0.32, 0.3), at = V(0, -0.22, -1.12), color = BLACK }, -- nose
+			{ s = "Egg", size = V(0.35, 0.1, 0.1), at = V(0, -0.62, -1.1), color = DARK_MOUTH }, -- mouth
+		},
+	},
+}
+
+type Options = {
+	parent: Instance,
+	scale: number?, -- 1 = driver size
+	suit: Color3?, -- racing suit colour (default: the character's kart colour)
+	cheer: boolean?, -- arms up, cheering (the crowd), instead of holding a steering wheel
+	weldTo: BasePart?, -- weld everything to this part (a kart). Otherwise every part is anchored where it stands
+}
+
+local function newShape(shape: string, size: Vector3, color: Color3, material: Enum.Material?): BasePart
+	local part: BasePart
+	if shape == "Wedge" then
+		part = Instance.new("WedgePart")
+	else
+		local p = Instance.new("Part")
+		if shape == "Ball" then
+			p.Shape = Enum.PartType.Ball
+		elseif shape == "Cylinder" then
+			p.Shape = Enum.PartType.Cylinder
+		elseif shape == "Egg" then
+			local mesh = Instance.new("SpecialMesh") -- stretches to the part's size: a smooth egg / ellipsoid
+			mesh.MeshType = Enum.MeshType.Sphere
+			mesh.Parent = p
+		end
+		part = p
+	end
+	part.Size = size
+	part.Color = color
+	part.Material = material or Enum.Material.SmoothPlastic
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	part.CanCollide = false
+	part.CanQuery = false
+	part.CanTouch = false
+	part.Massless = true
+	return part
+end
+
+local Mascots = {
+	KINDS = KINDS,
+	SEAT = CFrame.new(0, 0.75, 0.8), -- where a driver sits, from the middle of a kart's hitbox (the seat's top is 0.75 up, 0.8 back)
+}
+
+-- Builds a character sitting (or standing) at `cf`, facing cf's LookVector.
+-- Returns its model and its head (for a name tag).
+function Mascots.build(kind: string, cf: CFrame, options: Options): (Model, BasePart)
+	local spec = KINDS[kind] or KINDS.Bear
+	local scale = options.scale or 1
+	local suit = options.suit or spec.kart
+	local bodyColor = spec.body or suit
+	local model = Instance.new("Model")
+	model.Name = kind
+
+	local function add(name: string, shape: string, size: Vector3, at: Vector3, color: any, rot: Vector3?, material: Enum.Material?, alpha: number?): BasePart
+		local part = newShape(shape, size * scale, if color == "Fur" then spec.fur else color, material)
+		part.Name = name
+		part.Transparency = alpha or 0
+		part.CastShadow = not options.cheer -- (a whole crowd casting shadows is costly)
+		local r = rot or Vector3.zero
+		part.CFrame = cf * CFrame.new(at * scale) * CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z))
+		local holder = options.weldTo
+		if holder then
+			part.Anchored = false
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = holder
+			weld.Part1 = part
+			weld.Parent = part
+		else
+			part.Anchored = true
+		end
+		part.Parent = model
+		return part
+	end
+	-- Adds a part and its mirror image on the other side
+	local function pair(name: string, shape: string, size: Vector3, at: Vector3, color: any, rot: Vector3?, material: Enum.Material?, alpha: number?)
+		local r = rot or Vector3.zero
+		add(name, shape, size, at, color, r, material, alpha)
+		add(name, shape, size, Vector3.new(-at.X, at.Y, at.Z), color, Vector3.new(r.X, -r.Y, -r.Z), material, alpha)
+	end
+
+	-- The body every character shares (from the middle of its seat: the head is 3 studs up)
+	local headAt = Vector3.new(0, 3, 0)
+	model.PrimaryPart = add("Body", "Egg", Vector3.new(2.1, 2.2, 1.7), Vector3.new(0, 1.2, 0), bodyColor)
+	local head = add("Head", spec.headShape or "Egg", spec.head or Vector3.new(2.2, 2, 2), headAt, spec.fur, nil, spec.mat)
+	local hands = spec.hands or spec.fur
+	if options.cheer then
+		pair("Arm", "Egg", Vector3.new(0.5, 1.7, 0.5), Vector3.new(1.2, 2.75, -0.1), bodyColor, Vector3.new(0, 0, -22))
+		pair("Hand", "Ball", Vector3.one * 0.55, Vector3.new(1.5, 3.55, -0.2), hands)
+	else
+		pair("Arm", "Egg", Vector3.new(0.5, 0.5, 2.2), Vector3.new(0.7, 1.12, -0.85), bodyColor, Vector3.new(-52, 17, 0)) -- reaching for the steering wheel
+		pair("Hand", "Ball", Vector3.one * 0.55, Vector3.new(0.5, 0.3, -1.5), hands)
+	end
+	if spec.eyes ~= false then
+		local es = spec.eyeScale or 1
+		local x, y, z = spec.eyeSpread or 0.42, spec.eyeY or 0.2, spec.eyeZ or -0.88
+		pair("Eye", "Egg", Vector3.new(0.55, 0.7, 0.3) * es, headAt + Vector3.new(x, y, z), WHITE)
+		pair("Pupil", "Ball", Vector3.one * 0.32 * es, headAt + Vector3.new(x * 0.97, y - 0.03, z - 0.14 * es), BLACK)
+		if not options.cheer then -- (too small to see on the crowd)
+			pair("Shine", "Ball", Vector3.one * 0.11 * es, headAt + Vector3.new(x * 0.9, y + 0.08 * es, z - 0.27 * es), WHITE)
+		end
+	end
+	for _, e in spec.extras or {} do
+		local at = headAt + e.at
+		if e.pair then
+			pair("Detail", e.s, e.size, at, e.color, e.rot, e.mat, e.alpha)
+		else
+			add("Detail", e.s, e.size, at, e.color, e.rot, e.mat, e.alpha)
+		end
+	end
+	model.Parent = options.parent
+	return model, head
+end
+
+return Mascots
+]]></ProtectedString>
+				<string name="ScriptGuid">{0341D069-528A-4AC0-BD3D-F3025C424C0D}</string>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">Mascots</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+				<UniqueId name="UniqueId">4d646a3f854afaa10ad615540001b74f</UniqueId>
+			</Properties>
+		</Item>
 	</Item>
 	<Item class="ServerScriptService" referent="RBXBD451DA8469A481CAA0EAFCA88A08DB5">
 		<Properties>
@@ -7731,7 +8343,9 @@ return Garage
 
 	Kart racing MVP, server side. This script:
 	  • builds the lobby, plus whichever race track won the vote (with its scenery), out of parts
-	  • runs the game loop: lobby + track vote -> race -> back to lobby -> repeat
+	  • runs the game loop: someone in the lobby picks a track and starts a race, the
+	    others can join, race -> back to the lobby (SETTINGS.LOBBY_MODE = "Vote" brings
+	    back the old loop: everyone in the lobby votes between 3 tracks, then races)
 	  • tracks checkpoints, live race positions, finish times and respawns
 	  • keeps a global "most 1st places" leaderboard saved with DataStores
 
@@ -7755,14 +8369,21 @@ local Lighting = game:GetService("Lighting")
 -- SETTINGS  (safe to tweak)
 ------------------------------------------------------------------------
 local SETTINGS = {
-	INTERMISSION_TIME = 15, -- seconds in the lobby before each race (players vote for the next track meanwhile)
+	-- How races start. "Pick": nobody has to race. A player presses RACE, picks a track and
+	-- starts a race; everyone else in the lobby gets JOIN_TIME seconds to join it. While a race
+	-- runs, someone in the lobby can line up the next one.
+	-- "Vote": the old way. Everyone in the lobby races every round, after voting between
+	-- VOTE_CHOICES tracks for INTERMISSION_TIME seconds.
+	LOBBY_MODE = "Pick",
+	JOIN_TIME = 15, -- (Pick) seconds the others have to join a race someone started
+	INTERMISSION_TIME = 15, -- (Vote) seconds in the lobby before each race (players vote for the next track meanwhile)
 	VOTE_CHOICES = 3, -- how many randomly picked tracks players can vote between
 	TRACK_REVEAL_TIME = 3, -- seconds the winning track is announced before racers are put on it
 	COUNTDOWN_TIME = 3, -- 3, 2, 1, GO!
 	RACE_TIME_LIMIT = 240, -- hard limit on race length, in seconds (a race should take about 1.5-2 minutes)
 	TIME_AFTER_FIRST_FINISH = 45, -- once 1st place finishes, everyone else gets this long
 	RETURN_DELAY = 4, -- seconds a finisher stays on the track before going back to the lobby
-	MIN_PLAYERS_TO_START = 1, -- 1 lets you race alone (handy for testing)
+	MIN_PLAYERS_TO_START = 1, -- (Vote) 1 lets you race alone (handy for testing)
 	MIN_RACERS_FOR_WIN = 2, -- a 1st place only counts on the leaderboard with at least this many players (bots don't count)
 	MAX_RACERS = 12, -- size of the starting grid; extra players wait for the next race
 	RESPAWN_COOLDOWN = 1.5, -- seconds between manual respawns
@@ -7783,8 +8404,9 @@ local BOTS = {
 	SKILL = { 0.93, 1.01 }, -- each bot's top speed, as a share of a kart's top speed (random in this range)
 	CATCH_UP = 0.08, -- bots far behind the leading player speed up by up to this much; far-ahead bots slow down
 	LOOK_AHEAD = 22, -- studs ahead on the road a bot aims for (plus more the faster it goes)
-	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred" },
-	-- The character each one drives as (see the Mascots module inside this script). Their kart is the character's colour.
+	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred", "Grand Dad" },
+	-- The character each one drives as (see the Mascots module in ReplicatedStorage). Their kart is the character's colour.
+	-- Every CPU has its own character, so no two CPUs in a race are the same one (players can pick any).
 	MASCOTS = {
 		Blaze = "Fox",
 		Zippy = "Bee",
@@ -7801,6 +8423,7 @@ local BOTS = {
 		Mochi = "Cat",
 		Rusty = "Bear",
 		Fred = "Fred", -- Feelsgood Fred, king of Croaker Swamp
+		["Grand Dad"] = "GrandDad",
 	},
 	-- How karts handle. Keep these the same as HANDLING in RaceClient!
 	MAX_SPEED = 80,
@@ -7884,8 +8507,8 @@ local TRACK = {
 -- new one; the comment at its top explains everything a track can have.
 ------------------------------------------------------------------------
 local TRACKS = require(script:WaitForChild("Tracks"))
--- The cartoon characters CPU racers drive as, and the crowds in the grandstands
-local Mascots = require(script:WaitForChild("Mascots"))
+-- The cartoon characters CPU racers (and players who pick one) drive as, and the crowds in the grandstands
+local Mascots = require(ReplicatedStorage:WaitForChild("Mascots"))
 -- Every kart body and wheel set players can pick (shared with the client's garage menu)
 local Garage = require(ReplicatedStorage:WaitForChild("Garage"))
 
@@ -8125,20 +8748,22 @@ end
 ------------------------------------------------------------------------
 local raceState = Instance.new("Folder")
 raceState.Name = "RaceState"
-raceState:SetAttribute("Phase", "Waiting") -- Waiting / Intermission (track vote) / Reveal / Countdown / Racing / Results
+raceState:SetAttribute("Phase", "Waiting") -- Waiting / Joining (Pick: a race someone started) or Intermission (Vote: track vote) / Reveal / Countdown / Racing / Results
+raceState:SetAttribute("LobbyMode", SETTINGS.LOBBY_MODE)
 raceState:SetAttribute("Countdown", 0)
 raceState:SetAttribute("RaceStart", 0)
 raceState:SetAttribute("RaceEnd", 0)
 raceState:SetAttribute("RacerCount", 0)
--- Name, description and colour of every track, for the vote cards on players' screens
+-- Name, description and colour of every track, for the track menu and vote cards on players' screens
 local trackInfoFolder = Instance.new("Folder")
 trackInfoFolder.Name = "Tracks"
-for _, def in TRACKS do
+for order, def in TRACKS do
 	local info = Instance.new("Folder")
 	info.Name = def.id
 	info:SetAttribute("DisplayName", def.name)
 	info:SetAttribute("Blurb", def.blurb)
 	info:SetAttribute("Color", def.color)
+	info:SetAttribute("Order", order)
 	info.Parent = trackInfoFolder
 end
 trackInfoFolder.Parent = raceState
@@ -10650,7 +11275,7 @@ local function buildLobby(): Folder
 	newLabel({
 		Size = UDim2.fromScale(0.9, 0.72),
 		Position = UDim2.fromScale(0.05, 0.24),
-		Text = "Vote for the next track, then the race starts!\n"
+		Text = (if SETTINGS.LOBBY_MODE == "Vote" then "Vote for the next track, then the race starts!\n" else "Press RACE to start a race, or JOIN someone else's!\n")
 			.. "Orange pads give you a speed boost.\n"
 			.. "Hold DRIFT while turning, let go for a mini-turbo.\n"
 			.. "Fall off? You respawn at the last checkpoint.\n"
@@ -11558,6 +12183,16 @@ local function loadTrack(def)
 	raceState:SetAttribute("TrackName", def.name)
 end
 
+-- The track in TRACKS with this id, or nil. Safe to call with anything a client sends.
+local function trackById(id: any)
+	for _, def in TRACKS do
+		if def.id == id then
+			return def
+		end
+	end
+	return nil
+end
+
 loadTrack(TRACKS[math.random(1, #TRACKS)])
 
 -- Studio testing helper: switch tracks without waiting for a vote. While
@@ -11567,13 +12202,11 @@ if RunService:IsStudio() then
 	local preview = Instance.new("BindableFunction")
 	preview.Name = "PreviewTrack"
 	preview.OnInvoke = function(id: any): boolean
-		for _, def in TRACKS do
-			if def.id == id then
-				loadTrack(def)
-				return true
-			end
+		local def = trackById(id)
+		if def then
+			loadTrack(def)
 		end
-		return false
+		return def ~= nil
 	end
 	preview.Parent = game:GetService("ServerStorage")
 end
@@ -11639,7 +12272,12 @@ local function updateLobbyScreen()
 	end
 	local phase = raceState:GetAttribute("Phase")
 	local trackName = tostring(raceState:GetAttribute("TrackName") or "the track")
-	if phase == "Intermission" then
+	local pick = SETTINGS.LOBBY_MODE ~= "Vote"
+	if phase == "Joining" then
+		local def = trackById(raceState:GetAttribute("NextTrack"))
+		title.Text = string.format("%s IN %d", string.upper(if def then def.name else "RACE"), tonumber(raceState:GetAttribute("Countdown")) or 0)
+		subtitle.Text = tostring(raceState:GetAttribute("Host") or "Someone") .. " started a race. Press JOIN to race too!"
+	elseif phase == "Intermission" then
 		title.Text = string.format("NEXT RACE IN %d", tonumber(raceState:GetAttribute("Countdown")) or 0)
 		local leader = leadingTrackName()
 		subtitle.Text = if leader then "Vote for a track!  Winning: " .. leader else "Vote for the next track on your screen!"
@@ -11651,13 +12289,13 @@ local function updateLobbyScreen()
 		subtitle.Text = "The race on " .. trackName .. " is about to start!"
 	elseif phase == "Racing" then
 		title.Text = "RACE IN PROGRESS"
-		subtitle.Text = string.format("%d racing on %s — you're in the next one!", tonumber(raceState:GetAttribute("RacerCount")) or 0, trackName)
+		subtitle.Text = string.format(if pick then "%d racing on %s" else "%d racing on %s — you're in the next one!", tonumber(raceState:GetAttribute("RacerCount")) or 0, trackName)
 	elseif phase == "Results" then
 		title.Text = "RACE OVER!"
-		subtitle.Text = "Next race starting soon"
+		subtitle.Text = if pick then "Press RACE to start another one!" else "Next race starting soon"
 	else
-		title.Text = "WAITING FOR PLAYERS"
-		subtitle.Text = "Races start automatically"
+		title.Text = if pick then "PICK A TRACK!" else "WAITING FOR PLAYERS"
+		subtitle.Text = if pick then "Press RACE on your screen to start a race" else "Races start automatically"
 	end
 end
 raceState:GetAttributeChangedSignal("Phase"):Connect(updateLobbyScreen)
@@ -12044,6 +12682,17 @@ local function addRacer(player: Player, gridIndex: number, slot: BasePart): Race
 	local kart, hitbox, seat = buildKart(color, slot.CFrame + Vector3.new(0, KART_RIDE_HEIGHT, 0), player:GetAttribute("Kart"), player:GetAttribute("Wheels"))
 	kart.Name = player.Name .. "_Kart"
 	kart:SetAttribute("OwnerUserId", player.UserId)
+	-- Driving as one of the characters (garage menu)? Hide their avatar and sit the
+	-- character in the kart instead. They get a fresh avatar back in the lobby.
+	local kind = player:GetAttribute("Character")
+	if typeof(kind) == "string" and Mascots.KINDS[kind] then
+		for _, part in character:GetDescendants() do
+			if part:IsA("BasePart") or part:IsA("Decal") then
+				part.Transparency = 1
+			end
+		end
+		Mascots.build(kind, hitbox.CFrame * Mascots.SEAT, { parent = kart, weldTo = hitbox })
+	end
 	kart.Parent = kartsFolder
 
 	humanoid.JumpPower = 0 -- jumping would pop them out of the seat
@@ -12608,8 +13257,7 @@ end
 -- A little blocky driver in a bot's kart, with its name floating above
 -- The bot's character (a fox, a penguin...) sitting in its kart, with a name tag
 local function addBotDriver(kart: Model, hitbox: BasePart, mascot: string, name: string)
-	-- sitting on the seat (its top is 0.75 above the kart's middle, 0.8 back)
-	local _, head = Mascots.build(mascot, hitbox.CFrame * CFrame.new(0, 0.75, 0.8), { parent = kart, weldTo = hitbox })
+	local _, head = Mascots.build(mascot, hitbox.CFrame * Mascots.SEAT, { parent = kart, weldTo = hitbox })
 	local tag = Instance.new("BillboardGui")
 	tag.Name = "NameTag"
 	tag.Size = UDim2.fromOffset(150, 26)
@@ -12690,7 +13338,7 @@ end)
 ------------------------------------------------------------------------
 -- THE RACE
 ------------------------------------------------------------------------
-local function runRace()
+local function runRace(humans: { Player })
 	local checkpoints = sortedByNumber(trackFolder:FindFirstChild("Checkpoints"))
 	local slots = sortedByNumber(trackFolder:FindFirstChild("StartSlots"))
 	local startLine = trackFolder:FindFirstChild("StartLine") :: BasePart?
@@ -12737,7 +13385,7 @@ local function runRace()
 	-- 1) Fill the grid: last race's order, newcomers at the back, bots in the gaps
 	table.clear(racers)
 	local startedCount, humanCount = 0, 0
-	for i, entry in startingGrid(getLobbyPlayers()) do
+	for i, entry in startingGrid(humans) do
 		if i > #slots then
 			break -- (only if more players than grid spots are on the server)
 		end
@@ -13044,6 +13692,22 @@ local function finishVote()
 end
 
 ------------------------------------------------------------------------
+-- PICK A TRACK  (LOBBY_MODE "Pick": a player starts a race, others join it)
+------------------------------------------------------------------------
+local nextTrack: any = nil -- the track someone picked for the next race (nil = nothing lined up)
+local entrants: { [Player]: boolean } = {} -- who's joined it
+
+local function setJoined(player: Player, joined: boolean)
+	entrants[player] = if joined then true else nil
+	player:SetAttribute("Joined", if joined then true else nil)
+	local count = 0
+	for _ in entrants do
+		count += 1
+	end
+	raceState:SetAttribute("JoinedCount", count)
+end
+
+------------------------------------------------------------------------
 -- PLAYERS
 ------------------------------------------------------------------------
 local function onCharacterAdded(character: Model)
@@ -13061,7 +13725,7 @@ end
 -- Garage picks as last loaded/saved, so leaving without changing anything doesn't write
 local garageSaved: { [Player]: string } = {}
 local function garageKey(player: Player): string
-	return tostring(player:GetAttribute("Kart")) .. "/" .. tostring(player:GetAttribute("Wheels"))
+	return tostring(player:GetAttribute("Kart")) .. "/" .. tostring(player:GetAttribute("Wheels")) .. "/" .. tostring(player:GetAttribute("Character"))
 end
 
 local garageSaving = 0 -- saves still on their way (the server waits for them before it shuts down)
@@ -13073,7 +13737,7 @@ local function saveGarage(player: Player)
 		return
 	end
 	garageSaved[player] = garageKey(player)
-	local pick = { Kart = player:GetAttribute("Kart"), Wheels = player:GetAttribute("Wheels") }
+	local pick = { Kart = player:GetAttribute("Kart"), Wheels = player:GetAttribute("Wheels"), Character = player:GetAttribute("Character") }
 	garageSaving += 1
 	for attempt = 1, 3 do
 		local ok, err = pcall(function()
@@ -13121,6 +13785,7 @@ local function onPlayerAdded(player: Player)
 	-- Their garage pick: the default kart until their saved one loads
 	player:SetAttribute("Kart", Garage.DEFAULT_KART)
 	player:SetAttribute("Wheels", Garage.DEFAULT_WHEELS)
+	player:SetAttribute("Character", "Avatar") -- "Avatar" = their own Roblox avatar, or one of the Mascots
 	local garage = garageStore
 	if garage and player.UserId > 0 then
 		task.spawn(function()
@@ -13133,6 +13798,9 @@ local function onPlayerAdded(player: Player)
 				end
 				if Garage.find(Garage.WHEELS, saved.Wheels) then
 					player:SetAttribute("Wheels", saved.Wheels)
+				end
+				if typeof(saved.Character) == "string" and Mascots.KINDS[saved.Character] then
+					player:SetAttribute("Character", saved.Character)
 				end
 			end
 			garageSaved[player] = garageKey(player) -- (only saved again if it changes)
@@ -13174,6 +13842,9 @@ Players.PlayerRemoving:Connect(function(player)
 		votes[player] = nil
 		publishVotes()
 	end
+	if entrants[player] then
+		setJoined(player, false)
+	end
 end)
 
 game:BindToClose(function()
@@ -13204,11 +13875,27 @@ raceEvent.OnServerEvent:Connect(function(player, action, choice, id)
 			useItem(racer) -- (does nothing unless they're really holding an item)
 		end
 	elseif action == "Equip" then
-		-- Garage pick: `choice` is "Kart" or "Wheels", `id` must be one of the
-		-- Garage's items. Used from their next race on.
+		-- Garage pick: `choice` is "Kart", "Wheels" or "Character", `id` must be one of the
+		-- Garage's items, or a character ("Avatar" = their own). Used from their next race on.
 		local list = if choice == "Kart" then Garage.KARTS elseif choice == "Wheels" then Garage.WHEELS else nil
-		if list and Garage.find(list, id) then
+		local isCharacter = choice == "Character" and (id == "Avatar" or (typeof(id) == "string" and Mascots.KINDS[id] ~= nil))
+		if (list and Garage.find(list, id)) or isCharacter then
 			player:SetAttribute(choice, id)
+		end
+	elseif action == "Start" then
+		-- Pick mode: they picked a track (`choice`, its id) and pressed START. Only one
+		-- race can be lined up at a time, and not by someone who's racing right now.
+		local def = trackById(choice)
+		if SETTINGS.LOBBY_MODE ~= "Vote" and def and not nextTrack and not racers[player] then
+			nextTrack = def
+			raceState:SetAttribute("NextTrack", def.id)
+			raceState:SetAttribute("Host", player.DisplayName)
+			setJoined(player, true)
+		end
+	elseif action == "Join" then
+		-- Pick mode: join (`choice` = true) or leave the race someone lined up
+		if nextTrack and not racers[player] then
+			setJoined(player, choice == true)
 		end
 	elseif action == "Bump" then
 		-- Their kart hit a CPU racer (`choice`, its kart) on their screen. Karts'
@@ -13243,44 +13930,81 @@ end)
 ------------------------------------------------------------------------
 -- MAIN LOOP
 ------------------------------------------------------------------------
-while true do
+-- LOBBY_MODE "Vote": everyone in the lobby votes for a track, then they all race
+local function voteRound()
 	setPhase("Waiting")
 	while #getLobbyPlayers() < SETTINGS.MIN_PLAYERS_TO_START do
 		task.wait(1)
 	end
-
-	-- Lobby time: everyone votes for the next track
 	startVote()
 	setPhase("Intermission")
-	local cancelled = false
 	for t = SETTINGS.INTERMISSION_TIME, 1, -1 do
 		raceState:SetAttribute("Countdown", t)
 		task.wait(1)
 		if #getLobbyPlayers() < SETTINGS.MIN_PLAYERS_TO_START then
-			cancelled = true
-			break
+			return -- cancelled
 		end
 	end
+	-- Build the winning track (unless it's already there), announce it, then race
+	local winner = finishVote()
+	if winner ~= currentTrackDef then
+		loadTrack(winner)
+	end
+	setPhase("Reveal")
+	task.wait(SETTINGS.TRACK_REVEAL_TIME)
+	runRace(getLobbyPlayers())
+end
 
-	if not cancelled then
-		local ok, err = pcall(function()
-			-- Build the winning track (unless it's already there), announce it, then race
-			local winner = finishVote()
-			if winner ~= currentTrackDef then
-				loadTrack(winner)
-			end
-			setPhase("Reveal")
-			task.wait(SETTINGS.TRACK_REVEAL_TIME)
-			runRace()
-		end)
-		if not ok then
-			warn("[RaceServer] Race crashed:", err)
-			for _, racer in racers do
-				releaseRacer(racer, true)
-			end
-			table.clear(racers)
-			setStartLights(0, COLORS.LightOff)
+-- LOBBY_MODE "Pick": wait (as long as it takes) for someone to start a race, give
+-- everyone else JOIN_TIME seconds to join, then race with whoever joined
+local function pickRound()
+	setPhase("Waiting")
+	while not nextTrack do
+		task.wait(0.25)
+	end
+	setPhase("Joining")
+	for t = SETTINGS.JOIN_TIME, 1, -1 do
+		raceState:SetAttribute("Countdown", t)
+		task.wait(1)
+		if next(entrants) == nil then
+			break -- everyone left it
 		end
+	end
+	local def = nextTrack
+	local humans = {}
+	for _, player in getLobbyPlayers() do
+		if entrants[player] then
+			table.insert(humans, player)
+		end
+	end
+	for player in entrants do
+		player:SetAttribute("Joined", nil)
+	end
+	table.clear(entrants)
+	raceState:SetAttribute("JoinedCount", 0)
+	nextTrack = nil
+	raceState:SetAttribute("NextTrack", nil)
+	raceState:SetAttribute("Host", nil)
+	if #humans == 0 then
+		return
+	end
+	if def ~= currentTrackDef then
+		loadTrack(def)
+	end
+	setPhase("Reveal")
+	task.wait(SETTINGS.TRACK_REVEAL_TIME)
+	runRace(humans)
+end
+
+while true do
+	local ok, err = pcall(if SETTINGS.LOBBY_MODE == "Vote" then voteRound else pickRound)
+	if not ok then
+		warn("[RaceServer] Race crashed:", err)
+		for _, racer in racers do
+			releaseRacer(racer, true)
+		end
+		table.clear(racers)
+		setStartLights(0, COLORS.LightOff)
 	end
 end
 ]]></ProtectedString>
@@ -14336,390 +15060,6 @@ return {
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9f</UniqueId>
-				</Properties>
-			</Item>
-			<Item class="ModuleScript" referent="RBX16FD667544634566BA20170A14FE1EF3">
-				<Properties>
-					<Content name="LinkedSource"><null></null></Content>
-					<ProtectedString name="Source"><![CDATA[--[[
-	MASCOTS  —  the cartoon characters the CPU racers drive as, and the crowds
-	in the grandstands. RaceServer builds them with Mascots.build().
-
-	Every character gets the same simple body: a round body, two arms, a head and
-	two eyes. What makes each one different is listed in its entry:
-	  kart       colour of its kart (and racing suit)
-	  fur        colour of its head (and hands)
-	  body       colour of its body, if it isn't wearing a racing suit (a penguin is black)
-	  hands      colour of its hands (default: fur)
-	  head       size of its head (default 2.2 wide, 2 tall, 2 deep)
-	  headShape  "Block" for a boxy head (the robot)
-	  eyes       false = no standard eyes (it lists its own, like the frog's)
-	  eyeY / eyeSpread / eyeZ / eyeScale   move and size the standard eyes
-	  extras     ears, noses, tails...: { s = shape, size, at = position, color, rot, pair, mat, alpha }
-	             s: "Egg" (a ball you can stretch), "Ball", "Block", "Cylinder" or "Wedge"
-	             at: studs from the middle of the head; -Z is the way it faces
-	             rot: degrees to turn it (x, y, z)
-	             pair = true adds a mirror copy on the other side (ears, eyes, whiskers)
-	             color: a Color3, or "Fur"
-	BOTS.MASCOTS in RaceServer says which racer is which character, and THEMES
-	say which characters cheer in each track's grandstand.
-]]
-
-local V = Vector3.new
-local C = Color3.fromRGB
-local WHITE = C(250, 250, 250)
-local BLACK = C(30, 30, 36)
-local PINK = C(255, 165, 190)
-local DARK_MOUTH = C(110, 35, 40)
-
-local KINDS = {
-	Fox = {
-		kart = C(250, 130, 30),
-		fur = C(245, 135, 45),
-		extras = {
-			{ s = "Egg", size = V(0.6, 1.2, 0.35), at = V(0.6, 1, 0.05), rot = V(0, 0, -18), color = "Fur", pair = true }, -- pointy ears
-			{ s = "Egg", size = V(0.36, 0.45, 0.37), at = V(0.76, 1.45, 0.05), rot = V(0, 0, -18), color = C(60, 40, 35), pair = true }, -- dark ear tips
-			{ s = "Egg", size = V(1.3, 0.8, 1.1), at = V(0, -0.38, -0.65), color = WHITE }, -- muzzle
-			{ s = "Ball", size = V(0.36, 0.36, 0.36), at = V(0, -0.22, -1.2), color = BLACK }, -- nose
-			{ s = "Egg", size = V(0.9, 0.9, 2.2), at = V(0, -2, 1.4), rot = V(-35, 0, 0), color = "Fur" }, -- bushy tail
-			{ s = "Egg", size = V(0.65, 0.65, 0.8), at = V(0, -1.37, 2.3), rot = V(-35, 0, 0), color = WHITE }, -- tail tip
-		},
-	},
-	Bee = {
-		kart = C(250, 200, 40),
-		fur = C(255, 210, 50),
-		body = C(255, 210, 50),
-		hands = BLACK,
-		extras = {
-			{ s = "Egg", size = V(2.16, 0.4, 1.76), at = V(0, -1.8, 0), color = BLACK }, -- stripes
-			{ s = "Egg", size = V(1.88, 0.35, 1.53), at = V(0, -1.25, 0), color = BLACK },
-			{ s = "Cylinder", size = V(1.1, 0.12, 0.12), at = V(0.35, 1.3, -0.2), rot = V(0, 0, 70), color = BLACK, pair = true }, -- antennae
-			{ s = "Ball", size = V(0.35, 0.35, 0.35), at = V(0.54, 1.85, -0.2), color = BLACK, pair = true },
-			{ s = "Egg", size = V(0.15, 1.2, 1.6), at = V(0.8, -1.2, 0.95), rot = V(0, 30, 0), color = C(230, 245, 255), alpha = 0.3, pair = true }, -- wings
-			{ s = "Egg", size = V(0.6, 0.12, 0.12), at = V(0, -0.42, -0.94), color = DARK_MOUTH }, -- smile
-		},
-	},
-	Turtle = {
-		kart = C(70, 200, 90),
-		fur = C(130, 215, 170),
-		head = V(1.9, 1.8, 2),
-		eyeY = 0.05,
-		extras = {
-			{ s = "Egg", size = V(2.5, 2.4, 1.3), at = V(0, -1.6, 0.85), color = C(60, 120, 50) }, -- shell
-			{ s = "Egg", size = V(0.8, 0.8, 0.2), at = V(0, -1.3, 1.48), color = C(110, 170, 80) }, -- shell pattern
-			{ s = "Egg", size = V(0.6, 0.6, 0.2), at = V(0.62, -2, 1.32), color = C(110, 170, 80), pair = true },
-			{ s = "Egg", size = V(1.66, 0.28, 1.74), at = V(0, 0.5, 0), color = C(255, 140, 30) }, -- headband
-			{ s = "Egg", size = V(0.2, 0.35, 0.7), at = V(0.18, 0.4, 0.95), rot = V(30, 0, 20), color = C(255, 140, 30), pair = true }, -- headband ends
-			{ s = "Egg", size = V(0.6, 0.09, 0.12), at = V(0, -0.42, -0.89), color = C(50, 70, 50) }, -- smile
-		},
-	},
-	Penguin = {
-		kart = C(60, 130, 240),
-		fur = C(35, 38, 50),
-		body = C(35, 38, 50),
-		eyeZ = -0.95,
-		extras = {
-			{ s = "Egg", size = V(1.5, 1.8, 0.6), at = V(0, -1.75, -0.6), color = WHITE }, -- tummy
-			{ s = "Egg", size = V(1.7, 1.3, 0.5), at = V(0, 0, -0.78), color = WHITE }, -- face
-			{ s = "Egg", size = V(0.65, 0.32, 0.7), at = V(0, -0.3, -1.15), color = C(255, 160, 40) }, -- beak
-			{ s = "Cylinder", size = V(0.35, 1.9, 1.9), at = V(0, -0.85, 0), rot = V(0, 0, 90), color = C(230, 50, 60) }, -- scarf
-			{ s = "Block", size = V(0.4, 0.9, 0.12), at = V(0.5, -1.3, -0.82), rot = V(0, 0, 10), color = C(230, 50, 60) },
-		},
-	},
-	Frog = {
-		kart = C(140, 230, 60),
-		fur = C(110, 200, 70),
-		head = V(2.6, 1.5, 2),
-		eyes = false,
-		extras = {
-			{ s = "Egg", size = V(0.85, 0.85, 0.85), at = V(0.62, 0.65, -0.3), color = "Fur", pair = true }, -- bumps the eyes sit on
-			{ s = "Ball", size = V(0.85, 0.85, 0.85), at = V(0.62, 0.85, -0.62), color = WHITE, pair = true }, -- big round eyes, wide open
-			{ s = "Ball", size = V(0.42, 0.42, 0.42), at = V(0.6, 0.85, -0.95), color = BLACK, pair = true },
-			{ s = "Ball", size = V(0.13, 0.13, 0.13), at = V(0.54, 0.95, -1.13), color = WHITE, pair = true },
-			{ s = "Egg", size = V(0.9, 0.1, 0.2), at = V(0, -0.32, -0.92), color = C(40, 90, 40) }, -- little smile
-			{ s = "Egg", size = V(0.35, 0.12, 0.3), at = V(0, -0.38, -0.93), color = C(255, 120, 140) }, -- tongue
-			{ s = "Cylinder", size = V(0.45, 0.9, 0.9), at = V(0, 0.85, 0.15), rot = V(0, 0, 90), color = C(255, 205, 50) }, -- a little gold crown
-			{ s = "Ball", size = V(0.22, 0.22, 0.22), at = V(0.32, 1.12, 0.15), color = C(255, 205, 50), pair = true },
-			{ s = "Ball", size = V(0.24, 0.24, 0.24), at = V(0, 1.12, -0.18), color = C(255, 70, 90) },
-			{ s = "Egg", size = V(0.45, 0.3, 0.15), at = V(0.85, -0.1, -0.76), color = PINK, pair = true }, -- cheeks
-			{ s = "Egg", size = V(1.5, 1.6, 0.5), at = V(0, -1.75, -0.65), color = C(200, 240, 150) }, -- tummy
-		},
-	},
-	-- Feelsgood Fred: a laid-back swamp frog with big droopy eyes and wide lips.
-	-- He's the king of Croaker Swamp (that's his temple).
-	Fred = {
-		kart = C(110, 175, 70),
-		fur = C(95, 155, 62),
-		body = C(55, 95, 180), -- his comfy blue t-shirt
-		head = V(2.9, 2, 2.3),
-		eyes = false,
-		extras = {
-			{ s = "Egg", size = V(1.15, 1.05, 0.95), at = V(0.56, 0.8, -0.55), color = WHITE, pair = true }, -- big bulging eyes...
-			{ s = "Egg", size = V(0.5, 0.36, 0.3), at = V(0.5, 0.72, -1), color = BLACK, pair = true }, -- pupils peeking out from under...
-			{ s = "Egg", size = V(1.24, 0.62, 1.04), at = V(0.56, 1.1, -0.56), rot = V(0, 0, -8), color = "Fur", pair = true }, -- ...heavy, droopy lids
-			{ s = "Egg", size = V(1.22, 0.07, 0.96), at = V(0.56, 0.84, -0.6), rot = V(0, 0, -8), color = C(55, 95, 40), pair = true }, -- the lids' edge
-			{ s = "Egg", size = V(2.3, 0.42, 0.8), at = V(0, -0.36, -0.95), color = C(175, 85, 60) }, -- big wide lips
-			{ s = "Egg", size = V(2.1, 0.38, 0.72), at = V(0, -0.68, -0.88), color = C(175, 85, 60) },
-			{ s = "Egg", size = V(2.05, 0.07, 0.6), at = V(0, -0.52, -1.1), color = C(90, 35, 30) }, -- the line of his mouth
-		},
-	},
-	Monkey = {
-		kart = C(150, 100, 60),
-		fur = C(140, 90, 50),
-		eyeZ = -0.95,
-		extras = {
-			{ s = "Egg", size = V(1.6, 1.3, 0.6), at = V(0, -0.05, -0.75), color = C(240, 200, 150) }, -- face
-			{ s = "Egg", size = V(1.15, 0.7, 0.6), at = V(0, -0.5, -0.9), color = C(240, 200, 150) }, -- muzzle
-			{ s = "Egg", size = V(0.6, 0.12, 0.1), at = V(0, -0.62, -1.18), color = DARK_MOUTH }, -- smile
-			{ s = "Egg", size = V(0.3, 0.85, 0.85), at = V(1.15, 0.05, 0), color = "Fur", pair = true }, -- ears
-			{ s = "Egg", size = V(0.12, 0.55, 0.55), at = V(1.3, 0.05, -0.02), color = C(240, 200, 150), pair = true },
-			{ s = "Egg", size = V(0.4, 0.6, 0.4), at = V(0, 1.05, -0.2), rot = V(20, 0, 0), color = "Fur" }, -- tuft of hair
-			{ s = "Egg", size = V(0.3, 0.3, 1.8), at = V(0, -1.9, 1.3), rot = V(-50, 0, 0), color = "Fur" }, -- tail
-		},
-	},
-	Owl = {
-		kart = C(170, 80, 230),
-		fur = C(150, 95, 210),
-		body = C(150, 95, 210),
-		head = V(2.4, 2.1, 2),
-		eyeScale = 1.45,
-		eyeSpread = 0.5,
-		eyeY = 0.15,
-		eyeZ = -0.95,
-		extras = {
-			{ s = "Egg", size = V(2, 1.5, 0.4), at = V(0, 0.05, -0.8), color = C(215, 190, 240) }, -- face
-			{ s = "Egg", size = V(0.35, 0.55, 0.35), at = V(0, -0.35, -1.05), rot = V(15, 0, 0), color = C(255, 190, 50) }, -- beak
-			{ s = "Egg", size = V(0.4, 0.9, 0.3), at = V(0.8, 1.05, -0.05), rot = V(0, 0, -25), color = "Fur", pair = true }, -- ear tufts
-			{ s = "Egg", size = V(1.5, 1.7, 0.5), at = V(0, -1.8, -0.6), color = C(215, 190, 240) }, -- tummy
-		},
-	},
-	Robot = {
-		kart = C(40, 210, 210),
-		fur = C(190, 200, 215),
-		headShape = "Block",
-		head = V(2, 1.8, 1.8),
-		mat = Enum.Material.Metal,
-		eyes = false,
-		extras = {
-			{ s = "Block", size = V(1.6, 0.6, 0.1), at = V(0, 0.2, -0.92), color = C(30, 30, 40) }, -- visor
-			{ s = "Ball", size = V(0.35, 0.35, 0.35), at = V(0.4, 0.2, -0.95), color = C(80, 255, 255), mat = Enum.Material.Neon, pair = true }, -- glowing eyes
-			{ s = "Block", size = V(0.9, 0.22, 0.08), at = V(0, -0.45, -0.92), color = C(60, 60, 70) }, -- mouth grille
-			{ s = "Cylinder", size = V(0.8, 0.12, 0.12), at = V(0, 1.3, 0), rot = V(0, 0, 90), color = C(150, 150, 160) }, -- antenna
-			{ s = "Ball", size = V(0.4, 0.4, 0.4), at = V(0, 1.75, 0), color = C(255, 230, 60), mat = Enum.Material.Neon },
-			{ s = "Cylinder", size = V(0.3, 0.7, 0.7), at = V(1.08, 0, 0), color = C(250, 200, 40), pair = true }, -- ear bolts
-		},
-	},
-	Bunny = {
-		kart = C(120, 220, 150),
-		fur = C(248, 248, 248),
-		head = V(2.1, 1.9, 1.9),
-		eyeY = 0.15,
-		extras = {
-			{ s = "Egg", size = V(0.5, 1.8, 0.3), at = V(0.42, 1.55, 0.05), rot = V(0, 0, -8), color = "Fur", pair = true }, -- long ears
-			{ s = "Egg", size = V(0.3, 1.3, 0.3), at = V(0.43, 1.5, -0.05), rot = V(0, 0, -8), color = PINK, pair = true },
-			{ s = "Ball", size = V(0.28, 0.28, 0.28), at = V(0, -0.18, -0.95), color = PINK }, -- nose
-			{ s = "Egg", size = V(0.55, 0.45, 0.45), at = V(0.25, -0.4, -0.8), color = C(250, 240, 230), pair = true }, -- cheeks
-			{ s = "Block", size = V(0.3, 0.25, 0.08), at = V(0, -0.62, -0.88), color = WHITE }, -- teeth
-			{ s = "Cylinder", size = V(0.5, 0.1, 0.1), at = V(0, 1.15, 0), rot = V(0, 0, 90), color = C(80, 170, 60) }, -- a little sprout
-			{ s = "Egg", size = V(0.55, 0.18, 0.3), at = V(0.25, 1.4, 0), rot = V(0, 0, 25), color = C(110, 210, 80), pair = true },
-		},
-	},
-	Panda = {
-		kart = C(240, 240, 240),
-		fur = C(248, 248, 248),
-		body = C(35, 35, 40),
-		eyes = false,
-		extras = {
-			{ s = "Egg", size = V(0.75, 0.75, 0.4), at = V(0.8, 0.85, 0), color = BLACK, pair = true }, -- ears
-			{ s = "Egg", size = V(0.6, 0.8, 0.3), at = V(0.45, 0.12, -0.83), rot = V(0, 0, 25), color = BLACK, pair = true }, -- eye patches
-			{ s = "Ball", size = V(0.36, 0.36, 0.36), at = V(0.45, 0.2, -0.98), color = WHITE, pair = true },
-			{ s = "Ball", size = V(0.2, 0.2, 0.2), at = V(0.45, 0.2, -1.1), color = BLACK, pair = true },
-			{ s = "Egg", size = V(0.45, 0.28, 0.28), at = V(0, -0.3, -0.98), color = BLACK }, -- nose
-		},
-	},
-	Dragon = {
-		kart = C(230, 60, 60),
-		fur = C(225, 70, 60),
-		body = C(225, 70, 60),
-		head = V(2.2, 1.9, 2.1),
-		eyeY = 0.25,
-		extras = {
-			{ s = "Egg", size = V(1, 0.7, 1.4), at = V(0, -0.45, -0.8), color = C(240, 95, 75) }, -- long snout
-			{ s = "Ball", size = V(0.15, 0.15, 0.15), at = V(0.2, -0.2, -1.38), color = DARK_MOUTH, pair = true }, -- nostrils
-			{ s = "Wedge", size = V(0.1, 0.18, 0.13), at = V(0.25, -0.8, -1.15), rot = V(180, 0, 0), color = WHITE, pair = true }, -- little fangs
-			{ s = "Egg", size = V(0.12, 1.4, 1.7), at = V(1.05, -0.9, 0.85), rot = V(0, 35, -30), color = C(170, 40, 50), pair = true }, -- wings
-			{ s = "Egg", size = V(0.3, 0.9, 0.3), at = V(0.55, 1, 0.25), rot = V(-25, 0, -15), color = C(255, 235, 180), pair = true }, -- horns
-			{ s = "Egg", size = V(0.25, 0.6, 0.5), at = V(0, 0.8, 0.7), rot = V(-40, 0, 0), color = C(255, 200, 60) }, -- spikes down its back
-			{ s = "Egg", size = V(0.25, 0.6, 0.5), at = V(0, 0.15, 1.05), rot = V(-70, 0, 0), color = C(255, 200, 60) },
-			{ s = "Egg", size = V(1.4, 1.6, 0.5), at = V(0, -1.8, -0.62), color = C(255, 200, 90) }, -- tummy
-			{ s = "Egg", size = V(0.5, 0.5, 2), at = V(0, -2.1, 1.4), rot = V(-30, 0, 0), color = "Fur" }, -- tail
-			{ s = "Egg", size = V(0.3, 0.6, 0.6), at = V(0, -1.6, 2.35), color = C(255, 200, 60) },
-		},
-	},
-	Dog = {
-		kart = C(50, 80, 190),
-		fur = C(215, 170, 110),
-		extras = {
-			{ s = "Egg", size = V(0.45, 1.3, 0.75), at = V(1.05, -0.05, 0.05), rot = V(0, 0, 15), color = C(130, 85, 50), pair = true }, -- floppy ears
-			{ s = "Egg", size = V(1.1, 0.75, 0.85), at = V(0, -0.42, -0.72), color = C(245, 225, 190) }, -- muzzle
-			{ s = "Egg", size = V(0.5, 0.35, 0.35), at = V(0, -0.25, -1.15), color = BLACK }, -- nose
-			{ s = "Egg", size = V(0.35, 0.5, 0.15), at = V(0, -0.8, -1), color = C(255, 120, 140) }, -- tongue
-			{ s = "Egg", size = V(0.75, 0.75, 0.25), at = V(0.45, 0.22, -0.82), color = C(130, 85, 50) }, -- patch round one eye
-			{ s = "Cylinder", size = V(0.3, 1.9, 1.9), at = V(0, -0.9, 0), rot = V(0, 0, 90), color = C(230, 50, 60) }, -- collar
-			{ s = "Ball", size = V(0.3, 0.3, 0.3), at = V(0, -1.05, -0.92), color = C(255, 210, 60), mat = Enum.Material.Neon }, -- name tag
-		},
-	},
-	Cat = {
-		kart = C(240, 100, 180),
-		fur = C(250, 238, 215),
-		head = V(2.2, 1.9, 1.9),
-		extras = {
-			{ s = "Wedge", size = V(0.25, 0.85, 0.75), at = V(0.6, 0.95, 0), rot = V(0, -90, 0), color = "Fur", pair = true }, -- pointy ears
-			{ s = "Wedge", size = V(0.26, 0.55, 0.45), at = V(0.525, 0.875, -0.05), rot = V(0, -90, 0), color = PINK, pair = true },
-			{ s = "Block", size = V(0.9, 0.05, 0.05), at = V(0.75, -0.3, -0.8), rot = V(0, 0, 10), color = BLACK, pair = true }, -- whiskers
-			{ s = "Block", size = V(0.9, 0.05, 0.05), at = V(0.75, -0.45, -0.78), rot = V(0, 0, -5), color = BLACK, pair = true },
-			{ s = "Egg", size = V(0.25, 0.18, 0.15), at = V(0, -0.2, -0.97), color = PINK }, -- nose
-			{ s = "Egg", size = V(0.4, 0.1, 0.12), at = V(0, -0.4, -0.94), color = C(120, 60, 60) }, -- smile
-			{ s = "Egg", size = V(0.9, 0.8, 0.5), at = V(0.55, 0.5, -0.6), color = C(240, 150, 60) }, -- ginger patch
-			{ s = "Wedge", size = V(0.27, 0.86, 0.76), at = V(0.6, 0.95, 0.01), rot = V(0, -90, 0), color = C(240, 150, 60) }, -- (a ginger ear)
-			{ s = "Cylinder", size = V(0.3, 1.9, 1.9), at = V(0, -0.9, 0), rot = V(0, 0, 90), color = C(60, 150, 230) }, -- collar
-			{ s = "Ball", size = V(0.4, 0.4, 0.4), at = V(0, -1.1, -0.92), color = C(255, 210, 60) }, -- bell
-			{ s = "Egg", size = V(0.35, 0.35, 2), at = V(0, -1.9, 1.3), rot = V(-55, 0, 0), color = "Fur" }, -- tail
-		},
-	},
-	Bear = {
-		kart = C(180, 80, 40),
-		fur = C(170, 95, 50),
-		extras = {
-			{ s = "Egg", size = V(0.75, 0.75, 0.4), at = V(0.8, 0.85, 0), color = "Fur", pair = true }, -- round ears
-			{ s = "Egg", size = V(0.4, 0.4, 0.42), at = V(0.8, 0.85, -0.03), color = C(230, 180, 140), pair = true },
-			{ s = "Egg", size = V(1.05, 0.75, 0.7), at = V(0, -0.42, -0.78), color = C(230, 180, 140) }, -- muzzle
-			{ s = "Egg", size = V(0.5, 0.32, 0.3), at = V(0, -0.22, -1.12), color = BLACK }, -- nose
-			{ s = "Egg", size = V(0.35, 0.1, 0.1), at = V(0, -0.62, -1.1), color = DARK_MOUTH }, -- mouth
-		},
-	},
-}
-
-type Options = {
-	parent: Instance,
-	scale: number?, -- 1 = driver size
-	suit: Color3?, -- racing suit colour (default: the character's kart colour)
-	cheer: boolean?, -- arms up, cheering (the crowd), instead of holding a steering wheel
-	weldTo: BasePart?, -- weld everything to this part (a kart). Otherwise every part is anchored where it stands
-}
-
-local function newShape(shape: string, size: Vector3, color: Color3, material: Enum.Material?): BasePart
-	local part: BasePart
-	if shape == "Wedge" then
-		part = Instance.new("WedgePart")
-	else
-		local p = Instance.new("Part")
-		if shape == "Ball" then
-			p.Shape = Enum.PartType.Ball
-		elseif shape == "Cylinder" then
-			p.Shape = Enum.PartType.Cylinder
-		elseif shape == "Egg" then
-			local mesh = Instance.new("SpecialMesh") -- stretches to the part's size: a smooth egg / ellipsoid
-			mesh.MeshType = Enum.MeshType.Sphere
-			mesh.Parent = p
-		end
-		part = p
-	end
-	part.Size = size
-	part.Color = color
-	part.Material = material or Enum.Material.SmoothPlastic
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	part.CanCollide = false
-	part.CanQuery = false
-	part.CanTouch = false
-	part.Massless = true
-	return part
-end
-
-local Mascots = { KINDS = KINDS }
-
--- Builds a character sitting (or standing) at `cf`, facing cf's LookVector.
--- Returns its model and its head (for a name tag).
-function Mascots.build(kind: string, cf: CFrame, options: Options): (Model, BasePart)
-	local spec = KINDS[kind] or KINDS.Bear
-	local scale = options.scale or 1
-	local suit = options.suit or spec.kart
-	local bodyColor = spec.body or suit
-	local model = Instance.new("Model")
-	model.Name = kind
-
-	local function add(name: string, shape: string, size: Vector3, at: Vector3, color: any, rot: Vector3?, material: Enum.Material?, alpha: number?): BasePart
-		local part = newShape(shape, size * scale, if color == "Fur" then spec.fur else color, material)
-		part.Name = name
-		part.Transparency = alpha or 0
-		part.CastShadow = not options.cheer -- (a whole crowd casting shadows is costly)
-		local r = rot or Vector3.zero
-		part.CFrame = cf * CFrame.new(at * scale) * CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z))
-		local holder = options.weldTo
-		if holder then
-			part.Anchored = false
-			local weld = Instance.new("WeldConstraint")
-			weld.Part0 = holder
-			weld.Part1 = part
-			weld.Parent = part
-		else
-			part.Anchored = true
-		end
-		part.Parent = model
-		return part
-	end
-	-- Adds a part and its mirror image on the other side
-	local function pair(name: string, shape: string, size: Vector3, at: Vector3, color: any, rot: Vector3?, material: Enum.Material?, alpha: number?)
-		local r = rot or Vector3.zero
-		add(name, shape, size, at, color, r, material, alpha)
-		add(name, shape, size, Vector3.new(-at.X, at.Y, at.Z), color, Vector3.new(r.X, -r.Y, -r.Z), material, alpha)
-	end
-
-	-- The body every character shares (from the middle of its seat: the head is 3 studs up)
-	local headAt = Vector3.new(0, 3, 0)
-	model.PrimaryPart = add("Body", "Egg", Vector3.new(2.1, 2.2, 1.7), Vector3.new(0, 1.2, 0), bodyColor)
-	local head = add("Head", spec.headShape or "Egg", spec.head or Vector3.new(2.2, 2, 2), headAt, spec.fur, nil, spec.mat)
-	local hands = spec.hands or spec.fur
-	if options.cheer then
-		pair("Arm", "Egg", Vector3.new(0.5, 1.7, 0.5), Vector3.new(1.2, 2.75, -0.1), bodyColor, Vector3.new(0, 0, -22))
-		pair("Hand", "Ball", Vector3.one * 0.55, Vector3.new(1.5, 3.55, -0.2), hands)
-	else
-		pair("Arm", "Egg", Vector3.new(0.5, 0.5, 2.2), Vector3.new(0.7, 1.12, -0.85), bodyColor, Vector3.new(-52, 17, 0)) -- reaching for the steering wheel
-		pair("Hand", "Ball", Vector3.one * 0.55, Vector3.new(0.5, 0.3, -1.5), hands)
-	end
-	if spec.eyes ~= false then
-		local es = spec.eyeScale or 1
-		local x, y, z = spec.eyeSpread or 0.42, spec.eyeY or 0.2, spec.eyeZ or -0.88
-		pair("Eye", "Egg", Vector3.new(0.55, 0.7, 0.3) * es, headAt + Vector3.new(x, y, z), WHITE)
-		pair("Pupil", "Ball", Vector3.one * 0.32 * es, headAt + Vector3.new(x * 0.97, y - 0.03, z - 0.14 * es), BLACK)
-		if not options.cheer then -- (too small to see on the crowd)
-			pair("Shine", "Ball", Vector3.one * 0.11 * es, headAt + Vector3.new(x * 0.9, y + 0.08 * es, z - 0.27 * es), WHITE)
-		end
-	end
-	for _, e in spec.extras or {} do
-		local at = headAt + e.at
-		if e.pair then
-			pair("Detail", e.s, e.size, at, e.color, e.rot, e.mat, e.alpha)
-		else
-			add("Detail", e.s, e.size, at, e.color, e.rot, e.mat, e.alpha)
-		end
-	end
-	model.Parent = options.parent
-	return model, head
-end
-
-return Mascots
-]]></ProtectedString>
-					<string name="ScriptGuid">{0341D069-528A-4AC0-BD3D-F3025C424C0D}</string>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
-					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-					<string name="Name">Mascots</string>
-					<int64 name="SourceAssetId">-1</int64>
-					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-					<UniqueId name="UniqueId">4d646a3f854afaa10ad615540001b74f</UniqueId>
 				</Properties>
 			</Item>
 		</Item>

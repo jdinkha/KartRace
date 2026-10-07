@@ -8,7 +8,7 @@ The goal is for each track to feel like a level in a video game (think of drivin
 - **Rooms joined by corridors.** Like a dungeon: wide `Room` sections (arenas, plazas, caverns, 60–140 studs wide) connected by normal roads and `Tunnel` caves.
 - **Using walled, linear roads.** Do not feel inclined to make numerous straighforward, walled off roads (straight or nearly straight lines with walls on the left and right). Instead, prefer the use of elevation, unwalled roads, bendy turns, obstacles, open terrains, etc.
 - **Reference:** In 'assets/img1.png', you can see that the overall design of the level does not have to be linear, it can have branching paths. In 'assets/img2.png', you can see that the off-road should serve as an obstacle that racers must drive around, but also serve as potential shortcuts if players can boost or jump over it. In both images, you can see interesting world-building (mountains, trees, waterfalls, Yoshi eggs, a Yoshi billboard with Yoshis watching us on the cliffs), take inspiration from that.
-- **Choices and creative shortcuts.** Each track needs at least two shortcuts, and they should be inventive, not just "a narrower road". Mark each one with a `Sign` or `Banner`. Examples already in the game:
+- **Choices and creative shortcuts.** Each track needs at least two shortcuts, and they should be inventive, not just "a narrower road". Mark each one with a `Banner`. Examples already in the game:
   - a hole you can drop through onto road below (Magma's Lava River Jump: the main road loops down and passes under its own jump, `Skippable`)
   - a secret cave behind a waterfall (Jungle)
   - a boost-only leap across a ravine (Jungle)

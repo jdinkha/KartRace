@@ -1,6 +1,6 @@
 # KartRace — Roblox Kart Racing
 
-An arcade kart racing game for Roblox. Up to 12 racers (players plus CPU bots) vote on a track, then race from the start line to the finish, grabbing coins and item boxes along the way.
+An arcade kart racing game for Roblox. Players hang out in the lobby until someone picks a track and starts a race; anyone else can join. Up to 12 racers (players plus CPU bots) race from the start line to the finish, grabbing coins and item boxes along the way. Drive as your own avatar or as one of 16 characters.
 
 
 ## Structure
