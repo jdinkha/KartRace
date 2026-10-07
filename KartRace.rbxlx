@@ -330,27 +330,27 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 		<Item class="Camera" referent="RBXEDC5FB6892514099A6FA28EFBF4B153A">
 			<Properties>
 				<CoordinateFrame name="CFrame">
-					<X>-511.56955</X>
-					<Y>1.60277188</Y>
-					<Z>798.060608</Z>
-					<R00>0.640028417</R00>
-					<R01>-0.210504964</R01>
-					<R02>-0.738952875</R02>
+					<X>-508.244324</X>
+					<Y>2.83564711</Y>
+					<Z>795.290588</Z>
+					<R00>0.851457</R00>
+					<R01>-0.336865336</R01>
+					<R02>-0.401923954</R02>
 					<R10>-0</R10>
-					<R11>0.961738348</R11>
-					<R12>-0.27396968</R12>
-					<R20>0.768351316</R20>
-					<R21>0.175348386</R21>
-					<R22>0.615539789</R22>
+					<R11>0.766409576</R11>
+					<R12>-0.642352283</R12>
+					<R20>0.524424613</R20>
+					<R21>0.54693532</R21>
+					<R22>0.652564645</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-510.091644</X>
-					<Y>2.15071106</Y>
-					<Z>796.829529</Z>
+					<X>-6</X>
+					<Y>805.519287</Y>
+					<Z>-20.1544418</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -1719,26 +1719,8 @@ local function knockBack(d: DriveState, velocity: Vector3, from: Vector3, power:
 	return Vector3.new(velocity.X, 0, velocity.Z) * 0.35 + away.Unit * power + Vector3.yAxis * lift
 end
 
--- Solid obstacles (rocks, crystals, snowmen...) carry an "Obstacle" attribute
-local obstacleParams = OverlapParams.new()
-obstacleParams.FilterType = Enum.RaycastFilterType.Include
-
--- Is the kart up against an obstacle (not just a wall)?
-local function touchingObstacle(d: DriveState): boolean
-	local walls = if d.track then d.track:FindFirstChild("Walls") else nil
-	if not walls then
-		return false
-	end
-	obstacleParams.FilterDescendantsInstances = { walls }
-	for _, part in workspace:GetPartBoundsInBox(d.hitbox.CFrame, d.hitbox.Size + Vector3.new(3, 2, 3), obstacleParams) do
-		if part:GetAttribute("Obstacle") then
-			return true
-		end
-	end
-	return false
-end
-
--- Crashed into an obstacle or hazard: the server takes some coins (and everyone sees them spill)
+-- Hit by a dangerous hazard (lava, fire, geysers, things that move): the server takes
+-- some coins (and everyone sees them spill). Safe obstacles (crates, rocks...) are just walls.
 local function reportCrash(d: DriveState)
 	if os.clock() - d.lastCrash > 1 then
 		d.lastCrash = os.clock()
@@ -1935,9 +1917,6 @@ local function driveStep(dt: number)
 				end
 			end
 			velocity += away * math.min(shove.Magnitude * HANDLING.WALL_BOUNCE, 12)
-			if touchingObstacle(d) then -- (scraping a wall is free; crashing into a rock isn't)
-				reportCrash(d)
-			end
 			d.shake = math.clamp(shove.Magnitude / 40, 0.15, 1)
 			if os.clock() - d.lastHitSound > 0.15 then
 				d.lastHitSound = os.clock()
@@ -3501,6 +3480,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ContentProvider = game:GetService("ContentProvider")
+local UserInputService = game:GetService("UserInputService")
 
 local Garage = require(ReplicatedStorage:WaitForChild("Garage"))
 local Mascots = require(ReplicatedStorage:WaitForChild("Mascots"))
@@ -3638,6 +3618,32 @@ textLabel({
 	TextColor3 = Color3.fromRGB(180, 180, 200),
 }, panel)
 
+-- Rows slide sideways when you drag them with the mouse (touch screens drag them
+-- already). A drag that moved isn't a click, so it doesn't pick the card under it.
+local drag: { list: ScrollingFrame, x: number, canvas: number, moved: boolean }? = nil
+local function startDrag(list: ScrollingFrame, input: InputObject)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		drag = { list = list, x = input.Position.X, canvas = list.CanvasPosition.X, moved = false }
+	end
+end
+UserInputService.InputChanged:Connect(function(input)
+	if drag and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local dx = input.Position.X - drag.x
+		drag.moved = drag.moved or math.abs(dx) > 6
+		if drag.moved then
+			local most = math.max(0, drag.list.AbsoluteCanvasSize.X - drag.list.AbsoluteWindowSize.X)
+			drag.list.CanvasPosition = Vector2.new(math.clamp(drag.canvas - dx, 0, most), 0)
+		end
+	end
+end)
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		task.defer(function() -- (after the card's Activated has seen whether it was a drag)
+			drag = nil
+		end)
+	end
+end)
+
 -- A titled row of cards you can scroll sideways
 local function row(title: string, y: number): ScrollingFrame
 	textLabel({
@@ -3654,12 +3660,20 @@ local function row(title: string, y: number): ScrollingFrame
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollingDirection = Enum.ScrollingDirection.X,
-		AutomaticCanvasSize = Enum.AutomaticSize.X,
 		CanvasSize = UDim2.new(),
-		ScrollBarThickness = 4,
+		ScrollBarThickness = 6,
 	}, panel) :: ScrollingFrame
-	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }, list)
+	local layout = make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }, list) :: UIListLayout
 	make("UIPadding", { PaddingLeft = UDim.new(0, 3), PaddingTop = UDim.new(0, 3) }, list)
+	-- (sized from the laid-out cards: AutomaticCanvasSize ignored their aspect ratio and cut the row short)
+	local function fit()
+		list.CanvasSize = UDim2.fromOffset(layout.AbsoluteContentSize.X + 10, 0)
+	end
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fit)
+	fit()
+	list.InputBegan:Connect(function(input)
+		startDrag(list, input)
+	end)
 	return list
 end
 
@@ -3677,7 +3691,14 @@ local function card(list: ScrollingFrame, name: string, order: number, onPick: (
 	local stroke = make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Thickness = 3, Color = CARD }, button)
 	local view = viewport({ Size = UDim2.fromScale(1, 0.74) }, button)
 	textLabel({ Text = name, Position = UDim2.fromScale(0.05, 0.74), Size = UDim2.fromScale(0.9, 0.22) }, button)
-	button.Activated:Connect(onPick)
+	button.InputBegan:Connect(function(input)
+		startDrag(list, input)
+	end)
+	button.Activated:Connect(function()
+		if not (drag and drag.moved) then
+			onPick()
+		end
+	end)
 	return { view = view, stroke = stroke }
 end
 
@@ -8038,6 +8059,8 @@ return Garage
 	  body       colour of its body, if it isn't wearing a racing suit (a penguin is black)
 	  hands      colour of its hands (default: fur)
 	  head       size of its head (default 2.2 wide, 2 tall, 2 deep)
+	  headAt     where its head is, from the middle of the seat (default 3 studs up)
+	  ball       true = no body or arms: the whole character is its (round) head
 	  headShape  "Block" for a boxy head (the robot)
 	  eyes       false = no standard eyes (it lists its own, like the frog's)
 	  eyeY / eyeSpread / eyeZ / eyeScale   move and size the standard eyes
@@ -8057,6 +8080,42 @@ local WHITE = C(250, 250, 250)
 local BLACK = C(30, 30, 36)
 local PINK = C(255, 165, 190)
 local DARK_MOUTH = C(110, 35, 40)
+
+-- A flat piece lying on the front of a ball of radius `r`, standing out by `lift`:
+-- `x`, `y` = where on the face, `roll` = degrees to tilt it (for Smiley's face)
+local function onBall(r: number, s: string, x: number, y: number, size: Vector3, color: Color3, lift: number, roll: number?)
+	local n = V(x, y, -math.sqrt(r * r - x * x - y * y)) / r
+	local rx, ry, rz = (CFrame.lookAt(Vector3.zero, n) * CFrame.Angles(0, 0, math.rad(roll or 0))):ToEulerAnglesXYZ()
+	return { s = s, size = size, at = n * (r + lift - size.Z / 2), rot = V(math.deg(rx), math.deg(ry), math.deg(rz)), color = color }
+end
+
+-- Smiley's face on a ball of radius `r`: shadowed eyes and a wide crescent grin of
+-- teeth (white blocks on a black one, the gaps between them are the lines)
+local function smileyFace(r: number)
+	local face = {}
+	for _, side in { -1, 1 } do
+		local shadow = onBall(r, "Egg", side * 0.42, 0.45, V(0.8, 0.9, 0.1), C(190, 105, 10), 0.02) -- a dark gold glow round the eyes
+		shadow.alpha = 0.45
+		table.insert(face, shadow)
+		table.insert(face, onBall(r, "Egg", side * 0.42, 0.45, V(0.34, 0.58, 0.1), BLACK, 0.07)) -- eyes
+		table.insert(face, onBall(r, "Egg", side * 1.2, -0.08, V(0.36, 0.09, 0.1), BLACK, 0.05, side * 55)) -- curled corners
+	end
+	local w, n = 1.15, 7 -- half its width, pieces across
+	for k = 0, n - 1 do
+		local x = -w + (k + 0.5) * 2 * w / n
+		local f = (x / w) ^ 2
+		local top, bottom = -0.36 + 0.26 * f, -0.86 + 0.76 * f -- (they meet at the corners)
+		local tall, mid = top - bottom, (top + bottom) / 2
+		local slope = 1 * x / (w * w) -- (how steeply the middle of the grin climbs here)
+		local roll = math.deg(math.atan(slope))
+		local wide = 2 * w / n * math.sqrt(1 + slope * slope)
+		table.insert(face, onBall(r, "Block", x, mid, V(wide + 0.04, tall + 0.14, 0.1), BLACK, 0.03, roll))
+		for _, half in { 1, -1 } do -- top and bottom teeth
+			table.insert(face, onBall(r, "Block", x, mid + half * (tall / 4 + 0.01), V(wide - 0.05, tall / 2 - 0.035, 0.1), WHITE, 0.08, roll))
+		end
+	end
+	return face
+end
 
 local KINDS = {
 	Fox = {
@@ -8176,6 +8235,17 @@ local KINDS = {
 			{ s = "Block", size = V(0.26, 0.9, 0.12), at = V(0.5, -1.05, -0.66), rot = V(-12, 0, 0), color = C(255, 121, 48), pair = true }, -- straps
 			{ s = "Ball", size = V(0.24, 0.24, 0.24), at = V(0.45, -1.4, -0.85), color = WHITE, pair = true }, -- buttons
 		},
+	},
+	-- Smiley: just a big yellow ball with a toothy grin, asked for by the owner
+	-- from assets/verity.png (dark gold shadows round its eyes, curled smile corners).
+	Smiley = {
+		kart = C(245, 200, 20),
+		fur = C(245, 200, 20),
+		ball = true,
+		head = V(3.4, 3.4, 3.4),
+		headAt = V(0, 1.9, 0),
+		eyes = false,
+		extras = smileyFace(1.7),
 	},
 	Monkey = {
 		kart = C(150, 100, 60),
@@ -8394,14 +8464,18 @@ function Mascots.build(kind: string, cf: CFrame, options: Options): (Model, Base
 	end
 
 	-- The body every character shares (from the middle of its seat: the head is 3 studs up)
-	local headAt = Vector3.new(0, 3, 0)
-	model.PrimaryPart = add("Body", "Egg", Vector3.new(2.1, 2.2, 1.7), Vector3.new(0, 1.2, 0), bodyColor)
+	local headAt = spec.headAt or Vector3.new(0, 3, 0)
 	local head = add("Head", spec.headShape or "Egg", spec.head or Vector3.new(2.2, 2, 2), headAt, spec.fur, nil, spec.mat)
+	model.PrimaryPart = head
 	local hands = spec.hands or spec.fur
-	if options.cheer then
+	if spec.ball then
+		-- (no body or arms)
+	elseif options.cheer then
+		model.PrimaryPart = add("Body", "Egg", Vector3.new(2.1, 2.2, 1.7), Vector3.new(0, 1.2, 0), bodyColor)
 		pair("Arm", "Egg", Vector3.new(0.5, 1.7, 0.5), Vector3.new(1.2, 2.75, -0.1), bodyColor, Vector3.new(0, 0, -22))
 		pair("Hand", "Ball", Vector3.one * 0.55, Vector3.new(1.5, 3.55, -0.2), hands)
 	else
+		model.PrimaryPart = add("Body", "Egg", Vector3.new(2.1, 2.2, 1.7), Vector3.new(0, 1.2, 0), bodyColor)
 		pair("Arm", "Egg", Vector3.new(0.5, 0.5, 2.2), Vector3.new(0.7, 1.12, -0.85), bodyColor, Vector3.new(-52, 17, 0)) -- reaching for the steering wheel
 		pair("Hand", "Ball", Vector3.one * 0.55, Vector3.new(0.5, 0.3, -1.5), hands)
 	end
@@ -8521,7 +8595,7 @@ local BOTS = {
 	SPEED_SCALE = 0.95, -- every bot's top speed (boosting too) is this share of what it would be: with the items, full-speed bots were too hard
 	CATCH_UP = 0.08, -- bots far behind the leading player speed up by up to this much; far-ahead bots slow down
 	LOOK_AHEAD = 22, -- studs ahead on the road a bot aims for (plus more the faster it goes)
-	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred", "Grand Dad" },
+	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred", "Grand Dad", "Smiley" },
 	-- The character each one drives as (see the Mascots module in ReplicatedStorage). Their kart is the character's colour.
 	-- Every CPU has its own character, so no two CPUs in a race are the same one (players can pick any).
 	MASCOTS = {
@@ -8541,6 +8615,7 @@ local BOTS = {
 		Rusty = "Bear",
 		Fred = "Fred", -- Feelsgood Fred, king of Croaker Swamp
 		["Grand Dad"] = "GrandDad",
+		Smiley = "Smiley",
 	},
 	-- How karts handle. Keep these the same as HANDLING in RaceClient!
 	MAX_SPEED = 80,
@@ -8603,7 +8678,7 @@ local PICKUPS = {
 	TAX_BOOST = 2, -- ...and each of them is worth this many coins of speed (+2% top speed). Keep the same as HANDLING in RaceClient!
 	RESPAWN_TIME = 1.5, -- seconds before a grabbed coin or box comes back
 	REACH = 5.5, -- how close (studs) a kart's middle has to pass to grab one
-	CRASH_COINS = 3, -- coins dropped for hitting an obstacle or hazard, or being put back on the track (not for bumping karts)
+	CRASH_COINS = 3, -- coins dropped when a dangerous hazard hits you (fire, geysers, frogs...), or for being put back on the track (not for safe obstacles like crates and rocks, walls or bumping karts)
 	CRASH_COOLDOWN = 1.5, -- seconds before you can drop coins again (so one crash only costs once)
 }
 
@@ -8639,6 +8714,7 @@ local TRACK = {
 	SCENERY_SEED = 7, -- change this number to shuffle the scenery around
 	FALL_DEPTH = 40, -- drop this far below the lowest bit of road and you're put back at your last checkpoint
 	PILLARS = true, -- support pillars down to the ground under raised road (false: something else holds it up)
+	SOLID_CAVES = false, -- true: tunnels' walls and roofs are solid (karts can bump into them and drive on top), for tunnels standing in the open where a Mega Jump can reach them
 }
 
 ------------------------------------------------------------------------
@@ -9148,7 +9224,7 @@ local function buildArch(cfg, cf: CFrame, text: string, parent: Instance, roadWi
 	end
 	local banner = newPart("Part", {
 		Name = "ArchBanner",
-		Size = Vector3.new(width + 7, 4, 1.5),
+		Size = Vector3.new(width + 2 * (cfg.WALL_THICKNESS + 1.3), 4, 1.5), -- (its ends stop inside the posts: flush with their sides, they flickered)
 		CFrame = cf * CFrame.new(0, 17, 0),
 		Color = COLORS.Board,
 	}, parent)
@@ -9709,7 +9785,7 @@ local function buildObstacle(kind: string, cf: CFrame, size: number, style, wall
 		local scale = size / 5 -- a snowman's bottom ball is 5 studs across at scale 1
 		newPart("Part", { -- the invisible solid bit karts bump into
 			Name = "SnowmanBlock",
-			Attributes = { Obstacle = true }, -- (hitting one of these costs coins)
+			Attributes = { Obstacle = true }, -- (a safe obstacle: bumping it is like hitting a wall. Bots steer round anything marked Obstacle)
 			Shape = Enum.PartType.Cylinder,
 			Size = Vector3.new(10 * scale, 4.6 * scale, 4.6 * scale),
 			CFrame = upright(cf * CFrame.new(0, 5 * scale - 1, 0)),
@@ -10253,9 +10329,10 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 	local halfWidth, edge = route.halfWidth, route.edge
 	local count = route.count
 	local thick = cfg.WALL_THICKNESS
-	-- Is `pos` on one of the roads this one joins? (`roadOnly`: not counting their off-road)
-	local function onOtherRoad(pos: Vector3, margin: number, roadOnly: boolean?): boolean
-		for _, other in others do
+	-- Is `pos` on one of the roads this one joins? (`roadOnly`: not counting their off-road;
+	-- `among`: only these roads)
+	local function onOtherRoad(pos: Vector3, margin: number, roadOnly: boolean?, among: { any }?): boolean
+		for _, other in among or others do
 			if other.covers(pos, margin, roadOnly) then
 				return true
 			end
@@ -10264,10 +10341,10 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 	end
 	-- How many corners of the piece between samples i and i + 1 (from `x` studs
 	-- left of the middle to `x` right) lie on a road this one joins
-	local function cornersOnOtherRoad(i: number, x1: number, x2: number, roadOnly: boolean?): number
+	local function cornersOnOtherRoad(i: number, x1: number, x2: number, roadOnly: boolean?, among: { any }?): number
 		local covered = 0
 		for _, spot in { route.roadPoint(i, -x1), route.roadPoint(i, x1), route.roadPoint(i + 1, -x2), route.roadPoint(i + 1, x2) } do
-			if onOtherRoad(spot, -0.5, roadOnly) then
+			if onOtherRoad(spot, -0.5, roadOnly, among) then
 				covered += 1
 			end
 		end
@@ -10304,26 +10381,51 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 	local roadProps = { Name = "Road", Color = style.Road, Material = style.RoadMaterial }
 	local roughProps = { Name = "OffRoad", Color = style.OffRoad, Material = style.OffRoadMaterial or Enum.Material.Grass, Attributes = { OffRoad = true } }
 	local bridgeProps = { Name = "Bridge", Color = Color3.fromRGB(150, 105, 65), Material = Enum.Material.WoodPlanks }
+	-- What road `r`'s surface looks like `d` studs along it (icy, rough, bridge, painted or plain)
+	local function surfaceAt(r, d: number)
+		local grip = r.gripAt(d)
+		local paint = r.section("Paint", d)
+		return if grip
+			then { Name = "IceRoad", Color = style.Ice, Material = Enum.Material.Ice, Attributes = { Grip = grip } }
+			elseif r.section("Rough", d) then roughProps
+			elseif r.section("Bridge", d) then bridgeProps
+			elseif paint then { Name = "Road", Color = paint.feature.color or style.Road, Material = paint.feature.material or style.RoadMaterial }
+			else roadProps
+	end
 	for i = 1, count - 1 do
 		local m = route.middle(i)
 		if route.section("Gap", m) then
 			continue -- the hole a jump flies over
 		end
-		local grip = route.gripAt(m)
-		local paint = route.section("Paint", m)
-		local props = if grip
-			then { Name = "IceRoad", Color = style.Ice, Material = Enum.Material.Ice, Attributes = { Grip = grip } }
-			elseif route.section("Rough", m) then roughProps
-			elseif route.section("Bridge", m) then bridgeProps
-			elseif paint then { Name = "Road", Color = paint.feature.color or style.Road, Material = paint.feature.material or style.RoadMaterial }
-			else roadProps
+		local props = surfaceAt(route, m)
 		local drop = 0
 		if route.isBranch then
-			local covered = cornersOnOtherRoad(i, halfWidth[i], halfWidth[i + 1], true)
+			-- (only the roads it splits off count, not branches of its own: when both gave way
+			-- to each other they ended up level again and flickered, like the Stovetop's iron
+			-- on the marble Countertop)
+			local covered = cornersOnOtherRoad(i, halfWidth[i], halfWidth[i + 1], true, route.joins)
 			if covered == 4 then
-				continue -- the main road is already here
+				continue -- the road it joins is already here
 			end
-			drop = if covered > 0 then 0.05 else 0
+			if covered > 0 then
+				-- Partly on the road it joins: a hair lower, and looking just like that road,
+				-- so where they overlap nothing flickers
+				drop = 0.05
+				local spots = { route.roadPoint(i, 0):Lerp(route.roadPoint(i + 1, 0), 0.5), route.roadPoint(i, -halfWidth[i]), route.roadPoint(i, halfWidth[i]), route.roadPoint(i + 1, -halfWidth[i + 1]), route.roadPoint(i + 1, halfWidth[i + 1]) }
+				local found = false
+				for _, spot in spots do
+					for _, other in route.joins do
+						if other.covers(spot, -0.5, true) then
+							props = surfaceAt(other, other.middle(math.min(other.nearest(spot), other.count - 1)))
+							found = true
+							break
+						end
+					end
+					if found then
+						break
+					end
+				end
+			end
 		end
 		buildSurface(i, halfWidth[i], halfWidth[i + 1], drop, props)
 	end
@@ -10569,6 +10671,18 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 	-- icicles or rocky stalactites. Wide caverns get higher ceilings.
 	local caveRng = Random.new(cfg.SCENERY_SEED)
 	local caveMaterial = style.TunnelMaterial or Enum.Material.Rock
+	-- Solid caves: walls karts bump into, and a roof they can land and drive on (slowly)
+	local caveTops = if cfg.SOLID_CAVES then (road.Parent:FindFirstChild("Walkable") or newFolder("Walkable", road.Parent)) else decor
+	local function cave(props, parent: Instance)
+		if not cfg.SOLID_CAVES then
+			return newPart("Part", ghost(props), decor)
+		end
+		props.CanTouch = false
+		if parent == caveTops then
+			props.Attributes = { OffRoad = true }
+		end
+		return newPart("Part", props, parent)
+	end
 	for i = 1, count - 1 do
 		if not route.section("Tunnel", route.middle(i)) then
 			continue
@@ -10579,21 +10693,29 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 		local half = (halfWidth[i] + halfWidth[i + 1]) / 2
 		local caveSide = (edge[i] + edge[i + 1]) / 2 + thick + 2.5
 		local roof = 19 + math.max(0, half - 23) * 0.4
-		newPart("Part", ghost({
-			Name = "CaveRoof",
-			Size = Vector3.new(caveSide * 2 + 4, 3, len),
-			CFrame = cf * CFrame.new(0, roof, 0),
-			Color = style.Tunnel,
-			Material = caveMaterial,
-		}), decor)
+		-- (a solid cave opens up where it meets another road, like the walls do: there it
+		-- would be a wall across that road, or a ceiling over it)
+		local open = cfg.SOLID_CAVES and onOtherRoad(cf.Position, caveSide + 2)
+		if not open then
+			cave({
+				Name = "CaveRoof",
+				Size = Vector3.new(caveSide * 2 + 4, 3, len),
+				CFrame = cf * CFrame.new(0, roof, 0),
+				Color = style.Tunnel,
+				Material = caveMaterial,
+			}, caveTops)
+		end
 		for _, side in { -1, 1 } do
-			newPart("Part", ghost({
+			if cfg.SOLID_CAVES and (onOtherRoad((cf * CFrame.new(side * caveSide, 0, -len / 2)).Position, 4) or onOtherRoad((cf * CFrame.new(side * caveSide, 0, len / 2)).Position, 4)) then
+				continue
+			end
+			cave({
 				Name = "CaveWall",
 				Size = Vector3.new(4, roof + 3, len),
 				CFrame = cf * CFrame.new(side * caveSide, (roof + 3) / 2 - 2, 0),
 				Color = style.Tunnel,
 				Material = caveMaterial,
-			}), decor)
+			}, walls)
 			if i % 3 == 0 and style.CaveMushrooms then -- glowing mushrooms growing by the cave walls
 				buildMushroom((cf * CFrame.new(side * (caveSide - 1.5), -1, 0)).Position, 0.9 + (i % 4) * 0.15, style.TunnelLight, decor)
 			elseif i % 3 == 0 then
@@ -12181,7 +12303,7 @@ local function buildScenery(cfg, track: Instance, samples: { Vector3 }, halfWidt
 	if temple then
 		local base = Vector3.new(cfg.ORIGIN.X + temple.center.X, groundY, cfg.ORIGIN.Z + temple.center.Z)
 		scatter.reserve(base, temple.size * 0.75)
-		local solid = if temple.walkable then newFolder("Walkable", track) else nil -- (solid ground off the road; the client drives on it too)
+		local solid = if temple.walkable then (track:FindFirstChild("Walkable") or newFolder("Walkable", track)) else nil -- (solid ground off the road; the client drives on it too)
 		buildPyramid(base, temple.size, cfg.ORIGIN.Y + temple.top - groundY, samples, halfWidths, parent, cfg.theme ~= "Swamp", solid)
 	end
 
@@ -12860,8 +12982,9 @@ local function setCoins(racer: Racer, coins: number)
 	end
 end
 
--- Hitting an obstacle or hazard, or being put back on the track, drops a few
+-- Getting hit by a dangerous hazard, or being put back on the track, drops a few
 -- coins (at most once per CRASH_COOLDOWN). Everyone sees them spill out.
+-- (Safe obstacles like crates and rocks are just walls: they cost nothing.)
 local function loseCoins(racer: Racer)
 	local now = os.clock()
 	if racer.finished or now - (racer.lastCrash or -math.huge) < PICKUPS.CRASH_COOLDOWN then
@@ -14465,7 +14588,7 @@ raceEvent.OnServerEvent:Connect(function(player, action, choice, id)
 			peel.Parent:Destroy()
 		end
 	elseif action == "Crash" then
-		-- Their kart hit an obstacle or hazard. This only ever costs the sender
+		-- A dangerous hazard hit their kart. This only ever costs the sender
 		-- coins, so there's nothing to cheat (and loseCoins limits how often).
 		local racer = racers[player]
 		if racer and not racer.returned and raceState:GetAttribute("Phase") == "Racing" then
@@ -14630,7 +14753,10 @@ end
 	  "Rock" / "Crystal" / "Snowman" / "Tree"   solid obstacle to steer around. `size`
 	  "Crate" / "Block" / "Barrel"   more obstacles: a wooden crate, a toy block
 	              with a letter on it, a barrel. `size`
-	  "Leg"       a giant table or chair leg (bumping it doesn't cost coins). `size`
+	  "Leg"       a giant table or chair leg. `size`
+	              (All of these are SAFE obstacles: bumping one is like hitting a
+	              wall, no spin-out and no coins lost. Only DANGEROUS hazards (lava,
+	              fire bars, geysers, rolling balls, frogs, tongues) cost coins.)
 	  "LavaPool"  touch it and you're back at your last checkpoint. `radius`
 	  "Geyser"    vent (lava, or water in the jungle) that erupts every few
 	              seconds and throws karts in the air. `radius`, `height`,
@@ -16108,6 +16234,7 @@ local MANSION = {
 		{ level = 3, 1100, 150, 1100, 400 },
 	},
 	-- blocks under raised road: staircases, ramps onto furniture, the porch roof
+	-- (`reach` = how far above `base` the road on it goes, if more than one floor (95))
 	fills = {
 		{ from = V(1162, 0, 312), to = V(1162, 0, 672), base = 0, width = 90, color = C(110, 75, 48) }, -- cellar stairs
 		{ from = V(272, 0, 682), to = V(272, 0, 322), base = 90, width = 120, color = C(225, 220, 210), material = Enum.Material.Marble }, -- grand staircase
@@ -16121,7 +16248,7 @@ local MANSION = {
 		{ from = V(1040, 0, 866), to = V(900, 0, 812), base = 270, width = 34, depth = 6, color = BEAM }, -- the rafters
 		{ from = V(900, 0, 804), to = V(708, 0, 804), base = 270, width = 34, depth = 6, color = BEAM },
 		{ from = V(860, 0, 792), to = V(690, 0, 772), base = 270, width = 26, depth = 6, color = BEAM }, -- the tightrope
-		{ from = V(1302, 0, 417), to = V(1795, 0, 417), base = 90, width = 80, color = C(60, 55, 75), material = Enum.Material.Slate }, -- the porch roof
+		{ from = V(1302, 0, 417), to = V(1795, 0, 417), base = 90, reach = 245, width = 80, color = C(60, 55, 75), material = Enum.Material.Slate }, -- the porch roof (down from the roof at 330)
 	},
 	props = {
 		-- Cellar
@@ -16212,6 +16339,7 @@ return {
 	ARCH_SPACING = 0, -- (no glowing arches indoors)
 	PILLARS = false, -- the house holds the roads up
 	MAX_BANK = 0, -- roads don't lean into corners indoors (a leaning road dips under the floor on the inside of the bend)
+	SOLID_CAVES = true, -- the Mouse Hole, Heating Pipe and Under the Bed stand in open rooms: a Mega Jump can reach them
 	POINTS = M.POINTS,
 	FEATURES = FEATURES,
 	BRANCHES = BRANCHES,
@@ -16244,15 +16372,19 @@ return {
 	           drive back onto the road. The slab above is the ceiling.
 	  walls    the outside walls (with lit windows) and the inner walls between
 	           rooms. Both are solid. Doorways are cut wherever a road goes
-	           through a wall, just big enough for it.
+	           through a wall, just big enough for it (and a sliver of wall
+	           left between two doorways is opened up too).
 	  props    furniture and decorations: { "Kind", position, yaw, ... } in the
-	           track's own numbers (like POINTS). Furniture is see-through for
-	           karts (nothing to snag on); the roads on top of tables, counters
-	           and beds are what you drive on.
-	  fills    solid-looking blocks under a stretch of road (staircases, the
-	           ramps up onto furniture, the porch roof)
+	           track's own numbers (like POINTS). A Mega Jump reaches most of the
+	           house, so furniture is SOLID: karts bump into it and can land and
+	           drive on top of it, slowly, like the carpet (RaceTrack.Walkable).
+	           Only small or high-up bits (books, candles, knobs, bats) are
+	           see-through decoration.
+	  fills    solid blocks under a stretch of road (staircases, the ramps up
+	           onto furniture, the porch roof), sloped to follow the road
 	Outside: the cliff under the house, the lawn (solid, slow), the garden,
-	the moon. In Studio it also warns if a wall stands in the way of a road.
+	the moon. In Studio it also warns if a wall or anything solid stands in
+	the way of a road.
 ]]
 
 local RunService = game:GetService("RunService")
@@ -16285,16 +16417,35 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		end
 		return h.newPart(if wedge then "WedgePart" else "Part", h.ghost(props), parent)
 	end
-	local function ball(cf: CFrame, size: Vector3, color: Color3, material: Enum.Material?): BasePart
+	-- Something solid (furniture, stairs...): karts bump into it, and can land and drive
+	-- on top of it, slowly, like the carpet. A Mega Jump reaches most of the house, so
+	-- anything a kart could reach must be solid, never a see-through decoration.
+	local solidParts: { BasePart } = {} -- (checked against the roads at the end, like the walls)
+	local function solid(props): BasePart
+		local wedge = props.Shape == "Wedge"
+		if wedge then
+			props.Shape = nil
+		end
+		props.CanTouch = false
+		props.Attributes = { OffRoad = true }
+		local part = h.newPart(if wedge then "WedgePart" else "Part", props, walkable)
+		table.insert(solidParts, part)
+		return part
+	end
+	local function ball(cf: CFrame, size: Vector3, color: Color3, material: Enum.Material?, isSolid: boolean?): BasePart
 		local p = deco({ Size = size, CFrame = cf, Color = color, Material = material or Enum.Material.SmoothPlastic })
 		local mesh = Instance.new("SpecialMesh")
 		mesh.MeshType = Enum.MeshType.Sphere
 		mesh.Parent = p
+		if isSolid then -- (a stretched ball collides as a box, so it gets a round invisible core instead)
+			solid({ Name = "BallCore", Shape = Enum.PartType.Ball, Size = Vector3.one * math.min(size.X, size.Y, size.Z), CFrame = cf, Transparency = 1 })
+		end
 		return p
 	end
-	local function cylinder(cf: CFrame, length: number, diameter: number, color: Color3, material: Enum.Material?): BasePart
+	local function cylinder(cf: CFrame, length: number, diameter: number, color: Color3, material: Enum.Material?, isSolid: boolean?): BasePart
 		-- `cf` points along the cylinder's length (its X axis)
-		return deco({ Shape = Enum.PartType.Cylinder, Size = Vector3.new(length, diameter, diameter), CFrame = cf, Color = color, Material = material or Enum.Material.SmoothPlastic })
+		local props = { Shape = Enum.PartType.Cylinder, Size = Vector3.new(length, diameter, diameter), CFrame = cf, Color = color, Material = material or Enum.Material.SmoothPlastic }
+		return if isSolid then solid(props) else deco(props)
 	end
 	local function upright(cf: CFrame): CFrame
 		return cf * CFrame.Angles(0, 0, math.rad(90))
@@ -16320,6 +16471,10 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	local floorParts: { BasePart } = {} -- (checked against the roads at the end, like the walls)
 	for k, y in levels do
 		local look = spec.looks[k] or spec.roofLook
+		-- The slab stops at the inside of the walls round it (half their thickness in from
+		-- the house's edge). Running on under them, its underside flickered against theirs
+		-- along the ceiling below.
+		local inset = if k <= #spec.floors then 3 else 2
 		local worldY = origin.Y + y
 		local rising = {} -- road samples that come up through this floor
 		for i, p in samples do
@@ -16351,8 +16506,8 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			local runStart, runLook = nil, nil
 			local function finish(c: number)
 				if runStart then
-					local ax, bx = x0 + runStart * TILE, math.min(x1, x0 + c * TILE)
-					local a, b = W(ax, y, az), W(bx, y, bz)
+					local ax, bx = math.max(x0 + inset, x0 + runStart * TILE), math.min(x1 - inset, x0 + c * TILE)
+					local a, b = W(ax, y, math.max(az, z0 + inset)), W(bx, y, math.min(bz, z1 - inset))
 					table.insert(floorParts, h.newPart("Part", {
 						Name = "Floor",
 						Size = Vector3.new(b.X - a.X, 6, b.Z - a.Z),
@@ -16384,6 +16539,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	-- WALLS with doorways where roads go through them
 	--------------------------------------------------------------------
 	local wallParts: { BasePart } = {}
+	local MIN_PIER = 20 -- a bit of wall narrower than this between two doorways is left open (it'd only be a pillar in the way)
 	-- How steeply the road climbs at sample i (0 = flat; sample lists of different roads
 	-- follow on from each other, so a big jump to the next one doesn't count)
 	local function grade(i: number): number
@@ -16394,8 +16550,9 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		local flat = Vector3.new(b.X - a.X, 0, b.Z - a.Z).Magnitude
 		return if flat > 1 and flat < 40 then math.abs(b.Y - a.Y) / flat else 0
 	end
-	-- A wall from (ax, az) to (bx, bz) (track numbers), from height y0 to y1
-	local function wall(ax: number, az: number, bx: number, bz: number, y0: number, y1: number, thick: number, color: Color3, material: Enum.Material, solid: boolean, out: number?, panels: boolean?)
+	-- A wall from (ax, az) to (bx, bz) (track numbers), from height y0 to y1. `panels` =
+	-- the height of the floor in front of it, for wooden panelling along its bottom
+	local function wall(ax: number, az: number, bx: number, bz: number, y0: number, y1: number, thick: number, color: Color3, material: Enum.Material, isSolid: boolean, out: number?, panels: number?)
 		local a, b = Vector3.new(ax, 0, az), Vector3.new(bx, 0, bz)
 		local along = (b - a).Unit
 		local outward = Vector3.new(along.Z, 0, -along.X) -- (the house's sides go round anticlockwise, so this points outside)
@@ -16434,40 +16591,54 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 				Color = color,
 				Material = material,
 			}
-			if solid then
+			if isSolid then
 				props.CanTouch = false
 				table.insert(wallParts, h.newPart("Part", props, walls))
 			else
 				deco(props)
 			end
-			-- dark wooden panelling along the bottom of the wall, with a gold rail on top
-			if panels and b0 < y0 + 1 then
-				local tall = math.min(20, b1 - b0)
-				local spot = CFrame.fromMatrix(W(mid.X, b0 + tall / 2, mid.Z), along, Vector3.yAxis)
-				deco({ Name = "Panelling", Size = Vector3.new(s1 - s0, tall, thick + 1), CFrame = spot, Color = DARK_WOOD, Material = Enum.Material.Wood })
-				if tall >= 20 then
-					deco({ Name = "Rail", Size = Vector3.new(s1 - s0, 1.2, thick + 1.6), CFrame = spot * CFrame.new(0, tall / 2, 0), Color = GOLD, Material = Enum.Material.Wood })
+			-- dark wooden panelling along the bottom of the wall (up from the floor), with a gold rail on top
+			if panels and b0 < panels + 1 then
+				local tall = math.min(20, b1 - panels)
+				if tall > 0.2 then
+					local spot = CFrame.fromMatrix(W(mid.X, panels + tall / 2, mid.Z), along, Vector3.yAxis)
+					solid({ Name = "Panelling", Size = Vector3.new(s1 - s0, tall, thick + 1), CFrame = spot, Color = DARK_WOOD, Material = Enum.Material.Wood })
+					if tall >= 20 then
+						solid({ Name = "Rail", Size = Vector3.new(s1 - s0, 1.2, thick + 1.6), CFrame = spot * CFrame.new(0, tall / 2, 0), Color = GOLD, Material = Enum.Material.Wood })
+					end
 				end
 			end
 		end
+		-- Which doorways each slice of wall (between two cuts) has in it
+		local slices = {}
 		for c = 1, #cuts - 1 do
 			local s0, s1 = cuts[c], cuts[c + 1]
-			local mid = (s0 + s1) / 2
 			local gaps = {}
 			for _, door in doors do
-				if door[1] < mid and door[2] > mid then
+				if door[1] < (s0 + s1) / 2 and door[2] > (s0 + s1) / 2 then
 					table.insert(gaps, door)
 				end
 			end
-			table.sort(gaps, function(p, q)
+			table.insert(slices, { s0 = s0, s1 = s1, gaps = gaps })
+		end
+		-- A sliver of wall between two doorways would only be a pillar in the way: open it up
+		for c = 2, #slices - 1 do
+			local slice, before, after = slices[c], slices[c - 1], slices[c + 1]
+			if #slice.gaps == 0 and slice.s1 - slice.s0 < MIN_PIER and #before.gaps > 0 and #after.gaps > 0 then
+				slice.gaps = table.clone(before.gaps)
+				table.move(after.gaps, 1, #after.gaps, #slice.gaps + 1, slice.gaps)
+			end
+		end
+		for _, slice in slices do
+			table.sort(slice.gaps, function(p, q)
 				return p[3] < q[3]
 			end)
 			local yy = y0
-			for _, gap in gaps do
-				block(s0, s1, yy, math.min(gap[3], y1))
+			for _, gap in slice.gaps do
+				block(slice.s0, slice.s1, yy, math.min(gap[3], y1))
 				yy = math.max(yy, gap[4])
 			end
-			block(s0, s1, yy, y1)
+			block(slice.s0, slice.s1, yy, y1)
 		end
 		return doors, a, along, outward, length
 	end
@@ -16478,11 +16649,11 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		local top = levels[k + 1] - 6.25
 		local look = spec.looks[k]
 		for _, side in sides do
-			local doors, a, along, outward, length = wall(side[1], side[2], side[3], side[4], y - 6.25, top, 6, look.wall, look.wallMaterial or Enum.Material.SmoothPlastic, true, nil, k > 1)
-			wall(side[1], side[2], side[3], side[4], y - 6.25, top, 2, STONE, Enum.Material.Slate, false, 4)
+			local doors, a, along, outward, length = wall(side[1], side[2], side[3], side[4], y - 6.25, top, 6, look.wall, look.wallMaterial or Enum.Material.SmoothPlastic, true, nil, if k > 1 then y - 0.25 else nil)
+			wall(side[1], side[2], side[3], side[4], y - 6.25, top, 2, STONE, Enum.Material.Slate, true, 4)
 			-- a stone band round the outside at each floor
 			local mid = a + along * (length / 2)
-			deco({ Name = "Cornice", Size = Vector3.new(length + 12, 5, 4), CFrame = CFrame.fromMatrix(W(mid.X, y - 4, mid.Z), along, Vector3.yAxis) + outward * 6, Color = C(120, 115, 135), Material = Enum.Material.Slate })
+			solid({ Name = "Cornice", Size = Vector3.new(length + 12, 5, 4), CFrame = CFrame.fromMatrix(W(mid.X, y - 4, mid.Z), along, Vector3.yAxis) + outward * 6, Color = C(120, 115, 135), Material = Enum.Material.Slate })
 			-- windows every 90 studs, away from doorways
 			for s = 60, length - 60, 90 do
 				local clear = true
@@ -16495,7 +16666,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 					local high = if k == 1 then y + 60 elseif k == #spec.floors then y + 28 else y + 42
 					local cf = CFrame.fromMatrix(W(spot.X, high, spot.Z), along, Vector3.yAxis)
 					local size = if k == 1 then Vector3.new(30, 16, 0.6) elseif k == #spec.floors then Vector3.new(26, 28, 0.6) else Vector3.new(28, 44, 0.6)
-					deco({ Name = "WindowFrame", Size = Vector3.new(size.X + 6, size.Y + 6, 12), CFrame = cf, Color = DARK_WOOD, Material = Enum.Material.Wood })
+					solid({ Name = "WindowFrame", Size = Vector3.new(size.X + 6, size.Y + 6, 12), CFrame = cf, Color = DARK_WOOD, Material = Enum.Material.Wood })
 					-- outside: warm light glowing from inside; inside: cold moonlight
 					deco({ Name = "WindowGlow", Size = size, CFrame = cf + outward * 6.2, Color = C(255, 205, 120), Material = Enum.Material.Neon })
 					deco({ Name = "WindowMoon", Size = size, CFrame = cf - outward * 6.2, Color = C(120, 140, 210), Material = Enum.Material.Neon, Transparency = 0.2 })
@@ -16515,36 +16686,51 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	for _, w in spec.walls do
 		local y = spec.floors[w.level]
 		local look = spec.looks[w.level]
-		wall(w[1], w[2], w[3], w[4], y - 0.25, levels[w.level + 1] - 6.25, 5, look.wall, look.wallMaterial or Enum.Material.SmoothPlastic, true, nil, w.level > 1)
+		wall(w[1], w[2], w[3], w[4], y - 0.25, levels[w.level + 1] - 6.25, 5, look.wall, look.wallMaterial or Enum.Material.SmoothPlastic, true, nil, if w.level > 1 then y - 0.25 else nil)
 	end
 
 	--------------------------------------------------------------------
-	-- FILLS: blocks under a stretch of road, from `base` up to just under it
+	-- FILLS: solid blocks under a stretch of road, from `base` (or `depth` below the
+	-- road) up to just under it. One piece per bit of road between two samples, with a
+	-- sloped top that follows the road 0.6 below it: neighbours meet exactly (nothing
+	-- overlaps to flicker) and no step pokes up through the road on a climb.
 	--------------------------------------------------------------------
 	for _, fill in spec.fills do
 		local a, b = fill.from, fill.to
 		local seg = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
-		for i, p in samples do
+		local function inFill(p: Vector3): boolean
 			local rel = Vector3.new(p.X - origin.X - a.X, 0, p.Z - origin.Z - a.Z)
 			local t = rel:Dot(seg) / seg:Dot(seg)
-			local across = (rel - seg * t).Magnitude
 			local roadY = p.Y - origin.Y
-			if t >= 0 and t <= 1 and across < 20 and roadY > fill.base + 1 and roadY < fill.base + (fill.reach or 200) then
-				local nextP = samples[i + 1] or p
-				local prevP = samples[i - 1] or p
-				local dir = Vector3.new(nextP.X - prevP.X, 0, nextP.Z - prevP.Z)
-				if dir.Magnitude < 1 then
-					continue
-				end
-				local bottom = if fill.depth then roadY - 0.6 - fill.depth else fill.base
-				local height = roadY - 0.6 - bottom
-				deco({
-					Name = fill.name or "Fill",
-					Size = Vector3.new(fill.width, height, 13),
-					CFrame = CFrame.lookAt(W(p.X - origin.X, bottom + height / 2, p.Z - origin.Z), W(p.X - origin.X, bottom + height / 2, p.Z - origin.Z) + dir),
-					Color = fill.color,
-					Material = fill.material or Enum.Material.Wood,
-				})
+			-- (`reach`: how high above `base` its road goes. One floor by default, so a road on the
+			-- floor above doesn't get a fill standing all the way up from this one)
+			return t >= 0 and t <= 1 and (rel - seg * t).Magnitude < 20 and roadY > fill.base + 1 and roadY < fill.base + (fill.reach or 95)
+		end
+		for i = 1, #samples - 1 do
+			local p, q = samples[i], samples[i + 1]
+			local run = Vector3.new(q.X - p.X, 0, q.Z - p.Z)
+			-- (sample lists of different roads follow on from each other: skip the jump between them)
+			if run.Magnitude < 0.5 or run.Magnitude > 40 or not (inFill(p) or inFill(q)) then
+				continue
+			end
+			local low = math.min(p.Y, q.Y) - origin.Y - 0.6
+			local high = math.max(p.Y, q.Y) - origin.Y - 0.6
+			local bottom = if fill.depth then low - fill.depth else fill.base
+			local mid = (p + q) / 2 - origin
+			local look = { Name = fill.name or "Fill", Color = fill.color, Material = fill.material or Enum.Material.Wood }
+			if low - bottom > 0.05 then
+				local block = table.clone(look)
+				block.Size = Vector3.new(fill.width, low - bottom, run.Magnitude)
+				block.CFrame = CFrame.lookAt(W(mid.X, (low + bottom) / 2, mid.Z), W(mid.X, (low + bottom) / 2, mid.Z) + run)
+				solid(block)
+			end
+			if high - low > 0.05 then -- (a wedge is tallest at its back (+Z): turn that end to the higher sample)
+				local slope = table.clone(look)
+				local center = W(mid.X, (low + high) / 2, mid.Z)
+				slope.Shape = "Wedge"
+				slope.Size = Vector3.new(fill.width, high - low, run.Magnitude)
+				slope.CFrame = CFrame.lookAt(center, center + (if q.Y > p.Y then -run else run))
+				solid(slope)
 			end
 		end
 	end
@@ -16556,21 +16742,22 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	-- A long table: top `size.X` by `size.Z`, `size.Y` high, legs at the corners, chairs along both sides
 	function BUILD.Table(cf: CFrame, p)
 		local size = p.size
-		deco({ Name = "TableTop", Size = Vector3.new(size.X, 3, size.Z), CFrame = cf * CFrame.new(0, size.Y - 1.75, 0), Color = WOOD, Material = Enum.Material.Wood })
-		deco({ Name = "TableCloth", Size = Vector3.new(size.X + 1, 8, size.Z * 0.5), CFrame = cf * CFrame.new(0, size.Y - 4.4, size.Z * 0.18), Color = C(235, 228, 215), Material = Enum.Material.Fabric, Transparency = 0.05 })
+		-- (its top sits a little under the road on it, so the two don't flicker)
+		solid({ Name = "TableTop", Size = Vector3.new(size.X, 3, size.Z), CFrame = cf * CFrame.new(0, size.Y - 1.9, 0), Color = WOOD, Material = Enum.Material.Wood })
+		solid({ Name = "TableCloth", Size = Vector3.new(size.X + 1, 8, size.Z * 0.5), CFrame = cf * CFrame.new(0, size.Y - 4.6, size.Z * 0.18), Color = C(235, 228, 215), Material = Enum.Material.Fabric, Transparency = 0.05 })
 		for _, sx in { -1, 1 } do
 			for _, sz in { -1, 1 } do
-				deco({ Name = "TableLeg", Size = Vector3.new(8, size.Y - 3, 8), CFrame = cf * CFrame.new(sx * (size.X / 2 - 6), (size.Y - 3) / 2, sz * (size.Z / 2 - 4)), Color = WOOD, Material = Enum.Material.Wood })
+				solid({ Name = "TableLeg", Size = Vector3.new(8, size.Y - 3, 8), CFrame = cf * CFrame.new(sx * (size.X / 2 - 6), (size.Y - 3) / 2, sz * (size.Z / 2 - 4)), Color = WOOD, Material = Enum.Material.Wood })
 			end
 		end
 		for _, sz in { -1, 1 } do -- chairs pushed in along both sides
 			for x = -size.X / 2 + 40, size.X / 2 - 40, 60 do
 				local chair = cf * CFrame.new(x, 0, sz * (size.Z / 2 + 18)) * CFrame.Angles(0, if sz > 0 then math.pi else 0, 0)
-				deco({ Name = "ChairSeat", Size = Vector3.new(30, 3, 28), CFrame = chair * CFrame.new(0, 13.5, 0), Color = C(140, 30, 45), Material = Enum.Material.Fabric })
-				deco({ Name = "ChairBack", Size = Vector3.new(30, 34, 3), CFrame = chair * CFrame.new(0, 30, 13), Color = WOOD, Material = Enum.Material.Wood })
+				solid({ Name = "ChairSeat", Size = Vector3.new(30, 3, 28), CFrame = chair * CFrame.new(0, 13.5, 0), Color = C(140, 30, 45), Material = Enum.Material.Fabric })
+				solid({ Name = "ChairBack", Size = Vector3.new(30, 34, 3), CFrame = chair * CFrame.new(0, 30, 13), Color = WOOD, Material = Enum.Material.Wood })
 				for _, lx in { -12, 12 } do
 					for _, lz in { -11, 11 } do
-						deco({ Name = "ChairLeg", Size = Vector3.new(3, 12, 3), CFrame = chair * CFrame.new(lx, 6, lz), Color = WOOD, Material = Enum.Material.Wood })
+						solid({ Name = "ChairLeg", Size = Vector3.new(3, 12, 3), CFrame = chair * CFrame.new(lx, 6, lz), Color = WOOD, Material = Enum.Material.Wood })
 					end
 				end
 			end
@@ -16579,7 +16766,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		for x = -size.X / 2 + 30, size.X / 2 - 30, 55 do
 			local spot = cf * CFrame.new(x, size.Y, -size.Z * 0.3)
 			cylinder(upright(spot * CFrame.new(0, 0.3, 0)), 0.6, 18, C(240, 240, 245))
-			cylinder(upright(spot * CFrame.new(18, 6, 0)), 12, 3, GOLD, Enum.Material.Metal)
+			cylinder(upright(spot * CFrame.new(18, 6, 0)), 12, 3, GOLD, Enum.Material.Metal, true)
 			local flame = ball(spot * CFrame.new(18, 13.5, 0), Vector3.new(2, 3, 2), CANDLE, Enum.Material.Neon)
 			if x < -size.X / 2 + 90 or x > size.X / 2 - 90 then
 				light(flame, 50, 1.2)
@@ -16589,8 +16776,8 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	-- Kitchen counters: a long block with cupboard doors, worktop on top
 	function BUILD.Counter(cf: CFrame, p)
 		local size = p.size
-		deco({ Name = "Cupboards", Size = Vector3.new(size.X, size.Y - 2, size.Z), CFrame = cf * CFrame.new(0, (size.Y - 2) / 2, 0), Color = C(200, 205, 190), Material = Enum.Material.Wood })
-		deco({ Name = "Worktop", Size = Vector3.new(size.X + 2, 2, size.Z + 2), CFrame = cf * CFrame.new(0, size.Y - 1.25, 0), Color = C(225, 222, 215), Material = Enum.Material.Marble })
+		solid({ Name = "Cupboards", Size = Vector3.new(size.X, size.Y - 2, size.Z), CFrame = cf * CFrame.new(0, (size.Y - 2) / 2, 0), Color = C(200, 205, 190), Material = Enum.Material.Wood })
+		solid({ Name = "Worktop", Size = Vector3.new(size.X + 2, 2, size.Z + 2), CFrame = cf * CFrame.new(0, size.Y - 1.4, 0), Color = C(225, 222, 215), Material = Enum.Material.Marble })
 		for x = -size.X / 2 + 15, size.X / 2 - 15, 30 do
 			for _, sz in { -1, 1 } do
 				deco({ Name = "CupboardDoor", Size = Vector3.new(26, size.Y - 8, 0.6), CFrame = cf * CFrame.new(x, (size.Y - 2) / 2, sz * size.Z / 2), Color = C(175, 185, 165), Material = Enum.Material.Wood })
@@ -16600,12 +16787,14 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	end
 	function BUILD.Fridge(cf: CFrame, p)
 		local size = p.size or Vector3.new(50, 85, 40)
-		deco({ Name = "Fridge", Size = size, CFrame = cf * CFrame.new(0, size.Y / 2, 0), Color = C(220, 230, 235), Material = Enum.Material.SmoothPlastic })
+		solid({ Name = "Fridge", Size = size, CFrame = cf * CFrame.new(0, size.Y / 2, 0), Color = C(220, 230, 235), Material = Enum.Material.SmoothPlastic })
 		deco({ Name = "FridgeLine", Size = Vector3.new(size.X + 0.2, 1, size.Z + 0.2), CFrame = cf * CFrame.new(0, size.Y * 0.62, 0), Color = C(150, 160, 170) })
 		deco({ Name = "Handle", Size = Vector3.new(2, 18, 3), CFrame = cf * CFrame.new(size.X / 2 - 6, size.Y * 0.78, -size.Z / 2 - 1.5), Color = C(160, 165, 175), Material = Enum.Material.Metal })
 	end
 	function BUILD.Bookshelf(cf: CFrame, p)
 		local size = p.size
+		-- (one invisible solid block round the whole thing, so karts don't end up among the books)
+		solid({ Name = "BookshelfCore", Size = size, CFrame = cf * CFrame.new(0, size.Y / 2, 0), Transparency = 1 })
 		deco({ Name = "Bookshelf", Size = Vector3.new(size.X, size.Y, 4), CFrame = cf * CFrame.new(0, size.Y / 2, size.Z / 2 - 2), Color = DARK_WOOD, Material = Enum.Material.Wood })
 		local rng = Random.new(math.floor(cf.X + cf.Z))
 		for y = 2, size.Y - 14, 16 do
@@ -16620,20 +16809,20 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		end
 	end
 	function BUILD.Clock(cf: CFrame, p) -- a grandfather clock
-		deco({ Name = "ClockCase", Size = Vector3.new(26, 80, 16), CFrame = cf * CFrame.new(0, 40, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		solid({ Name = "ClockCase", Size = Vector3.new(26, 80, 16), CFrame = cf * CFrame.new(0, 40, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
 		cylinder(cf * CFrame.new(0, 66, -8.2) * CFrame.Angles(0, math.rad(90), 0), 0.6, 20, C(245, 235, 210))
 		deco({ Name = "ClockHand", Size = Vector3.new(1, 8, 0.5), CFrame = cf * CFrame.new(0, 69, -8.6) * CFrame.Angles(0, 0, math.rad(30)), Color = C(30, 30, 30) })
 		cylinder(upright(cf * CFrame.new(0, 30, -8.3)) * CFrame.Angles(0, math.rad(90), 0), 0.5, 9, GOLD, Enum.Material.Metal)
 	end
 	function BUILD.Armor(cf: CFrame, p) -- a suit of armour on a stand
 		local steel, m = C(175, 180, 190), Enum.Material.Metal
-		deco({ Name = "Plinth", Size = Vector3.new(22, 4, 22), CFrame = cf * CFrame.new(0, 2, 0), Color = DARK_WOOD })
+		solid({ Name = "Plinth", Size = Vector3.new(22, 4, 22), CFrame = cf * CFrame.new(0, 2, 0), Color = DARK_WOOD })
 		for _, s in { -1, 1 } do
-			deco({ Name = "ArmorLeg", Size = Vector3.new(6, 22, 7), CFrame = cf * CFrame.new(s * 4.5, 15, 0), Color = steel, Material = m })
-			deco({ Name = "ArmorArm", Size = Vector3.new(5, 18, 5), CFrame = cf * CFrame.new(s * 11, 34, 0), Color = steel, Material = m })
+			solid({ Name = "ArmorLeg", Size = Vector3.new(6, 22, 7), CFrame = cf * CFrame.new(s * 4.5, 15, 0), Color = steel, Material = m })
+			solid({ Name = "ArmorArm", Size = Vector3.new(5, 18, 5), CFrame = cf * CFrame.new(s * 11, 34, 0), Color = steel, Material = m })
 		end
-		deco({ Name = "ArmorBody", Size = Vector3.new(16, 18, 10), CFrame = cf * CFrame.new(0, 35, 0), Color = steel, Material = m })
-		ball(cf * CFrame.new(0, 49, 0), Vector3.new(11, 12, 11), steel, m)
+		solid({ Name = "ArmorBody", Size = Vector3.new(16, 18, 10), CFrame = cf * CFrame.new(0, 35, 0), Color = steel, Material = m })
+		ball(cf * CFrame.new(0, 49, 0), Vector3.new(11, 12, 11), steel, m, true)
 		deco({ Name = "Visor", Size = Vector3.new(8, 1.5, 1), CFrame = cf * CFrame.new(0, 50, -5.4), Color = C(30, 30, 35) })
 		deco({ Name = "Plume", Size = Vector3.new(2, 8, 8), CFrame = cf * CFrame.new(0, 57, 2), Color = C(170, 30, 50) })
 	end
@@ -16646,25 +16835,26 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			cylinder(upright(spot * CFrame.new(0, 2.5, 0)), 5, 1.6, C(250, 245, 230))
 			ball(spot * CFrame.new(0, 6, 0), Vector3.new(1.6, 2.4, 1.6), CANDLE, Enum.Material.Neon)
 		end
-		local hub = ball(cf, Vector3.new(6, 8, 6), GOLD, Enum.Material.Metal)
+		local hub = ball(cf, Vector3.new(6, 8, 6), GOLD, Enum.Material.Metal, true)
 		light(hub, p.range or 90, 1.6)
 	end
 	-- A giant four-poster bed: mattress top at `size.Y`, pillows at the head (-X end)
 	function BUILD.Bed(cf: CFrame, p)
 		local size = p.size
-		deco({ Name = "Mattress", Size = Vector3.new(size.X, 5, size.Z), CFrame = cf * CFrame.new(0, size.Y - 2.75, 0), Color = C(245, 240, 235), Material = Enum.Material.Fabric })
-		deco({ Name = "Quilt", Size = Vector3.new(size.X * 0.7, 5.4, size.Z + 1), CFrame = cf * CFrame.new(size.X * 0.15, size.Y - 2.95, 0), Color = C(175, 70, 95), Material = Enum.Material.Fabric })
-		deco({ Name = "BedFrame", Size = Vector3.new(size.X + 4, 5, size.Z + 4), CFrame = cf * CFrame.new(0, size.Y - 7.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		-- (the quilt's top sits between the mattress's and the road's, so none of them flicker)
+		solid({ Name = "Mattress", Size = Vector3.new(size.X, 5, size.Z), CFrame = cf * CFrame.new(0, size.Y - 3, 0), Color = C(245, 240, 235), Material = Enum.Material.Fabric })
+		solid({ Name = "Quilt", Size = Vector3.new(size.X * 0.7, 5.4, size.Z + 1), CFrame = cf * CFrame.new(size.X * 0.15, size.Y - 3, 0), Color = C(175, 70, 95), Material = Enum.Material.Fabric })
+		solid({ Name = "BedFrame", Size = Vector3.new(size.X + 4, 5, size.Z + 4), CFrame = cf * CFrame.new(0, size.Y - 7.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
 		for _, sx in { -1, 1 } do
 			for _, sz in { -1, 1 } do
-				deco({ Name = "BedPost", Size = Vector3.new(6, size.Y + 55, 6), CFrame = cf * CFrame.new(sx * (size.X / 2 + 2), (size.Y + 55) / 2, sz * (size.Z / 2 + 2)), Color = DARK_WOOD, Material = Enum.Material.Wood })
+				solid({ Name = "BedPost", Size = Vector3.new(6, size.Y + 55, 6), CFrame = cf * CFrame.new(sx * (size.X / 2 + 2), (size.Y + 55) / 2, sz * (size.Z / 2 + 2)), Color = DARK_WOOD, Material = Enum.Material.Wood })
 			end
 		end
-		deco({ Name = "Headboard", Size = Vector3.new(4, 40, size.Z), CFrame = cf * CFrame.new(-size.X / 2 - 2, size.Y + 10, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
-		deco({ Name = "Canopy", Size = Vector3.new(size.X + 10, 3, size.Z + 10), CFrame = cf * CFrame.new(0, size.Y + 55, 0), Color = C(120, 40, 70), Material = Enum.Material.Fabric })
+		solid({ Name = "Headboard", Size = Vector3.new(4, 40, size.Z), CFrame = cf * CFrame.new(-size.X / 2 - 2, size.Y + 10, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		solid({ Name = "Canopy", Size = Vector3.new(size.X + 10, 3, size.Z + 10), CFrame = cf * CFrame.new(0, size.Y + 55, 0), Color = C(120, 40, 70), Material = Enum.Material.Fabric })
 	end
 	function BUILD.Wardrobe(cf: CFrame, p)
-		deco({ Name = "Wardrobe", Size = Vector3.new(60, 75, 25), CFrame = cf * CFrame.new(0, 37.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		solid({ Name = "Wardrobe", Size = Vector3.new(60, 75, 25), CFrame = cf * CFrame.new(0, 37.5, 0), Color = DARK_WOOD, Material = Enum.Material.Wood })
 		for _, s in { -1, 1 } do
 			deco({ Name = "WardrobeDoor", Size = Vector3.new(27, 66, 0.6), CFrame = cf * CFrame.new(s * 14.5, 39, -12.6), Color = C(95, 58, 40), Material = Enum.Material.Wood })
 		end
@@ -16677,17 +16867,17 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		local rng = Random.new(math.floor(cf.X * 7 + cf.Z))
 		for _ = 1, p.count or 6 do
 			local s = rng:NextNumber(8, 14)
-			deco({ Name = "ToyBlock", Size = Vector3.one * s, CFrame = cf * CFrame.new(rng:NextNumber(-25, 25), s / 2, rng:NextNumber(-25, 25)) * CFrame.Angles(0, rng:NextNumber(0, 6), 0), Color = hsv(rng:NextNumber(), 0.6, 0.95) })
+			solid({ Name = "ToyBlock", Size = Vector3.one * s, CFrame = cf * CFrame.new(rng:NextNumber(-25, 25), s / 2, rng:NextNumber(-25, 25)) * CFrame.Angles(0, rng:NextNumber(0, 6), 0), Color = hsv(rng:NextNumber(), 0.6, 0.95) })
 		end
 	end
 	function BUILD.Dumbbell(cf: CFrame, p)
-		cylinder(cf * CFrame.new(0, 5, 0), 30, 3, C(60, 60, 66), Enum.Material.Metal)
+		cylinder(cf * CFrame.new(0, 5, 0), 30, 3, C(60, 60, 66), Enum.Material.Metal, true)
 		for _, s in { -1, 1 } do
-			cylinder(cf * CFrame.new(s * 12, 5, 0), 5, 12, C(40, 40, 45), Enum.Material.Metal)
+			cylinder(cf * CFrame.new(s * 12, 5, 0), 5, 12, C(40, 40, 45), Enum.Material.Metal, true)
 		end
 	end
 	function BUILD.Trunk(cf: CFrame, p) -- an old travelling trunk
-		deco({ Name = "Trunk", Size = Vector3.new(40, 22, 26), CFrame = cf * CFrame.new(0, 11, 0), Color = C(110, 60, 40), Material = Enum.Material.Wood })
+		solid({ Name = "Trunk", Size = Vector3.new(40, 22, 26), CFrame = cf * CFrame.new(0, 11, 0), Color = C(110, 60, 40), Material = Enum.Material.Wood })
 		for _, x in { -12, 12 } do
 			deco({ Name = "TrunkBand", Size = Vector3.new(3, 22.4, 26.4), CFrame = cf * CFrame.new(x, 11, 0), Color = C(60, 60, 66), Material = Enum.Material.Metal })
 		end
@@ -16695,26 +16885,26 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	end
 	function BUILD.Sheet(cf: CFrame, p) -- furniture under a dust sheet (it looks a bit like a ghost)
 		local size = p.size or Vector3.new(40, 35, 30)
-		ball(cf * CFrame.new(0, size.Y * 0.45, 0), size, C(225, 225, 232), Enum.Material.Fabric)
-		deco({ Name = "SheetHem", Size = Vector3.new(size.X * 0.9, size.Y * 0.4, size.Z * 0.9), CFrame = cf * CFrame.new(0, size.Y * 0.2, 0), Color = C(215, 215, 225), Material = Enum.Material.Fabric })
+		ball(cf * CFrame.new(0, size.Y * 0.45, 0), size, C(225, 225, 232), Enum.Material.Fabric, true)
+		solid({ Name = "SheetHem", Size = Vector3.new(size.X * 0.9, size.Y * 0.4, size.Z * 0.9), CFrame = cf * CFrame.new(0, size.Y * 0.2, 0), Color = C(215, 215, 225), Material = Enum.Material.Fabric })
 	end
 	function BUILD.Mannequin(cf: CFrame, p)
-		cylinder(upright(cf * CFrame.new(0, 14, 0)), 28, 2, DARK_WOOD, Enum.Material.Wood)
-		ball(cf * CFrame.new(0, 38, 0), Vector3.new(16, 24, 12), C(200, 180, 150), Enum.Material.Fabric)
-		deco({ Name = "Dress", Size = Vector3.new(18, 6, 13), CFrame = cf * CFrame.new(0, 30, 0), Color = C(110, 60, 140), Material = Enum.Material.Fabric })
+		cylinder(upright(cf * CFrame.new(0, 14, 0)), 28, 2, DARK_WOOD, Enum.Material.Wood, true)
+		ball(cf * CFrame.new(0, 38, 0), Vector3.new(16, 24, 12), C(200, 180, 150), Enum.Material.Fabric, true)
+		solid({ Name = "Dress", Size = Vector3.new(18, 6, 13), CFrame = cf * CFrame.new(0, 30, 0), Color = C(110, 60, 140), Material = Enum.Material.Fabric })
 	end
 	function BUILD.Beam(cf: CFrame, p) -- a rafter running across the attic
-		deco({ Name = "Rafter", Size = Vector3.new(p.length or 300, 8, 8), CFrame = cf, Color = C(100, 68, 42), Material = Enum.Material.Wood })
+		solid({ Name = "Rafter", Size = Vector3.new(p.length or 300, 8, 8), CFrame = cf, Color = C(100, 68, 42), Material = Enum.Material.Wood })
 	end
 	function BUILD.Post(cf: CFrame, p) -- an upright post (floor to ceiling)
-		deco({ Name = "Post", Size = Vector3.new(8, p.height or 60, 8), CFrame = cf * CFrame.new(0, (p.height or 60) / 2, 0), Color = C(100, 68, 42), Material = Enum.Material.Wood })
+		solid({ Name = "Post", Size = Vector3.new(8, p.height or 60, 8), CFrame = cf * CFrame.new(0, (p.height or 60) / 2, 0), Color = C(100, 68, 42), Material = Enum.Material.Wood })
 	end
 	function BUILD.WineRack(cf: CFrame, p) -- shelves of barrels and bottles along a wall
 		local length = p.length or 200
-		deco({ Name = "RackBack", Size = Vector3.new(length, 70, 3), CFrame = cf * CFrame.new(0, 35, 12), Color = DARK_WOOD, Material = Enum.Material.Wood })
+		solid({ Name = "RackBack", Size = Vector3.new(length, 70, 3), CFrame = cf * CFrame.new(0, 35, 12), Color = DARK_WOOD, Material = Enum.Material.Wood })
 		for x = -length / 2 + 14, length / 2 - 14, 28 do
 			for _, y in { 12, 38 } do
-				local barrel = cylinder(cf * CFrame.new(x, y, 0) * CFrame.Angles(0, math.rad(90), 0), 22, 22, C(125, 75, 40), Enum.Material.Wood)
+				local barrel = cylinder(cf * CFrame.new(x, y, 0) * CFrame.Angles(0, math.rad(90), 0), 22, 22, C(125, 75, 40), Enum.Material.Wood, true)
 				cylinder(barrel.CFrame * CFrame.new(-11, 0, 0), 0.6, 8, C(60, 40, 30))
 			end
 			for k = 0, 3 do
@@ -16723,7 +16913,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		end
 	end
 	function BUILD.Boiler(cf: CFrame, p) -- a huge round boiler with a glowing furnace door
-		cylinder(upright(cf * CFrame.new(0, 35, 0)), 70, 50, C(150, 80, 50), Enum.Material.Metal)
+		cylinder(upright(cf * CFrame.new(0, 35, 0)), 70, 50, C(150, 80, 50), Enum.Material.Metal, true)
 		ball(cf * CFrame.new(0, 70, 0), Vector3.new(50, 24, 50), C(150, 80, 50), Enum.Material.Metal)
 		local door = deco({ Name = "FurnaceDoor", Size = Vector3.new(18, 14, 3), CFrame = cf * CFrame.new(0, 12, -25), Color = C(255, 120, 40), Material = Enum.Material.Neon })
 		light(door, 60, 2, C(255, 140, 60))
@@ -16734,12 +16924,12 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		deco({ Name = "GaugeNeedle", Size = Vector3.new(0.6, 4, 0.4), CFrame = cf * CFrame.new(18, 46, -23.6) * CFrame.Angles(0, 0, math.rad(-40)), Color = C(200, 30, 30) })
 	end
 	function BUILD.Washer(cf: CFrame, p) -- a washing machine
-		deco({ Name = "Washer", Size = Vector3.new(30, 34, 30), CFrame = cf * CFrame.new(0, 17, 0), Color = C(235, 238, 240) })
+		solid({ Name = "Washer", Size = Vector3.new(30, 34, 30), CFrame = cf * CFrame.new(0, 17, 0), Color = C(235, 238, 240) })
 		cylinder(cf * CFrame.new(0, 15, -15.2) * CFrame.Angles(0, math.rad(90), 0), 0.6, 20, C(110, 140, 170), Enum.Material.Glass)
 		deco({ Name = "Suds", Size = Vector3.new(14, 5, 0.4), CFrame = cf * CFrame.new(0, 11, -15.6), Color = C(250, 252, 255), Material = Enum.Material.Neon, Transparency = 0.3 })
 	end
 	function BUILD.Portrait(cf: CFrame, p) -- a framed portrait of one of the characters, on a wall
-		deco({ Name = "Frame", Size = Vector3.new(36, 44, 2), CFrame = cf, Color = GOLD, Material = Enum.Material.Metal })
+		solid({ Name = "Frame", Size = Vector3.new(36, 44, 2), CFrame = cf, Color = GOLD, Material = Enum.Material.Metal })
 		deco({ Name = "Canvas", Size = Vector3.new(30, 38, 2.4), CFrame = cf, Color = p.color or C(60, 45, 75) })
 		-- (the portrait's front faces the way `cf` looks; the character looks out of the frame)
 		local bust = h.Mascots.build(p.kind or "Cat", cf * CFrame.new(0, -13.5, -3), { parent = parent, scale = 4.5, cheer = false })
@@ -16762,16 +16952,16 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 	end
 	-- OUTSIDE ---------------------------------------------------------
 	function BUILD.Hedge(cf: CFrame, p)
-		deco({ Name = "Hedge", Size = Vector3.new(p.length or 80, 22, 16), CFrame = cf * CFrame.new(0, 11, 0), Color = C(40, 80, 50), Material = Enum.Material.Grass })
+		solid({ Name = "Hedge", Size = Vector3.new(p.length or 80, 22, 16), CFrame = cf * CFrame.new(0, 11, 0), Color = C(40, 80, 50), Material = Enum.Material.Grass })
 	end
 	function BUILD.Topiary(cf: CFrame, p) -- a hedge trimmed into a ball on a stalk
-		cylinder(upright(cf * CFrame.new(0, 6, 0)), 12, 3, C(90, 60, 40), Enum.Material.Wood)
-		ball(cf * CFrame.new(0, 20, 0), Vector3.one * 22, C(45, 95, 55), Enum.Material.Grass)
-		ball(cf * CFrame.new(0, 35, 0), Vector3.one * 14, C(45, 95, 55), Enum.Material.Grass)
+		cylinder(upright(cf * CFrame.new(0, 6, 0)), 12, 3, C(90, 60, 40), Enum.Material.Wood, true)
+		ball(cf * CFrame.new(0, 20, 0), Vector3.one * 22, C(45, 95, 55), Enum.Material.Grass, true)
+		ball(cf * CFrame.new(0, 35, 0), Vector3.one * 14, C(45, 95, 55), Enum.Material.Grass, true)
 	end
 	function BUILD.Pumpkin(cf: CFrame, p) -- a glowing jack-o'-lantern
 		local s = p.scale or 1
-		ball(cf * CFrame.new(0, 6 * s, 0), Vector3.new(16, 12, 16) * s, C(240, 130, 30))
+		ball(cf * CFrame.new(0, 6 * s, 0), Vector3.new(16, 12, 16) * s, C(240, 130, 30), nil, true)
 		deco({ Name = "Stalk", Size = Vector3.new(2, 4, 2) * s, CFrame = cf * CFrame.new(0, 13 * s, 0), Color = C(80, 110, 50) })
 		for _, x in { -3, 3 } do
 			deco({ Name = "PumpkinEye", Size = Vector3.new(3, 3, 1) * s, CFrame = cf * CFrame.new(x * s, 7.5 * s, -7.6 * s), Color = C(255, 230, 120), Material = Enum.Material.Neon })
@@ -16782,24 +16972,24 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		end
 	end
 	function BUILD.Oak(cf: CFrame, p) -- a giant gnarled tree
-		h.buildTree(cf.Position, p.scale or 9, C(55, 75, 50), parent, false)
+		h.buildTree(cf.Position, p.scale or 9, C(55, 75, 50), parent, true) -- (a solid trunk)
 	end
 	function BUILD.GatePost(cf: CFrame, p)
-		deco({ Name = "GatePost", Size = Vector3.new(14, 46, 14), CFrame = cf * CFrame.new(0, 23, 0), Color = STONE, Material = Enum.Material.Slate })
+		solid({ Name = "GatePost", Size = Vector3.new(14, 46, 14), CFrame = cf * CFrame.new(0, 23, 0), Color = STONE, Material = Enum.Material.Slate })
 		local lamp = ball(cf * CFrame.new(0, 52, 0), Vector3.new(7, 9, 7), CANDLE, Enum.Material.Neon)
 		light(lamp, 50, 1.4)
 	end
 	function BUILD.Fence(cf: CFrame, p) -- an iron railing `length` long
 		local length = p.length or 200
-		deco({ Name = "FenceRail", Size = Vector3.new(length, 1.5, 1.5), CFrame = cf * CFrame.new(0, 20, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
-		deco({ Name = "FenceRail", Size = Vector3.new(length, 1.5, 1.5), CFrame = cf * CFrame.new(0, 4, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
+		solid({ Name = "FenceRail", Size = Vector3.new(length, 1.5, 1.5), CFrame = cf * CFrame.new(0, 20, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
+		solid({ Name = "FenceRail", Size = Vector3.new(length, 1.5, 1.5), CFrame = cf * CFrame.new(0, 4, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
 		for x = -length / 2, length / 2, 8 do
-			deco({ Name = "FenceSpike", Size = Vector3.new(1.2, 26, 1.2), CFrame = cf * CFrame.new(x, 13, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
+			solid({ Name = "FenceSpike", Size = Vector3.new(1.2, 26, 1.2), CFrame = cf * CFrame.new(x, 13, 0), Color = C(30, 30, 36), Material = Enum.Material.Metal })
 		end
 	end
 	function BUILD.Turret(cf: CFrame, p) -- a round tower with a pointy roof on a corner of the house
 		local radius, height = p.radius or 50, p.height or 120
-		cylinder(upright(cf * CFrame.new(0, height / 2, 0)), height, radius * 2, STONE, Enum.Material.Slate)
+		cylinder(upright(cf * CFrame.new(0, height / 2, 0)), height, radius * 2, STONE, Enum.Material.Slate, true)
 		for k = 0, 2 do
 			local cone = deco({ Name = "TurretRoof", Shape = Enum.PartType.Cylinder, Size = Vector3.new(14, radius * 2.3 * (1 - k * 0.3), radius * 2.3 * (1 - k * 0.3)), CFrame = upright(cf * CFrame.new(0, height + 7 + k * 14, 0)), Color = C(45, 40, 70), Material = Enum.Material.Slate })
 			cone.Name = "TurretRoof"
@@ -16816,20 +17006,20 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		local length, depth, height = p.length, p.depth, p.height
 		local slate = C(45, 40, 70)
 		for _, side in { -1, 1 } do -- (a wedge's high edge is its +Z side)
-			deco({ Name = "RoofSlope", Shape = "Wedge", Size = Vector3.new(length, height, depth / 2), CFrame = cf * CFrame.new(0, height / 2, side * depth / 4) * CFrame.Angles(0, if side > 0 then math.pi else 0, 0), Color = slate, Material = Enum.Material.Slate })
+			solid({ Name = "RoofSlope", Shape = "Wedge", Size = Vector3.new(length, height, depth / 2), CFrame = cf * CFrame.new(0, height / 2, side * depth / 4) * CFrame.Angles(0, if side > 0 then math.pi else 0, 0), Color = slate, Material = Enum.Material.Slate })
 		end
-		cylinder(cf * CFrame.new(0, height, 0), length + 4, 5, C(70, 62, 95), Enum.Material.Slate)
+		cylinder(cf * CFrame.new(0, height, 0), length + 4, 5, C(70, 62, 95), Enum.Material.Slate, true)
 		for x = -length / 2 + 120, length / 2 - 120, 200 do
 			local dormer = cf * CFrame.new(x, height * 0.35, -depth * 0.32)
-			deco({ Name = "Dormer", Size = Vector3.new(34, 34, 40), CFrame = dormer, Color = STONE, Material = Enum.Material.Slate })
-			deco({ Name = "DormerRoof", Shape = "Wedge", Size = Vector3.new(40, 14, 44), CFrame = dormer * CFrame.new(0, 24, 0) * CFrame.Angles(0, math.rad(90), 0), Color = slate, Material = Enum.Material.Slate })
+			solid({ Name = "Dormer", Size = Vector3.new(34, 34, 40), CFrame = dormer, Color = STONE, Material = Enum.Material.Slate })
+			solid({ Name = "DormerRoof", Shape = "Wedge", Size = Vector3.new(40, 14, 44), CFrame = dormer * CFrame.new(0, 24, 0) * CFrame.Angles(0, math.rad(90), 0), Color = slate, Material = Enum.Material.Slate })
 			deco({ Name = "DormerWindow", Size = Vector3.new(20, 22, 1), CFrame = dormer * CFrame.new(0, -2, -20.2), Color = C(255, 205, 120), Material = Enum.Material.Neon })
 		end
 	end
 	function BUILD.Chimney(cf: CFrame, p)
 		local height = p.height or 50
-		deco({ Name = "Chimney", Size = Vector3.new(24, height, 24), CFrame = cf * CFrame.new(0, height / 2, 0), Color = C(120, 60, 50), Material = Enum.Material.Brick })
-		deco({ Name = "ChimneyTop", Size = Vector3.new(28, 4, 28), CFrame = cf * CFrame.new(0, height, 0), Color = C(90, 80, 80), Material = Enum.Material.Slate })
+		solid({ Name = "Chimney", Size = Vector3.new(24, height, 24), CFrame = cf * CFrame.new(0, height / 2, 0), Color = C(120, 60, 50), Material = Enum.Material.Brick })
+		solid({ Name = "ChimneyTop", Size = Vector3.new(28, 4, 28), CFrame = cf * CFrame.new(0, height, 0), Color = C(90, 80, 80), Material = Enum.Material.Slate })
 	end
 	function BUILD.Bat(cf: CFrame, p)
 		local s = p.scale or 1
@@ -16896,7 +17086,7 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			continue -- (under the house, its own cellar wall is the cliff face)
 		end
 		local depth = rng:NextNumber(40, 80)
-		deco({
+		solid({
 			Name = "Cliff",
 			Size = Vector3.new(124, cliffTop - cliffBottom, depth),
 			CFrame = CFrame.new(W(x + 60, (cliffTop + cliffBottom) / 2, g.z[1] + 10 - depth / 2 + rng:NextNumber(0, 15))),
@@ -16905,22 +17095,34 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 		})
 	end
 	-- the house's foundations, down to the water
-	deco({ Name = "Foundation", Size = Vector3.new(x1 - x0, -6.25 - cliffBottom, z1 - z0), CFrame = CFrame.new(W((x0 + x1) / 2, (cliffBottom - 6.25) / 2, (z0 + z1) / 2)), Color = C(70, 66, 80), Material = Enum.Material.Slate })
+	solid({ Name = "Foundation", Size = Vector3.new(x1 - x0, -6.25 - cliffBottom, z1 - z0), CFrame = CFrame.new(W((x0 + x1) / 2, (cliffBottom - 6.25) / 2, (z0 + z1) / 2)), Color = C(70, 66, 80), Material = Enum.Material.Slate })
 	-- (and a solid block of earth under the lawn, so the cellar is underground)
 	for _, t in lawnTiles do
-		deco({ Name = "Earth", Size = Vector3.new(t[3] - t[1], cliffTop - cliffBottom, t[4] - t[2]), CFrame = CFrame.new(W((t[1] + t[3]) / 2, (cliffTop + cliffBottom) / 2, (t[2] + t[4]) / 2)), Color = C(60, 50, 45), Material = Enum.Material.Ground })
+		solid({ Name = "Earth", Size = Vector3.new(t[3] - t[1], cliffTop - cliffBottom, t[4] - t[2]), CFrame = CFrame.new(W((t[1] + t[3]) / 2, (cliffTop + cliffBottom) / 2, (t[2] + t[4]) / 2)), Color = C(60, 50, 45), Material = Enum.Material.Ground })
 	end
 
 	--------------------------------------------------------------------
-	-- STUDIO CHECK: no house wall may stand in a road's way
+	-- STUDIO CHECK: no house wall, floor, furniture or tunnel may stand in a road's way
 	--------------------------------------------------------------------
 	-- (it feels across the road's whole width at each sample, just above the road
-	-- and at kart height, for any house wall or floor there)
+	-- and at kart height, for anything solid there)
 	if RunService:IsStudio() then
-		for _, part in floorParts do
-			table.insert(wallParts, part)
+		for _, list in { floorParts, solidParts } do
+			for _, part in list do
+				table.insert(wallParts, part)
+			end
 		end
-		local found = 0
+		for _, part in walls:GetChildren() do
+			if part:IsA("BasePart") and part.Name == "CaveWall" then
+				table.insert(wallParts, part)
+			end
+		end
+		for _, part in walkable:GetChildren() do
+			if part:IsA("BasePart") and part.Name == "CaveRoof" then
+				table.insert(wallParts, part)
+			end
+		end
+		local found, byName = 0, {}
 		for i, p in samples do
 			local a, b = samples[i - 1], samples[i + 1]
 			local dir = if a and b then Vector3.new(b.X - a.X, 0, b.Z - a.Z) else Vector3.zero
@@ -16939,21 +17141,32 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 				for u = -1, 1, 0.5 do
 					for _, up in { 0.4, 6 } do
 						local rel = part.CFrame:PointToObjectSpace(p + right * u * halves[i] + Vector3.new(0, up, 0))
-						hit = hit or (math.abs(rel.X) < half.X and math.abs(rel.Y) < half.Y and math.abs(rel.Z) < half.Z + 3)
+						local inside = math.abs(rel.X) < half.X and math.abs(rel.Y) < half.Y and math.abs(rel.Z) < half.Z + 3
+						if part:IsA("WedgePart") then -- (only under its slope, which climbs towards +Z)
+							inside = inside and rel.Y / half.Y <= rel.Z / half.Z
+						end
+						hit = hit or inside
 					end
 				end
 				if hit then
 					found += 1
+					byName[part.Name] = (byName[part.Name] or 0) + 1
 					if found <= 8 then
 						local q = p - origin
-						warn(string.format("[MansionCheck] a %s is in the way of the road at (%.0f, %.0f, %.0f)", if part.Name == "Floor" then "floor" else "wall", q.X, q.Y, q.Z))
+						warn(string.format("[MansionCheck] a %s is in the way of the road at (%.0f, %.0f, %.0f)", part.Name, q.X, q.Y, q.Z))
 					end
 					break
 				end
 			end
 		end
 		if found == 0 then
-			print("[MansionCheck] no walls or floors in the way of the roads")
+			print("[MansionCheck] nothing solid in the way of the roads")
+		elseif found > 8 then
+			local list = {}
+			for name, n in byName do
+				table.insert(list, name .. " x" .. n)
+			end
+			warn("[MansionCheck] " .. found .. " spots in all: " .. table.concat(list, ", "))
 		end
 	end
 end

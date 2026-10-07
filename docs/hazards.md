@@ -2,6 +2,10 @@
 
 Read before adding or changing hazards (lava, fire bars, frogs, tongues, geysers, wind, boost pad timing).
 
+**Safe vs dangerous** (the owner's rule):
+- **Safe** obstacles are static things: crates, barrels, rocks, toy blocks, crystals, snowmen, trees, table legs, frog idol statues, furniture. Hitting one is exactly like hitting a wall: you bounce off, no spin-out, no coins lost. They're solid parts in `Walls` (bots steer round the ones marked `Obstacle`, plus `Tree`/`Leg`/`FireBarPost`).
+- **Dangerous** hazards are lava and things that move or erupt: lava pools (`Burn`, sends you back), fire bars, rolling balls, frogs/cats/bunnies/owls, tongues (`Bonk`), geysers and steam vents (`Launch`), banana peels. They spin you out (the "damage" moment) and cost `CRASH_COINS` (3), with the red "-3" and coins spilling. Only these call `reportCrash` in the client / `knockBot` on the server.
+
 - Hazards: parts in `RaceTrack.Hazards` carry a `Hazard` attribute that the client feels for with `GetPartsInPart` on its hitbox:
   - `Burn`: lava, sends you back to your respawn point.
   - `Bonk`: fire bars, snowballs, boulders, hopping frogs and idol tongues, knock you aside and spin you out.
@@ -14,5 +18,5 @@ Read before adding or changing hazards (lava, fire bars, frogs, tongues, geysers
   - `Wind`: pushes you sideways during gusts (`push` studs/s², applied once per frame even where two wind zones overlap). Every piece of a wind zone has two emitters, `Gust` (long streaks) and `Flurry` (big bluish puffs), blowing the way it pushes; the client sets their rates: a few streaks always, more for 1 s as a warning, a storm during the gust. Every 4th piece (`Howl` attribute) gets a looping howl anyone nearby hears, louder in gusts; your own kart howls and the camera rattles while you're pushed. Streaks use `Orientation` VelocityParallel with a negative `Squash` (positive makes them stand upright like rain). Windy Ledge uses `push` 90, enough to blow an unsteered kart off in about a second.
 
   The server builds hazards static and never moves them. Each client animates the moving ones in step with `workspace:GetServerTimeNow()` (attributes `Origin`/`Speed`, `From`/`To`/`Period`/`Offset`, `Period`/`Active`/`Offset`/`Height`), so everyone sees the same thing.
-- Looks: a `Frog` feature's `look` uses another Mascots character instead of a frog (Moonlight Manor's pouncing cats, toy bunnies and owls). A `Boulder`'s `color`/`material` turn it into a glass marble or a rolling pin. Obstacles `Crate`, `Block` (toy block) and `Barrel` cost coins like rocks; a `Leg` (giant table leg) doesn't, like a tree, and bots steer round it.
+- Looks: a `Frog` feature's `look` uses another Mascots character instead of a frog (Moonlight Manor's pouncing cats, toy bunnies and owls). A `Boulder`'s `color`/`material` turn it into a glass marble or a rolling pin. Obstacles `Crate`, `Block` (toy block), `Barrel` and `Leg` (giant table leg) are safe, like rocks and trees: bumping them costs nothing, and bots steer round them.
 - `Banana`: a banana peel an item dropped on the road (a `BananaHit` part in a `Banana` model); see the items section of `docs/coins-items.md`.

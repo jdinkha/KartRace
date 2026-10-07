@@ -10,6 +10,8 @@ Roblox kart racing game written in Luau. The scripts live in the place file (`Ka
 - Validate anything the client sends to the server; clients can be exploited.
 - Audience is young players: keep content age-appropriate and follow Roblox monetization rules (e.g. disclose odds for random paid items). Keep new characters friendly and original.
 - Drivable road must have no clipping or unevenness: a step of more than 0.3 studs acts as a wall. `[RoadCheck]` finds these.
+- The Mega Jump item throws a kart ~45 studs up, so karts can reach places off the course. Anything a kart can reach must have collision, even if it's not part of the main course: no see-through furniture, pillars, chimneys or stairs a kart could land on or drive into. Solid things you could land on go in `Walkable` so the kart can drive on and off them.
+- Obstacles come in two kinds. **Safe** (crates, barrels, rocks, toy blocks, snowmen, trees, table legs, crystals, idol statues, furniture): hitting one is exactly like hitting a wall, no spin-out, no coins lost. **Dangerous** (lava, fire bars, geysers/steam vents, rolling balls, hopping frogs/cats, tongues, banana peels): spin-out (or respawn for lava) and lose `CRASH_COINS` (3). See `docs/hazards.md`.
 
 ## Read the matching doc before working on a system
 - `docs/track-design.md`: design rules for tracks (levels, not circuits), shortcuts, and every current track's route.
@@ -49,7 +51,7 @@ If you change a system, update its doc (or this file) to match.
 ## Testing in Studio
 - Through the MCP you can press Play, read the Output, run code on the Server/Client and take screenshots.
 - Track layout check (game stopped): `require(game.ServerStorage.TrackCheck:Clone())("Magma")`. Reports road lengths, roads crashing into each other (need 20+ studs of height between crossings), corners too tight for the road's width (TIGHT), and roads through the lobby.
-- Road surface check: in Studio, `checkRoads` runs every time a track loads and prints `[RoadCheck] <track>: no steps or holes in the road` or one warning per hole/step (positions in POINTS numbers). It skips jump gaps, ramp lips and boost pads. Moonlight Manor also prints `[MansionCheck]`: any house wall or floor in a road's way.
+- Road surface check: in Studio, `checkRoads` runs every time a track loads and prints `[RoadCheck] <track>: no steps or holes in the road` or one warning per hole/step (positions in POINTS numbers). It skips jump gaps, ramp lips and boost pads. Moonlight Manor also prints `[MansionCheck]`: anything solid (house wall, floor, furniture, fill, solid tunnel) in a road's way.
 - Bot run: start a race with no input and watch the CPUs; on Moonlight Manor they all finish in about 2:00–2:15. A bot sitting still for 10+ s means a spot it can't drive through.
 - Grid check (game stopped): `require(game.ServerStorage.GridCheck:Clone())()`.
 - Switch tracks in Play (Server, Studio only): `game.ServerStorage.PreviewTrack:Invoke("Magma")`. Not mid-race with a kart you're testing.
