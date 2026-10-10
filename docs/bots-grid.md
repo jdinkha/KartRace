@@ -19,3 +19,4 @@ Read before changing bot behaviour, race-ending rules, rubber-banding or startin
 - Starting grid order (`startingGrid`): you start where you finished last race (`standings`), bots included. Anyone ahead who left drops out, so everyone behind moves up.
   - New players start at the very back, replacing the rearmost bots, in the order they joined (`joinedAt`). Bots fill whatever is left. `standings` only holds the last race's racers, so a player who sat that race out also counts as new.
   - Run `require(game.ServerStorage.GridCheck:Clone())()` (game stopped) to check these rules.
+  - Where each place starts (diagonal lines, 1st on the inside of the first corner) is in `docs/track-building.md` ("Jumps and grid").

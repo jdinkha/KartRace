@@ -42,6 +42,8 @@
 			<token name="RejectCharacterDeletions">0</token>
 			<token name="RenderingCacheOptimizations">0</token>
 			<token name="ReplicateInstanceDestroySetting">0</token>
+			<token name="ReplicationFrequency">0</token>
+			<token name="ReplicationThroughput">0</token>
 			<token name="Retargeting">0</token>
 			<token name="SandboxedInstanceMode">0</token>
 			<token name="SignalBehavior2">0</token>
@@ -104,6 +106,7 @@
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Workspace</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001495</UniqueId>
@@ -204,6 +207,7 @@
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">Baseplate</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001870</UniqueId>
@@ -322,6 +326,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">Terrain</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001871</UniqueId>
@@ -330,27 +335,27 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 		<Item class="Camera" referent="RBXEF61CBA5CACA48A69F291E086C91B9A7">
 			<Properties>
 				<CoordinateFrame name="CFrame">
-					<X>-508.244324</X>
-					<Y>2.83564711</Y>
-					<Z>795.290588</Z>
-					<R00>0.851457</R00>
-					<R01>-0.336865336</R01>
-					<R02>-0.401923954</R02>
+					<X>-665.05072</X>
+					<Y>1336.35986</Y>
+					<Z>899.282776</Z>
+					<R00>0.808351994</R00>
+					<R01>0.248118475</R01>
+					<R02>-0.533857942</R02>
 					<R10>-0</R10>
-					<R11>0.766409576</R11>
-					<R12>-0.642352283</R12>
-					<R20>0.524424613</R20>
-					<R21>0.54693532</R21>
-					<R22>0.652564645</R22>
+					<R11>0.906842947</R11>
+					<R12>0.421468824</R12>
+					<R20>0.58869946</R20>
+					<R21>-0.340695173</R21>
+					<R22>0.73304832</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-6</X>
-					<Y>805.519287</Y>
-					<Z>-20.1544418</Z>
+					<X>3</X>
+					<Y>808.948853</Y>
+					<Z>-18.0276432</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -363,12 +368,17 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				</CoordinateFrame>
 				<bool name="HeadLocked">true</bool>
 				<float name="HeadScale">1</float>
+				<token name="OrthographicMode">0</token>
+				<float name="OrthographicSize">300</float>
+				<token name="ProjectionType">0</token>
 				<bool name="VRTiltAndRollEnabled">false</bool>
+				<float name="ViewStretch">1</float>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">Camera</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001881</UniqueId>
@@ -382,6 +392,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">TimerService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000017f7</UniqueId>
@@ -394,6 +405,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">CollectionService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000017f8</UniqueId>
@@ -436,6 +448,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">SoundService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000017f9</UniqueId>
@@ -448,6 +461,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">VideoCaptureService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001805</UniqueId>
@@ -460,6 +474,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">NonReplicatedCSGDictionaryService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001806</UniqueId>
@@ -472,6 +487,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">CSGDictionaryService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001807</UniqueId>
@@ -487,6 +503,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Chat</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000180d</UniqueId>
@@ -505,6 +522,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Players</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000180f</UniqueId>
@@ -517,6 +535,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ReplicatedFirst</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001812</UniqueId>
@@ -529,6 +548,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">TweenService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001814</UniqueId>
@@ -582,6 +602,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">MaterialService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001815</UniqueId>
@@ -602,6 +623,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">TextChatService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001816</UniqueId>
@@ -643,6 +665,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">ChatWindowConfiguration</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001873</UniqueId>
@@ -688,6 +711,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">ChatInputBarConfiguration</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001874</UniqueId>
@@ -733,6 +757,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">BubbleChatConfiguration</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001875</UniqueId>
@@ -780,6 +805,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">ChannelTabsConfiguration</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001876</UniqueId>
@@ -793,6 +819,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">PermissionsService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e81</UniqueId>
@@ -812,6 +839,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">PlayerEmulatorService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001819</UniqueId>
@@ -825,6 +853,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">StudioData</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000181c</UniqueId>
@@ -868,6 +897,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">StarterPlayer</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000181e</UniqueId>
@@ -879,6 +909,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">StarterPlayerScripts</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186e</UniqueId>
@@ -923,7 +954,7 @@ local raceEvent = ReplicatedStorage:WaitForChild("RaceEvent") :: RemoteEvent
 -- HANDLING  (tweak these to change how karts feel)
 ------------------------------------------------------------------------
 local HANDLING = {
-	MAX_SPEED = 80, -- studs per second (a walking character is 16)
+	MAX_SPEED = 83.2, -- studs per second (a walking character is 16)
 	ACCELERATION = 40,
 	BRAKE = 90,
 	REVERSE_SPEED = 25,
@@ -936,7 +967,7 @@ local HANDLING = {
 	DRIFT_BODY_ANGLE = 22, -- degrees the kart swings out while drifting (looks only)
 	MINI_TURBO_1 = 0.8, -- seconds of drifting for a small boost (blue sparks)
 	MINI_TURBO_2 = 1.7, -- seconds of drifting for a big boost (orange sparks)
-	BOOST_SPEED = 115,
+	BOOST_SPEED = 119.6, -- (MAX_SPEED +44%)
 	OFFROAD_SPEED = 0.55, -- top speed on off-road (grass, ash, snow, mud), as a share of normal. Boosting ignores it!
 	PAD_BOOST_TIME = 1.2,
 	AIR_GRAVITY = 0.55, -- fraction of normal gravity in the air (floatier jumps)
@@ -966,10 +997,11 @@ local HANDLING = {
 	BUMP_RAMMED = 0.5, -- ...while the kart you hit (from behind, say) gets knocked this much
 	-- Coins and items. Keep these the same as PICKUPS in RaceServer!
 	MAX_COINS = 20, -- the most coins you can carry in one race
-	COIN_SPEED = 0.01, -- extra top speed per coin you carry (20 coins = 20% faster)
+	COIN_SPEED = 0.0085, -- extra top speed per coin you carry (20 coins = 17% faster)
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts
-	TAX_BOOST = 4, -- each coin over MAX_COINS (only just after a Taxman) is worth this many coins of speed
-	MEGA_JUMP = 100, -- how fast a Mega Jump throws you upwards (studs/s)
+	TAX_BOOST = 5, -- each coin a Taxman just took (for a few seconds) is worth this many coins of speed
+	MEGA_JUMP = 90, -- how fast a Mega Jump throws you upwards (studs/s): about 45 studs high
+	MEGA_GRAVITY = 0.45, -- share of normal gravity while Mega Jumping (a bit floatier than other jumps)
 	PICKUP_REACH = 4.5, -- how close you pass a coin/box for it to vanish on your screen straight away. Keep it a bit under the server's REACH, so the server grabs whatever you saw grabbed
 }
 
@@ -1510,6 +1542,7 @@ type DriveState = {
 	slide: number, -- seconds of slippery tyres left after bumping another kart
 	lookingBack: boolean, -- is the camera looking behind the kart?
 	lastCrash: number, -- when we last told the server we crashed into something
+	flying: boolean, -- in a Mega Jump: steers, drifts and keeps its speed like a plane, until it lands
 }
 
 local drive: DriveState? = nil
@@ -1593,6 +1626,13 @@ local function createEffects(hitbox: BasePart): ({ ParticleEmitter }, ParticleEm
 		table.insert(effects, emitter)
 	end
 	return sparks, flame, effects, dust
+end
+
+-- One of a kart's stats (see STATS in the Garage module; the server puts them on the
+-- kart): a multiplier, 1 = the Classic kart on Chunky wheels
+local function kartStat(kart: Instance, stat: string): number
+	local value = kart:GetAttribute("Stat_" .. stat)
+	return if typeof(value) == "number" and value > 0 then value else 1
 end
 
 type Ground = {
@@ -1839,7 +1879,8 @@ local function bumpKarts(d: DriveState, velocity: Vector3): Vector3
 		local mine, theirs = -velocity:Dot(away), otherVelocity:Dot(away)
 		local blame = (mine - theirs) / math.max(math.abs(mine) + math.abs(theirs), 10)
 		local scale = if blame > 0 then 1 + (HANDLING.BUMP_RAMMER - 1) * blame else 1 - (HANDLING.BUMP_RAMMED - 1) * blame
-		velocity += away * math.min((HANDLING.BUMP_SPEED + closing * HANDLING.BUMP_TRANSFER) * power, HANDLING.BUMP_MAX) * scale
+		local heavier = kartStat(other, "weight") / kartStat(d.kart, "weight") -- (a heavier kart shoves you further)
+		velocity += away * math.min((HANDLING.BUMP_SPEED + closing * HANDLING.BUMP_TRANSFER) * power, HANDLING.BUMP_MAX) * scale * heavier
 		velocity += Vector3.yAxis * HANDLING.BUMP_HOP -- boing!
 		d.pop = math.max(d.pop, 0.15) -- (let go of the road so the hop happens)
 		d.slide = HANDLING.BUMP_SLIDE
@@ -1889,6 +1930,10 @@ local function driveStep(dt: number)
 			playSound("Land", hitbox, 1, math.clamp(d.airTime / 1.5, 0.4, 1))
 		end
 		d.airTime = 0
+		if d.flying then -- landed a Mega Jump: carry on at full speed (a hard touchdown isn't a wall hit)
+			d.flying = false
+			d.wallGrace = math.max(d.wallGrace, 0.3)
+		end
 	else
 		d.airTime += dt
 	end
@@ -1952,8 +1997,8 @@ local function driveStep(dt: number)
 	if d.drifting then
 		if onOffRoad then
 			d.driftTime = 0
-		elseif grounded then
-			d.driftTime += dt
+		elseif grounded or d.flying then
+			d.driftTime += dt * kartStat(d.kart, "miniTurbo") -- (a better mini-turbo stat charges faster)
 		end
 		if not canDrive or forwardSpeed < driftMin * 0.6 then
 			d.drifting = false -- lost too much speed (e.g. hit a wall): no boost
@@ -1967,7 +2012,7 @@ local function driveStep(dt: number)
 			end
 			d.drifting = false
 		end
-	elseif driftHeld and canDrive and grounded and forwardSpeed > driftMin and math.abs(steer) > 0.3 then
+	elseif driftHeld and canDrive and (grounded or d.flying) and forwardSpeed > driftMin and math.abs(steer) > 0.3 then
 		d.drifting = true
 		d.driftDir = if steer > 0 then 1 else -1
 		d.driftTime = 0
@@ -1976,45 +2021,53 @@ local function driveStep(dt: number)
 	d.boostTime = math.max(0, d.boostTime - dt)
 	local boosting = d.boostTime > 0
 
-	-- Speed (only when wheels are on the ground)
-	if grounded then
+	-- Speed (only when wheels are on the ground, or flying in a Mega Jump)
+	if grounded or d.flying then
+		local tookOff = math.sqrt(forwardSpeed * forwardSpeed + sideSpeed * sideSpeed) -- (in a Mega Jump: the speed you're keeping)
 		if throttle > 0 then
 			if forwardSpeed < 0 then
 				forwardSpeed += HANDLING.BRAKE * dt
 			else
-				forwardSpeed += HANDLING.ACCELERATION * throttle * dt
+				forwardSpeed += HANDLING.ACCELERATION * kartStat(d.kart, "acceleration") * throttle * dt
 			end
 		elseif throttle < 0 then
 			if forwardSpeed > 0 then
 				forwardSpeed += HANDLING.BRAKE * throttle * dt
 			else
-				forwardSpeed += HANDLING.ACCELERATION * throttle * dt
+				forwardSpeed += HANDLING.ACCELERATION * kartStat(d.kart, "acceleration") * throttle * dt
 			end
-		else
+		elseif grounded then -- (a Mega Jump doesn't slow down in the air)
 			local decel = if canDrive then HANDLING.COAST_DECEL else HANDLING.BRAKE * 0.5
 			forwardSpeed = moveToward(forwardSpeed, 0, decel * dt)
 		end
 
-		-- Speed boosts add up: every coin you carry is +1% (a Taxman's extra coins over
-		-- MAX_COINS +2% each), and boosting adds what BOOST_SPEED is over MAX_SPEED.
-		-- 20 coins + a boost = +20% +44%.
-		local coins = numberAttr(player, "RaceCoins")
-		local coinBonus = (math.min(coins, HANDLING.MAX_COINS) + math.max(0, coins - HANDLING.MAX_COINS) * HANDLING.TAX_BOOST) * HANDLING.COIN_SPEED
+		-- Speed boosts add up: every coin you carry is +COIN_SPEED (coins a Taxman just took
+		-- count TAX_BOOST times), and boosting adds what BOOST_SPEED is over MAX_SPEED.
+		-- 20 coins + a boost = +17% +44%.
+		local coins = numberAttr(player, "RaceCoins") + numberAttr(player, "TaxCoins") * (HANDLING.TAX_BOOST - 1)
+		local coinBonus = coins * HANDLING.COIN_SPEED
 		local bonus = coinBonus + (if boosting then HANDLING.BOOST_SPEED / HANDLING.MAX_SPEED - 1 else 0)
-		local topSpeed = HANDLING.MAX_SPEED * (1 + bonus)
+		local topSpeed = HANDLING.MAX_SPEED * kartStat(d.kart, "speed") * (1 + bonus)
 		if ground and ground.offRoad and not boosting then
-			topSpeed *= ground.slow -- off-road slows you down (unless you're boosting)
+			topSpeed *= math.min(1, ground.slow * kartStat(d.kart, "offroad")) -- off-road slows you down (unless you're boosting)
 		end
 		if boosting then
 			forwardSpeed = math.max(forwardSpeed, topSpeed)
 		end
-		if forwardSpeed > topSpeed then
+		if forwardSpeed > topSpeed and grounded then
 			forwardSpeed = math.max(topSpeed, forwardSpeed - 60 * dt) -- ease down after a boost
 		end
 		forwardSpeed = math.max(forwardSpeed, -HANDLING.REVERSE_SPEED)
 
 		local grip = (if d.drifting then HANDLING.DRIFT_GRIP else HANDLING.GRIP) * (if ground then ground.grip else 1) * (if d.slide > 0 then HANDLING.BUMP_GRIP else 1)
-		sideSpeed *= math.exp(-grip * dt)
+		if grounded then
+			sideSpeed *= math.exp(-grip * dt)
+		else -- a Mega Jump flies like a plane: turning swings its speed round with it, none lost
+			-- (it keeps the speed it took off with, but the gas can't push it past top speed)
+			local speed = math.min(math.sqrt(forwardSpeed * forwardSpeed + sideSpeed * sideSpeed), math.max(topSpeed, tookOff))
+			sideSpeed *= math.exp(-grip * dt)
+			forwardSpeed = math.sign(forwardSpeed) * math.sqrt(math.max(speed * speed - sideSpeed * sideSpeed, 0))
+		end
 	end
 
 	-- Steering
@@ -2026,10 +2079,10 @@ local function driveStep(dt: number)
 		local speedFactor = math.clamp(math.abs(forwardSpeed) / 25, 0, 1)
 		turn = steer * speedFactor * (if forwardSpeed < -1 then -1 else 1)
 	end
-	if not grounded then
+	if not grounded and not d.flying then
 		turn *= HANDLING.AIR_STEER
 	end
-	d.heading -= turn * HANDLING.TURN_RATE * dt
+	d.heading -= turn * HANDLING.TURN_RATE * kartStat(d.kart, "handling") * dt
 
 	-- Up/down: on the road, a spring holds the kart at its ride height (so it
 	-- follows hills and banks smoothly). In the air, gravity is softened so
@@ -2037,7 +2090,7 @@ local function driveStep(dt: number)
 	if ground then
 		upSpeed = math.clamp((d.rideHeight - ground.distance) * HANDLING.HOVER_STIFFNESS, -40, 40)
 	else
-		upSpeed += workspace.Gravity * (1 - HANDLING.AIR_GRAVITY) * dt
+		upSpeed += workspace.Gravity * (1 - (if d.flying then HANDLING.MEGA_GRAVITY else HANDLING.AIR_GRAVITY)) * dt
 	end
 	local newVelocity = forward * forwardSpeed + right * sideSpeed + up * upSpeed
 	d.lastVelocity = newVelocity
@@ -2175,9 +2228,10 @@ local function onItemInput(_: string, inputState: Enum.UserInputState): Enum.Con
 			playSound("Boost", d.hitbox, 1.1, 1.2)
 		elseif item == "TripleCoin" then -- ching! (pitched like grabbing the coin you end up on)
 			playSound("Coin", nil, 1 + math.min(shownCoins() + 3, HANDLING.MAX_COINS) * 0.015)
-		elseif item == "MegaJump" then -- straight up, right now
+		elseif item == "MegaJump" then -- up right now, then fly like a plane until you land
 			d.hitbox.AssemblyLinearVelocity += Vector3.yAxis * HANDLING.MEGA_JUMP
 			d.pop = 0.25 -- (let go of the road)
+			d.flying = true
 			playSound("Geyser", d.hitbox, 1.3)
 		end
 		raceEvent:FireServer("UseItem")
@@ -2343,6 +2397,7 @@ local function startDriving(seat: VehicleSeat, humanoid: Humanoid)
 		slide = 0,
 		lookingBack = false,
 		lastCrash = 0,
+		flying = false,
 	}
 
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
@@ -2797,10 +2852,14 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 			spillCoins(kart, lost)
 		end
 	elseif action == "Mist" then
-		-- someone behind used an Inversion Mist: a warning, then left and right swap
+		-- someone behind used an Inversion Mist: a warning, then left and right swap. The
+		-- same `from` again = another Mist stacked onto it: it just lasts longer
 		local by, from, untilTime = ...
 		if typeof(from) == "number" and typeof(untilTime) == "number" then
-			mistBy, mistFrom, mistUntil, mistStart = tostring(by), from, untilTime, workspace:GetServerTimeNow()
+			if from ~= mistFrom then
+				mistStart = workspace:GetServerTimeNow()
+			end
+			mistBy, mistFrom, mistUntil = tostring(by), from, untilTime
 			playSound("Gust", nil, 1.4)
 		end
 	elseif action == "ItemNews" then
@@ -2824,6 +2883,8 @@ raceEvent.OnClientEvent:Connect(function(action: string, ...)
 			showFeed(string.format("You swapped places with %s!", tostring(a)))
 		elseif kind == "SwappedBy" then
 			showFeed(string.format("%s swapped places with you!", tostring(a)))
+		elseif kind == "NoOneAhead" then
+			showFeed("Nobody ahead to swap with!")
 		end
 	elseif action == "CoinsEarned" then
 		local amount, collected, bonus = ...
@@ -2996,6 +3057,13 @@ for _, info in raceState:WaitForChild("Tracks"):GetChildren() do
 	end)
 end
 raceButton.Activated:Connect(function()
+	if not trackMenu.Visible then
+		-- one menu at a time: close the garage (GarageClient's) in the same frame, so they swap cleanly
+		local garagePanel = gui.Parent and gui.Parent:FindFirstChild("Garage") and gui.Parent.Garage:FindFirstChild("Panel")
+		if garagePanel then
+			garagePanel.Visible = false
+		end
+	end
 	trackMenu.Visible = not trackMenu.Visible
 end)
 closeMenu.Activated:Connect(function()
@@ -3510,6 +3578,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">RaceClient</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186f</UniqueId>
@@ -3841,10 +3910,16 @@ local function refresh()
 end
 
 local function setOpen(open: boolean)
-	panel.Visible = open
 	if open then
+		-- one menu at a time: close the RACE menu (RaceClient's) in the same frame, so they swap cleanly
+		local raceHud = gui.Parent and gui.Parent:FindFirstChild("RaceHUD")
+		local trackMenu = raceHud and raceHud:FindFirstChild("TrackMenu")
+		if trackMenu then
+			trackMenu.Visible = false
+		end
 		refresh()
 	end
+	panel.Visible = open
 end
 
 openButton.Activated:Connect(function()
@@ -3888,6 +3963,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">GarageClient</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c0004314b</UniqueId>
@@ -3901,6 +3977,7 @@ end)
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">StarterCharacterScripts</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001872</UniqueId>
@@ -3914,6 +3991,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">StarterPack</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000181f</UniqueId>
@@ -3934,6 +4012,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">StarterGui</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001820</UniqueId>
@@ -3946,6 +4025,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">LocalizationService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001822</UniqueId>
@@ -3958,6 +4038,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Teleport Service</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001826</UniqueId>
@@ -3970,6 +4051,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">PhysicsService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001828</UniqueId>
@@ -3983,6 +4065,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">InsertService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182b</UniqueId>
@@ -3995,6 +4078,7 @@ end)
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">InsertionHash</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001e09</UniqueId>
@@ -4008,6 +4092,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">GamePassService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182c</UniqueId>
@@ -4021,6 +4106,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Debris</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182d</UniqueId>
@@ -4033,6 +4119,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">CookiesService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182e</UniqueId>
@@ -4045,6 +4132,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Selection</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000182f</UniqueId>
@@ -4062,6 +4150,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">VRService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001833</UniqueId>
@@ -4074,6 +4163,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ContextActionService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001834</UniqueId>
@@ -4086,6 +4176,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ScriptService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001835</UniqueId>
@@ -4099,6 +4190,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">AssetService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001836</UniqueId>
@@ -4111,6 +4203,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">TouchInputService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001838</UniqueId>
@@ -4123,6 +4216,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">AvatarSettings</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000183e</UniqueId>
@@ -4135,6 +4229,7 @@ end)
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">DefaultAvatarRules</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7a</UniqueId>
@@ -4178,6 +4273,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">AvatarBodyRules</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7b</UniqueId>
@@ -4198,6 +4294,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">AvatarCollisionRules</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7c</UniqueId>
@@ -4232,6 +4329,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">AvatarAnimationRules</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7d</UniqueId>
@@ -4271,6 +4369,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">AvatarAccessoryRules</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7e</UniqueId>
@@ -4314,6 +4413,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">AvatarClothingRules</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e7f</UniqueId>
@@ -4339,6 +4439,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">AvatarAbilityRules</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">3526879107bcf9450ad8173200000e80</UniqueId>
@@ -4356,6 +4457,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Packages</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001842</UniqueId>
@@ -4368,23 +4470,10 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">GuidRegistryService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001843</UniqueId>
-		</Properties>
-	</Item>
-	<Item class="ServiceVisibilityService" referent="RBX6F4136687AD9445F880940A47387735A">
-		<Properties>
-			<BinaryString name="HiddenServices">AAAAAA==</BinaryString>
-			<BinaryString name="VisibleServices">AQAAAAIQAAAAVm9pY2VDaGF0U2VydmljZQ==</BinaryString>
-			<BinaryString name="AttributesSerialize"></BinaryString>
-			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-			<bool name="DefinesCapabilities">false</bool>
-			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-			<string name="Name">ServiceVisibilityService</string>
-			<int64 name="SourceAssetId">-1</int64>
-			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
-			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001863</UniqueId>
 		</Properties>
 	</Item>
 	<Item class="LuaWebService" referent="RBXB2809ED37D464DF497311FADB0DFB2CE">
@@ -4394,6 +4483,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">LuaWebService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">3526879107bcf9450ad8173200000f9d</UniqueId>
@@ -4406,6 +4496,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ProcessInstancePhysicsService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">25a21ac24889a8a60ad86213000003ba</UniqueId>
@@ -4418,6 +4509,7 @@ end)
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ReplicatedStorage</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000184c</UniqueId>
@@ -4429,9 +4521,9 @@ end)
 	Garage  —  every kart and wheel set a player can pick (ModuleScript in ReplicatedStorage)
 
 	Karts (the body) and wheels are separate, so any kart works with any wheels.
-	They only change the looks: every combo uses the same hitbox and seat, so
-	they all drive the same. The server builds racers' karts with Garage.build,
-	and the GarageClient menu uses it for its 3D previews.
+	Every combo uses the same hitbox and seat; how it drives comes from the
+	kart's and the wheels' `stats` (see STATS below). The server builds racers'
+	karts with Garage.build, and the GarageClient menu uses it for its 3D previews.
 
 	The looks are template Models in the Karts and Wheels folders under this module:
 	  • Kart templates are centred on the kart's hitbox centre, front = -Z.
@@ -4442,21 +4534,46 @@ end)
 	To add a kart or wheels: put its template in the folder and add a line below.
 ]]
 
-export type Kart = { id: string, name: string, front: { x: number, z: number }, rear: { x: number, z: number } }
-export type Wheels = { id: string, name: string, front: number, rear: number }
+export type Stats = { [string]: number }
+export type Kart = { id: string, name: string, front: { x: number, z: number }, rear: { x: number, z: number }, stats: Stats? }
+export type Wheels = { id: string, name: string, front: number, rear: number, stats: Stats? }
 
 local Garage = {}
 
+-- How each kart and wheel set drives. Every stat is a multiplier: 1 = the Classic kart
+-- on Chunky wheels, 1.1 = 10% more. A racer's stat is their kart's times their wheels'
+-- (a 1.1 kart on 1.1 wheels = 1.21). A stat that's left out counts as 1.
+--   speed         top speed (boosts too)
+--   acceleration  how quickly you get up to speed
+--   weight        how hard you are to shove: bump a kart twice as heavy as you and you
+--                 bounce off twice as far, while it moves half as far
+--   handling      how sharply you turn (a tighter turning circle)
+--   offroad       top speed on off-road (grass, mud, carpet...), never more than on the road
+--   miniTurbo     how quickly a drift charges its mini-turbos (blue sparks, then orange)
+Garage.STATS = { "speed", "acceleration", "weight", "handling", "offroad", "miniTurbo" }
+
 -- Where each kart's wheels go: x = how far out from the middle, z = forward (-) / back (+)
 Garage.KARTS = {
-	{ id = "Classic", name = "Classic", front = { x = 2.35, z = -2.3 }, rear = { x = 2.35, z = 2.3 } },
-	{ id = "F1", name = "Formula", front = { x = 2.35, z = -2.6 }, rear = { x = 2.35, z = 2.3 } },
+	{
+		id = "Classic", name = "Classic", front = { x = 2.35, z = -2.3 }, rear = { x = 2.35, z = 2.3 },
+		stats = { speed = 1, acceleration = 1, weight = 1, handling = 1, offroad = 1, miniTurbo = 1 },
+	},
+	{
+		id = "F1", name = "Formula", front = { x = 2.35, z = -2.6 }, rear = { x = 2.35, z = 2.3 },
+		stats = { speed = 1, acceleration = 1, weight = 1, handling = 1, offroad = 1, miniTurbo = 1 },
+	},
 } :: { Kart }
 
 -- How big each wheel set's front and back wheels are (studs across)
 Garage.WHEELS = {
-	{ id = "Classic", name = "Chunky", front = 1.7, rear = 2 },
-	{ id = "Slick", name = "Slicks", front = 1.8, rear = 2.1 },
+	{
+		id = "Classic", name = "Chunky", front = 1.7, rear = 2,
+		stats = { speed = 1, acceleration = 1, weight = 1, handling = 1, offroad = 1, miniTurbo = 1 },
+	},
+	{
+		id = "Slick", name = "Slicks", front = 1.8, rear = 2.1,
+		stats = { speed = 1, acceleration = 1, weight = 1, handling = 1, offroad = 1, miniTurbo = 1 },
+	},
 } :: { Wheels }
 
 Garage.DEFAULT_KART = "Classic"
@@ -4472,11 +4589,27 @@ function Garage.find<T>(list: { T }, id: any): T?
 	return nil
 end
 
+-- The kart and wheels with these ids (unknown ids fall back to the defaults)
+local function pick(kartId: string?, wheelsId: string?): (Kart, Wheels)
+	local kart = (Garage.find(Garage.KARTS, kartId) or Garage.find(Garage.KARTS, Garage.DEFAULT_KART)) :: Kart
+	local wheels = (Garage.find(Garage.WHEELS, wheelsId) or Garage.find(Garage.WHEELS, Garage.DEFAULT_WHEELS)) :: Wheels
+	return kart, wheels
+end
+
+-- How a kart with these wheels drives: every stat in STATS, kart's times wheels'
+function Garage.stats(kartId: string?, wheelsId: string?): Stats
+	local kart, wheels = pick(kartId, wheelsId)
+	local stats = {}
+	for _, stat in Garage.STATS do
+		stats[stat] = ((kart.stats or {})[stat] or 1) * ((wheels.stats or {})[stat] or 1)
+	end
+	return stats
+end
+
 -- A looks-only model of a kart with its wheels, centred where the hitbox goes.
 -- Unknown ids fall back to the defaults.
 function Garage.build(kartId: string?, wheelsId: string?, color: Color3): Model
-	local kart = (Garage.find(Garage.KARTS, kartId) or Garage.find(Garage.KARTS, Garage.DEFAULT_KART)) :: Kart
-	local wheels = (Garage.find(Garage.WHEELS, wheelsId) or Garage.find(Garage.WHEELS, Garage.DEFAULT_WHEELS)) :: Wheels
+	local kart, wheels = pick(kartId, wheelsId)
 	local model = (script.Karts :: Folder)[kart.id]:Clone() :: Model
 	model:PivotTo(CFrame.identity)
 	for _, axle in { "front", "rear" } do
@@ -4509,6 +4642,7 @@ return Garage
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">Garage</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430ec</UniqueId>
@@ -4525,6 +4659,7 @@ return Garage
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">Karts</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430ef</UniqueId>
@@ -4578,6 +4713,7 @@ return Garage
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 						<string name="Name">Classic</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">-1</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f1</UniqueId>
@@ -4678,6 +4814,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Floor</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f2</UniqueId>
@@ -4779,6 +4916,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Body</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f3</UniqueId>
@@ -4880,6 +5018,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Side</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f4</UniqueId>
@@ -4981,6 +5120,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SideBumper</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f5</UniqueId>
@@ -5082,6 +5222,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Side</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f6</UniqueId>
@@ -5183,6 +5324,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SideBumper</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f7</UniqueId>
@@ -5284,6 +5426,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Nose</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f8</UniqueId>
@@ -5385,6 +5528,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">FrontBumper</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f9</UniqueId>
@@ -5485,6 +5629,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Hood</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fa</UniqueId>
@@ -5585,6 +5730,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Stripe</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fb</UniqueId>
@@ -5686,6 +5832,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Headlight</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fc</UniqueId>
@@ -5787,6 +5934,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Exhaust</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fd</UniqueId>
@@ -5888,6 +6036,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Headlight</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430fe</UniqueId>
@@ -5989,6 +6138,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Exhaust</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430ff</UniqueId>
@@ -6090,6 +6240,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Engine</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043100</UniqueId>
@@ -6191,6 +6342,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SeatBack</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043101</UniqueId>
@@ -6292,6 +6444,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Spoiler</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043102</UniqueId>
@@ -6393,6 +6546,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SpoilerStrut</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043103</UniqueId>
@@ -6494,6 +6648,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SpoilerEnd</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043104</UniqueId>
@@ -6595,6 +6750,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SpoilerStrut</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043105</UniqueId>
@@ -6696,6 +6852,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SpoilerEnd</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043106</UniqueId>
@@ -6797,6 +6954,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">SteeringWheel</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043107</UniqueId>
@@ -6852,6 +7010,7 @@ return Garage
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 						<string name="Name">F1</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">-1</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f9</UniqueId>
@@ -6988,6 +7147,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Carbon</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f5</UniqueId>
@@ -7125,6 +7285,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Paint</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f6</UniqueId>
@@ -7262,6 +7423,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Trim</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434f7</UniqueId>
@@ -7363,6 +7525,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">RainLight</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434fa</UniqueId>
@@ -7382,6 +7545,7 @@ return Garage
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">Wheels</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000430f0</UniqueId>
@@ -7435,6 +7599,7 @@ return Garage
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 						<string name="Name">Classic</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">-1</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043108</UniqueId>
@@ -7535,6 +7700,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Tyre</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043109</UniqueId>
@@ -7636,6 +7802,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Hubcap</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c0004310a</UniqueId>
@@ -7691,6 +7858,7 @@ return Garage
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 						<string name="Name">Slick</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">-1</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c000434fb</UniqueId>
@@ -7827,6 +7995,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Rim</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043361</UniqueId>
@@ -7964,6 +8133,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Stripe</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043362</UniqueId>
@@ -8101,6 +8271,7 @@ return Garage
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">Tyre</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">-1</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">241c65221bff14b60ad6ff5c00043363</UniqueId>
@@ -8313,6 +8484,37 @@ local KINDS = {
 		headAt = V(0, 1.9, 0),
 		eyes = false,
 		extras = smileyFace(1.7),
+	},
+	-- Mr. Tele Vision: a showman with a TV for a head, asked for by the owner from
+	-- assets/tenna.png, made his own: a mint-green retro set with two gold dials and a
+	-- glowing face on its screen, a V of antennae with red tips, a royal-blue suit, a gold
+	-- bow tie and white gloves.
+	TeleVision = {
+		name = "Mr. Tele Vision",
+		kart = C(60, 90, 210),
+		fur = C(160, 225, 200), -- the TV's casing
+		body = C(55, 80, 200), -- his suit
+		hands = WHITE, -- gloves
+		headShape = "Block",
+		head = V(2.6, 2.1, 1.9),
+		eyes = false,
+		extras = {
+			{ s = "Block", size = V(1.95, 1.6, 0.1), at = V(-0.25, 0.05, -0.96), color = C(95, 160, 140) }, -- the screen's frame...
+			{ s = "Block", size = V(1.75, 1.4, 0.1), at = V(-0.25, 0.05, -1), color = C(18, 34, 40) }, -- ...and the screen
+			{ s = "Block", size = V(0.2, 0.4, 0.05), at = V(-0.62, 0.27, -1.06), color = C(120, 255, 230), mat = Enum.Material.Neon }, -- his face, glowing on it
+			{ s = "Block", size = V(0.2, 0.4, 0.05), at = V(0.12, 0.27, -1.06), color = C(120, 255, 230), mat = Enum.Material.Neon },
+			{ s = "Block", size = V(0.62, 0.1, 0.05), at = V(-0.25, -0.33, -1.06), color = C(120, 255, 230), mat = Enum.Material.Neon }, -- a big grin
+			{ s = "Block", size = V(0.32, 0.1, 0.05), at = V(-0.68, -0.24, -1.06), rot = V(0, 0, -32), color = C(120, 255, 230), mat = Enum.Material.Neon },
+			{ s = "Block", size = V(0.32, 0.1, 0.05), at = V(0.18, -0.24, -1.06), rot = V(0, 0, 32), color = C(120, 255, 230), mat = Enum.Material.Neon },
+			{ s = "Cylinder", size = V(0.14, 0.4, 0.4), at = V(0.98, 0.32, -0.96), rot = V(0, 90, 0), color = C(240, 200, 70), mat = Enum.Material.Metal }, -- two dials
+			{ s = "Cylinder", size = V(0.14, 0.4, 0.4), at = V(0.98, -0.28, -0.96), rot = V(0, 90, 0), color = C(240, 200, 70), mat = Enum.Material.Metal },
+			{ s = "Egg", size = V(0.6, 0.25, 0.5), at = V(0, 1.08, 0), color = C(60, 60, 70) }, -- antennae
+			{ s = "Cylinder", size = V(1.4, 0.1, 0.1), at = V(0.5, 1.66, 0), rot = V(0, 0, 60), color = C(60, 60, 70), mat = Enum.Material.Metal, pair = true },
+			{ s = "Ball", size = V(0.34, 0.34, 0.34), at = V(0.86, 2.27, 0), color = C(230, 60, 70), pair = true },
+			{ s = "Egg", size = V(0.7, 0.7, 0.2), at = V(0, -1.5, -0.78), color = WHITE }, -- shirt
+			{ s = "Egg", size = V(0.55, 0.4, 0.22), at = V(0.28, -1.32, -0.84), color = C(255, 205, 60), pair = true }, -- gold bow tie
+			{ s = "Ball", size = V(0.22, 0.22, 0.22), at = V(0, -1.32, -0.92), color = C(255, 205, 60) },
+		},
 	},
 	Monkey = {
 		kart = C(150, 100, 60),
@@ -8575,6 +8777,7 @@ return Mascots
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">Mascots</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">4d646a3f854afaa10ad615540001b74f</UniqueId>
@@ -8589,6 +8792,7 @@ return Mascots
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ServerScriptService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000184d</UniqueId>
@@ -8661,7 +8865,7 @@ local BOTS = {
 	SPEED_SCALE = 0.95, -- every bot's top speed (boosting too) is this share of what it would be: with the items, full-speed bots were too hard
 	CATCH_UP = 0.08, -- bots far behind the leading player speed up by up to this much; far-ahead bots slow down
 	LOOK_AHEAD = 22, -- studs ahead on the road a bot aims for (plus more the faster it goes)
-	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred", "Grand Dad", "Smiley" },
+	NAMES = { "Blaze", "Zippy", "Turbo", "Comet", "Pickle", "Rocket", "Nova", "Bolt", "Sprout", "Ziggy", "Pepper", "Dash", "Mochi", "Rusty", "Fred", "Grand Dad", "Smiley", "Mr. Tele Vision" },
 	-- The character each one drives as (see the Mascots module in ReplicatedStorage). Their kart is the character's colour.
 	-- Every CPU has its own character, so no two CPUs in a race are the same one (players can pick any).
 	MASCOTS = {
@@ -8682,10 +8886,11 @@ local BOTS = {
 		Fred = "Fred", -- Feelsgood Fred, king of Croaker Swamp
 		["Grand Dad"] = "GrandDad",
 		Smiley = "Smiley",
+		["Mr. Tele Vision"] = "TeleVision",
 	},
 	-- How karts handle. Keep these the same as HANDLING in RaceClient!
-	MAX_SPEED = 80,
-	BOOST_SPEED = 115,
+	MAX_SPEED = 83.2,
+	BOOST_SPEED = 119.6, -- (MAX_SPEED +44%)
 	ACCELERATION = 40,
 	TURN_RATE = 2.6, -- radians per second
 	OFFROAD_SPEED = 0.55,
@@ -8713,10 +8918,10 @@ local PICKUPS = {
 	COINS_PER_LINE = 4,
 	COIN_GAP = 22, -- studs between the coins in a line
 	MAX_COINS = 20, -- the most coins a racer can carry in one race (back to 0 every race). Keep the same as HANDLING in RaceClient!
-	COIN_SPEED = 0.01, -- extra top speed per coin carried (20 coins = 20% faster). Keep the same as HANDLING in RaceClient!
+	COIN_SPEED = 0.0085, -- extra top speed per coin carried (20 coins = 17% faster). Keep the same as HANDLING in RaceClient!
 	PLACE_BONUS = { 2, 1.5, 1.25 }, -- after the race, 1st / 2nd / 3rd get their coins multiplied by this (rounded up)
-	FIRST_ITEM_ROW = 450, -- studs after the start line to the first row of item boxes
-	ITEM_ROW_SPACING = 1600, -- studs of main road between rows of item boxes
+	FIRST_ITEM_ROW = 200, -- studs after the start line to the first row of item boxes (~3 s in: before any early shortcut leaves the main road)
+	ITEM_ROW_SPACING = 800, -- studs between rows of item boxes, on the main road and on branches (~10 s of driving)
 	ITEM_BOX_GAP = 9, -- studs between the boxes in a row
 	-- What an item box gives (only if you aren't holding one), and how likely each item is.
 	-- These are weights: an item with 2 comes up twice as often as one with 1, so all 1 =
@@ -8729,19 +8934,21 @@ local PICKUPS = {
 		Mist = 1, -- Inversion Mist: everyone ahead gets left and right swapped for a while
 		Stealer = 1, -- takes the item of a random racer who has one
 		Roulette = 1, -- spins for a random item (any of them, Roulette too, each equally likely)
-		Taxman = 1, -- takes up to TAX coins from everyone ahead of you; coins over MAX_COINS are a short speed boost
-		Teleport = 1, -- swap places with a random racer
+		Taxman = 1, -- takes up to TAX coins from everyone ahead of you; the coins it takes are a short speed boost
+		Teleport = 1, -- swap places with the racer just ahead of you
 	},
 	ITEM_BOOST_TIME = 1.6, -- seconds the Boost item lasts. Keep the same as HANDLING in RaceClient!
 	BANANA_THROW = 80, -- studs ahead a Banana Peel lands
 	BANANA_SAFE = 2, -- seconds before the thrower can slip on their own peel
-	MEGA_JUMP = 100, -- how fast a Mega Jump throws you upwards (studs/s). Keep the same as HANDLING in RaceClient!
+	MEGA_JUMP = 90, -- how fast a Mega Jump throws you upwards (studs/s): about 45 studs high. Keep the same as HANDLING in RaceClient!
+	MEGA_GRAVITY = 0.45, -- share of normal gravity while Mega Jumping (a bit floatier than other jumps). Keep the same as HANDLING in RaceClient!
 	MIST_WARNING = 2, -- seconds of warning before the Inversion Mist swaps left and right...
 	MIST_TIME = 3, -- ...and for how long
+	MIST_STACK = 2, -- another Mist while one has you: it lasts this many seconds longer (same warning and countdown)
 	ROULETTE_SPIN = 0.8, -- seconds the Roulette spins before you get your item
 	TAX = 5, -- coins the Taxman takes from each racer ahead of you (all they have, if less)
-	TAX_TIME = 5, -- seconds the coins over MAX_COINS last...
-	TAX_BOOST = 4, -- ...and each of them is worth this many coins of speed (+4% top speed). Keep the same as HANDLING in RaceClient!
+	TAX_TIME = 5, -- seconds the taken coins are a speed boost (and coins over MAX_COINS last)...
+	TAX_BOOST = 5, -- ...and each taken coin is worth this many coins of speed meanwhile. Keep the same as HANDLING in RaceClient!
 	RESPAWN_TIME = 1.5, -- seconds before a grabbed coin or box comes back
 	REACH = 5.5, -- how close (studs) a kart's middle has to pass to grab one
 	CRASH_COINS = 3, -- coins dropped when a dangerous hazard hits you (fire, geysers, frogs...), or for being put back on the track (not for safe obstacles like crates and rocks, walls or bumping karts)
@@ -8762,8 +8969,10 @@ local TRACK = {
 	OFFROAD = 10, -- slow strips (grass, ash, snow, mud) between the road and the walls, on each side
 	STEP = 12, -- length of each road piece (smaller = smoother but more parts)
 	PRE_START = 80, -- road behind the start line (room for the starting grid)
-	GRID_SIDE = 13, -- studs between karts side by side on the starting grid (roomy, for bigger karts later)
-	GRID_ROW = 16, -- studs between rows of the starting grid (the back row ends up ~68 studs behind the line: keep under PRE_START)
+	GRID_SIDE = 13, -- studs between neighbouring lanes on the starting grid (roomy, for bigger karts later)
+	GRID_ROW = 16, -- studs from a kart on the grid to the one straight behind it (the last kart ends up ~71 studs behind the line: keep under PRE_START)
+	GRID_LINE = 3, -- karts in each diagonal line of the grid: as many as fit across the road (3 on a 46-stud road). Set it on every track
+	GRID_POLE = "Left", -- side 1st place starts on ("Left" or "Right"): the inside of the first corner. Set it on every track
 	RUN_OFF = 70, -- road after the finish line
 	CHECKPOINT_SPACING = 100, -- gates racers must pass in order (only on road every route shares)
 	RESPAWN_SPACING = 60, -- spots you can be put back at after a fall (on every route, branches too)
@@ -9159,6 +9368,45 @@ local function newFolder(name: string, parent: Instance): Folder
 	folder.Name = name
 	folder.Parent = parent
 	return folder
+end
+
+-- Dresses a cube as a wooden ABC block: bare wood round a painted panel with a big
+-- letter on every face, each face its own colour. (A plain coloured cube with a
+-- glowing letter looked like a model that had lost its textures.)
+local TOY_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+local function toyBlock(part: BasePart, seed: number)
+	part.Material = Enum.Material.Wood
+	part.Color = Color3.fromRGB(225, 188, 135)
+	for k, face in Enum.NormalId:GetEnumItems() do
+		if face == Enum.NormalId.Bottom then
+			continue
+		end
+		local color = RAINBOW[(seed + k) % #RAINBOW + 1]
+		local gui = newSurfaceGui(part, face)
+		gui.LightInfluence = 1 -- (lit like the room: a glowing panel looked stuck on)
+		local panel = Instance.new("Frame")
+		panel.AnchorPoint = Vector2.new(0.5, 0.5)
+		panel.Position = UDim2.fromScale(0.5, 0.5)
+		panel.Size = UDim2.fromScale(0.8, 0.8)
+		panel.BackgroundColor3 = color
+		panel.BorderSizePixel = 0
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0.12, 0)
+		corner.Parent = panel
+		local rim = Instance.new("UIStroke")
+		rim.Color = color:Lerp(Color3.new(0, 0, 0), 0.45)
+		rim.Thickness = 6
+		rim.Parent = panel
+		local index = (seed * 7 + k) % #TOY_LETTERS + 1
+		newLabel({
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.5),
+			Size = UDim2.fromScale(0.8, 0.8),
+			Text = string.sub(TOY_LETTERS, index, index),
+			TextStrokeTransparency = 0.3,
+		}, panel)
+		panel.Parent = gui
+	end
 end
 
 -- CFrame at `pos` facing along `dir`, kept level (no tilt)
@@ -9685,18 +9933,36 @@ local function buildSnowball(frame: CFrame, halfWidth: number, feature, hazards:
 	local span = feature.span or math.max(0, halfWidth - radius - 1.5)
 	local from = frame:PointToWorldSpace(Vector3.new(-span, radius - 0.4, 0))
 	local to = frame:PointToWorldSpace(Vector3.new(span, radius - 0.4, 0))
-	newPart("Part", {
+	local marble = feature.material == Enum.Material.Glass
+	local ball = newPart("Part", {
 		Name = if boulder then "Boulder" else "Snowball",
 		Shape = Enum.PartType.Ball,
 		Size = Vector3.one * radius * 2,
 		CFrame = CFrame.new(from),
 		Color = feature.color or (if boulder then Color3.fromRGB(125, 115, 100) else COLORS.White), -- (a `color` makes it a bowling ball, a ball of yarn...)
 		Material = feature.material or (if boulder then Enum.Material.Slate else Enum.Material.Snow),
+		Transparency = if marble then 0.4 else 0, -- (glass you can't see through looks like flat paint)
 		CanCollide = false,
 		CanTouch = false,
 		-- the client rolls it between From and To, in step with the server clock
 		Attributes = { Hazard = "Bonk", From = from, To = to, Period = feature.period or 4, Offset = feature.offset or 0 },
 	}, hazards)
+	if marble then
+		-- A glowing twist inside the glass (a cat's-eye marble). The client rolls it with the ball
+		-- (same From/To, same size); it has no Hazard, so it never counts as a hit.
+		local swirl = newPart("Part", ghost({
+			Name = "MarbleSwirl",
+			Size = ball.Size,
+			CFrame = ball.CFrame,
+			Color = Color3.fromRGB(255, 150, 40),
+			Material = Enum.Material.Neon, -- (plain orange looked grey through the blue glass)
+			Attributes = { From = from, To = to, Period = ball:GetAttribute("Period"), Offset = ball:GetAttribute("Offset") },
+		}), hazards)
+		local mesh = Instance.new("SpecialMesh")
+		mesh.MeshType = Enum.MeshType.Sphere
+		mesh.Scale = Vector3.new(0.8, 0.25, 0.8) -- (a flat vane inside the ball)
+		mesh.Parent = swirl
+	end
 end
 
 -- A frog that hops across the road and back: it crouches for a moment before
@@ -9899,21 +10165,18 @@ local function buildObstacle(kind: string, cf: CFrame, size: number, style, wall
 			}), decor)
 		end
 	elseif kind == "Crate" or kind == "Block" then
-		-- A wooden crate (Mansion cellar) or a giant toy block with a letter on it (playroom)
-		local block = kind == "Block"
+		-- A wooden crate (Mansion cellar) or a giant wooden ABC block (playroom, see toyBlock)
 		local seed = math.floor(math.abs(cf.X) + math.abs(cf.Z))
 		local part = newPart("Part", {
 			Name = kind,
 			Attributes = { Obstacle = true },
 			Size = Vector3.one * size,
 			CFrame = cf * CFrame.new(0, size / 2 - 1, 0) * CFrame.Angles(0, math.rad(seed % 40 - 20), 0),
-			Color = if block then RAINBOW[seed % #RAINBOW + 1] else Color3.fromRGB(150, 105, 60),
-			Material = if block then Enum.Material.SmoothPlastic else Enum.Material.WoodPlanks,
+			Color = Color3.fromRGB(150, 105, 60),
+			Material = Enum.Material.WoodPlanks,
 		}, walls)
-		if block then
-			for _, face in { Enum.NormalId.Front, Enum.NormalId.Back, Enum.NormalId.Left, Enum.NormalId.Right } do
-				newLabel({ Size = UDim2.fromScale(1, 1), Text = string.sub("ABCKRT", seed % 6 + 1, seed % 6 + 1), TextStrokeTransparency = 0.5 }, newSurfaceGui(part, face))
-			end
+		if kind == "Block" then
+			toyBlock(part, seed)
 		else
 			for _, y in { -0.3, 0.3 } do -- dark slats round the crate
 				newPart("Part", ghost({
@@ -10837,7 +11100,7 @@ local function buildRoute(cfg, route, others: { any }, everyRoute: { any }, fold
 				}), decor)
 			end
 		end
-		if i % 2 == 0 then
+		if i % 2 == 0 and not open then -- (no roof here: they'd hang in mid-air)
 			local drip = caveRng:NextNumber(2, 5)
 			local thickness = if style.Icicles then 0.9 else 1.8
 			newPart("Part", ghost({
@@ -10913,9 +11176,9 @@ end
 ------------------------------------------------------------------------
 -- COINS AND ITEM BOXES. Coins come in short lines down the road that swing
 -- from side to side (so grabbing them takes a little steering), plus a line
--- on each branch. Item boxes come in rows right across the main road, only
--- where every racer drives (never on road a shortcut skips). Both keep clear
--- of jumps, hazards and anything else standing on the road.
+-- on each branch. Item boxes come in rows right across every road (main road
+-- and branches), about every 10 seconds of driving. Both keep clear of jumps,
+-- hazards and anything else standing on the road.
 ------------------------------------------------------------------------
 local function buildCoin(pos: Vector3, parent: Instance)
 	newPart("Part", ghost({
@@ -10943,17 +11206,23 @@ local function buildItemBox(pos: Vector3, color: Color3, parent: Instance)
 	end
 end
 
--- `skipped` = stretches of main road that some racers skip (shortcuts, jumps, hazards)
-local function buildPickups(main, branches: { any }, startDist: number, finishDist: number, skipped: { { number } }, folder: Instance)
+local function buildPickups(main, branches: { any }, startDist: number, finishDist: number, folder: Instance)
 	local height = 2.6 -- above the road
-	local rows: { number } = {} -- where the rows of item boxes are on the main road
+	local everyRoad = { main }
+	for _, route in branches do
+		table.insert(everyRoad, route)
+	end
+	local rows: { [any]: { number } } = {} -- where the rows of item boxes are on each road
+	for _, route in everyRoad do
+		rows[route] = {}
+	end
 
 	-- Can a pickup go `lane` studs from the middle of `route`, `d` studs along it?
 	local function clear(route, d: number, lane: number): boolean
 		if d < 0 or d > route.total or route.section("Gap", d, 25) then
 			return false
 		end
-		for _, row in if route == main then rows else {} do
+		for _, row in rows[route] do
 			if math.abs(d - row) < 15 then
 				return false
 			end
@@ -10993,34 +11262,70 @@ local function buildPickups(main, branches: { any }, startDist: number, finishDi
 		return false
 	end
 
-	-- Rows of item boxes across the main road
-	local d = startDist + PICKUPS.FIRST_ITEM_ROW
-	while d < finishDist - 200 do
-		for try = 0, 30 do -- slide it along until it's somewhere good
-			local at = d + try * 25
-			local count = math.clamp(math.floor((main.halfWidthAt(at) * 2 - 8) / PICKUPS.ITEM_BOX_GAP) + 1, 3, 7)
-			local ok = at < finishDist - 150
-			for _, zone in skipped do
-				ok = ok and not (at > zone[1] and at < zone[2])
-			end
-			for k = 1, count do
-				ok = ok and clear(main, at, (k - (count + 1) / 2) * PICKUPS.ITEM_BOX_GAP)
-			end
-			if ok then
-				for k = 1, count do
-					local lane = (k - (count + 1) / 2) * PICKUPS.ITEM_BOX_GAP
-					buildItemBox(main.frameAt(at):PointToWorldSpace(Vector3.new(lane, height, 0)), RAINBOW[(k - 1) % #RAINBOW + 1], folder)
-				end
-				table.insert(rows, at)
-				break
+	-- The lanes of the item boxes that fit right across `route`, `d` studs along it
+	local function boxLanes(route, d: number): { number }
+		local count = math.clamp(math.floor((route.halfWidthAt(d) * 2 - 8) / PICKUPS.ITEM_BOX_GAP) + 1, 2, 7)
+		local lanes = {}
+		for k = 1, count do
+			table.insert(lanes, (k - (count + 1) / 2) * PICKUPS.ITEM_BOX_GAP)
+		end
+		return lanes
+	end
+	local function itemRow(route, d: number)
+		for k, lane in boxLanes(route, d) do
+			buildItemBox(route.frameAt(d):PointToWorldSpace(Vector3.new(lane, height, 0)), RAINBOW[(k - 1) % #RAINBOW + 1], folder)
+		end
+		table.insert(rows[route], d)
+	end
+
+	-- Rows of item boxes a track asks for (an `Items` feature: to make a longer branch worth it)...
+	for _, route in everyRoad do
+		for _, feature in route.features do
+			local at = if feature.kind == "Items" then route.spotDist(feature) else nil
+			if at then
+				itemRow(route, at)
 			end
 		end
-		d += PICKUPS.ITEM_ROW_SPACING
+	end
+	-- ...then rows on every road by themselves, from `d` on, `step` apart. Where a row can't
+	-- go (a jump's run-up, a hazard, within 200 studs of another row), it moves on to the
+	-- next good spot
+	local function itemRows(route, d: number, step: number, stop: number)
+		while d < stop do
+			local ok = true
+			for _, zone in route.jumpZones do
+				ok = ok and not (d > zone[1] and d < zone[2])
+			end
+			for _, zone in route.hazardZones do
+				ok = ok and not (d > zone[1] and d < zone[2])
+			end
+			for _, row in rows[route] do
+				ok = ok and math.abs(d - row) > 200
+			end
+			for _, lane in boxLanes(route, d) do
+				ok = ok and clear(route, d, lane)
+			end
+			if ok then
+				itemRow(route, d)
+				d += step
+			else
+				d += 25 -- (try a bit further along)
+			end
+		end
+	end
+	-- (the main road: the first just after the start, then every ITEM_ROW_SPACING)
+	itemRows(main, startDist + PICKUPS.FIRST_ITEM_ROW, PICKUPS.ITEM_ROW_SPACING, finishDist - 150)
+	-- (a branch: about as far apart, spread evenly along it; none on a short one)
+	for _, route in branches do
+		local n = math.round(route.total / PICKUPS.ITEM_ROW_SPACING)
+		if n > 0 then
+			itemRows(route, route.total / n / 2, route.total / n, route.total - 150)
+		end
 	end
 
 	-- Lines of coins down the main road, swinging from side to side
 	local line = 0
-	d = startDist + 150
+	local d = startDist + 150
 	while d < finishDist - 120 do
 		line += 1
 		local swing = if main.section("NoWalls", d, 20) then 0.15 else 0.55 -- (stay near the middle where there are no walls)
@@ -11036,26 +11341,12 @@ local function buildPickups(main, branches: { any }, startDist: number, finishDi
 	for _, route in branches do
 		coinLine(route, route.total / 2 - (PICKUPS.COINS_PER_LINE - 1) * PICKUPS.COIN_GAP / 2, { 0, 6, -6 })
 	end
-	-- ...plus wherever a track asks for more, on any road: a `Coins` feature is a line
-	-- of coins, an `Items` feature a row of item boxes (to make a longer branch worth it)
-	local everyRoad = { main }
-	for _, route in branches do
-		table.insert(everyRoad, route)
-	end
+	-- ...plus wherever a track asks for more, on any road (a `Coins` feature: a line of coins)
 	for _, route in everyRoad do
 		for _, feature in route.features do
-			local at = if feature.kind == "Coins" or feature.kind == "Items" then route.spotDist(feature) else nil
-			if not at then
-				continue
-			end
-			if feature.kind == "Coins" then
+			local at = if feature.kind == "Coins" then route.spotDist(feature) else nil
+			if at then
 				coinLine(route, at, { feature.lane or 0, 6, -6, 0 })
-			else
-				local count = math.clamp(math.floor((route.halfWidthAt(at) * 2 - 8) / PICKUPS.ITEM_BOX_GAP) + 1, 2, 7)
-				for k = 1, count do
-					local lane = (k - (count + 1) / 2) * PICKUPS.ITEM_BOX_GAP
-					buildItemBox(route.frameAt(at):PointToWorldSpace(Vector3.new(lane, height, 0)), RAINBOW[(k - 1) % #RAINBOW + 1], folder)
-				end
 			end
 		end
 	end
@@ -11400,7 +11691,7 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 			warn("[GateCheck] " .. tostring(cfg.name) .. ": " .. problems .. " spots in all")
 		end
 	end
-	buildPickups(main, branches, startDist, finishDist, merged, newFolder("Pickups", track))
+	buildPickups(main, branches, startDist, finishDist, newFolder("Pickups", track))
 
 	-- Respawn points: where you're put back after falling off or driving into
 	-- lava (whichever one you passed last). You don't have to pass them, so
@@ -11464,14 +11755,18 @@ local function buildTrack(cfg): (Folder, { Vector3 }, { number }, any, { any })
 		end
 	end
 
-	-- Starting grid: rows of three (four on a wide road) behind the start line
-	local columns = if width >= 52 then 4 else 3
+	-- Starting grid: diagonal lines of GRID_LINE karts. 1st starts at the front on the
+	-- GRID_POLE side, and each next kart is a lane further across and a little further
+	-- back. When a line reaches the other side (as close to that wall as 1st is to its
+	-- own), the next kart starts a new line back on 1st's side, GRID_ROW behind the kart
+	-- there. So every kart starts behind the one before it.
+	local pole = if cfg.GRID_POLE == "Right" then 1 else -1 -- (+X is the driver's right)
 	for k = 1, SETTINGS.MAX_RACERS do
-		local row = math.floor((k - 1) / columns)
-		local col = (k - 1) % columns
-		local back = 12 + row * cfg.GRID_ROW + (if col % 2 == 1 then cfg.GRID_ROW / 2 else 0)
+		local lane = (k - 1) % cfg.GRID_LINE
+		local back = 12 + (k - 1) * cfg.GRID_ROW / cfg.GRID_LINE
+		local across = pole * ((cfg.GRID_LINE - 1) / 2 - lane) * cfg.GRID_SIDE
 		local frame = main.frameAt(startDist - back)
-		local slotCF = flatCFrame(frame.Position, frame.LookVector) * CFrame.new((col - (columns - 1) / 2) * cfg.GRID_SIDE, 0, 0)
+		local slotCF = flatCFrame(frame.Position, frame.LookVector) * CFrame.new(across, 0, 0)
 		newPart("Part", ghost({
 			Name = tostring(k),
 			Size = Vector3.new(6, 0.1, 8),
@@ -11561,6 +11856,11 @@ local function buildKart(color: Color3, cframe: CFrame, kartId: string?, wheelsI
 		end
 	end
 	looks:Destroy()
+	-- How it drives (see STATS in the Garage module), for whoever drives it: the
+	-- player's device, or the CPU driver here
+	for stat, value in Garage.stats(kartId, wheelsId) do
+		kart:SetAttribute("Stat_" .. stat, value)
+	end
 
 	local seat = Instance.new("VehicleSeat")
 	seat.Name = "DriverSeat"
@@ -11606,6 +11906,12 @@ local function buildKart(color: Color3, cframe: CFrame, kartId: string?, wheelsI
 	end
 
 	return kart, hitbox, seat
+end
+
+-- One of a kart's stats (see STATS in the Garage module): 1 = the Classic kart on Chunky wheels
+local function kartStat(kart: Instance, stat: string): number
+	local value = kart:GetAttribute("Stat_" .. stat)
+	return if typeof(value) == "number" and value > 0 then value else 1
 end
 
 ------------------------------------------------------------------------
@@ -12476,7 +12782,7 @@ local function buildScenery(cfg, track: Instance, samples: { Vector3 }, halfWidt
 		buildGround(samples, groundY, style, parent)
 	end
 	if cfg.MANSION then
-		MansionBuilder.build(cfg, track, parent, samples, halfWidths, { newPart = newPart, ghost = ghost, newFolder = newFolder, buildTree = buildTree, Mascots = Mascots })
+		MansionBuilder.build(cfg, track, parent, samples, halfWidths, { newPart = newPart, ghost = ghost, newFolder = newFolder, buildTree = buildTree, toyBlock = toyBlock, Mascots = Mascots })
 	end
 	-- A giant step-temple the road drives right through (Jungle, Swamp)
 	local temple = cfg.TEMPLE
@@ -13078,6 +13384,10 @@ type Racer = {
 	lastCrash: number?, -- when they last dropped coins
 	noReturnUntil: number?, -- went over a `noReturn` jump's lip: until then, falling puts them back after its gap
 	taxUntil: number?, -- used a Taxman: until then they can carry more than MAX_COINS
+	taxCoins: number?, -- ...and this many of their coins (the taken ones) are worth TAX_BOOST coins of speed
+	mistBy: string?, -- an Inversion Mist has them: whose, when left and right swap, and until when (server time)
+	mistFrom: number?,
+	mistUntil: number?,
 }
 
 local racers: { [any]: Racer } = {} -- keyed by Player, or by a bot's entry
@@ -13141,6 +13451,7 @@ local function releaseRacer(racer: Racer, sendToLobby: boolean)
 	player:SetAttribute("Finished", false)
 	player:SetAttribute("Place", nil)
 	player:SetAttribute("RaceCoins", nil)
+	player:SetAttribute("TaxCoins", nil)
 	player:SetAttribute("Item", nil)
 	player:SetAttribute("Checkpoint", nil)
 	if sendToLobby and player.Parent == Players then
@@ -13161,12 +13472,14 @@ end
 -- Puts a racer back at their last checkpoint. `reason`: "Fell" (off the track),
 -- "Lava" (drove into lava) or nil (they pressed the respawn button, or a bot got stuck).
 -- How many coins a racer has this race (never more than MAX_COINS, except for
--- the few seconds after a Taxman, while the extra ones are a speed boost)
+-- the few seconds after a Taxman, while the taken ones are a speed boost)
 local function setCoins(racer: Racer, coins: number)
-	local most = if os.clock() < (racer.taxUntil or 0) then math.huge else PICKUPS.MAX_COINS
-	racer.coins = math.clamp(coins, 0, most)
+	local taxing = os.clock() < (racer.taxUntil or 0)
+	racer.coins = math.clamp(coins, 0, if taxing then math.huge else PICKUPS.MAX_COINS)
+	racer.taxCoins = if taxing then math.min(racer.taxCoins or 0, racer.coins) else 0
 	if racer.player then
 		racer.player:SetAttribute("RaceCoins", racer.coins)
+		racer.player:SetAttribute("TaxCoins", racer.taxCoins)
 	end
 end
 
@@ -13356,6 +13669,7 @@ local function useItem(racer: Racer)
 	elseif item == "MegaJump" and ai then
 		ai.pop = 0.25
 		ai.lift = PICKUPS.MEGA_JUMP
+		ai.flying = true
 	elseif item == "Banana" then
 		throwBanana(racer)
 	elseif item == "Roulette" then
@@ -13366,15 +13680,21 @@ local function useItem(racer: Racer)
 			end
 		end)
 	elseif item == "Mist" then
-		-- everyone ahead: a warning, then left and right swapped (bots weave about instead)
+		-- everyone ahead: a warning, then left and right swapped (bots weave about instead).
+		-- Already in someone's Mist? It keeps that one's warning and lasts MIST_STACK longer
 		local now = workspace:GetServerTimeNow()
 		for _, other in rivalsOf(racer) do
 			if (other.livePlace or math.huge) < (racer.livePlace or 0) then
+				if now < (other.mistUntil or 0) then
+					other.mistUntil = (other.mistUntil :: number) + PICKUPS.MIST_STACK
+				else
+					other.mistBy, other.mistFrom, other.mistUntil = racer.name, now + PICKUPS.MIST_WARNING, now + PICKUPS.MIST_WARNING + PICKUPS.MIST_TIME
+				end
 				if other.player then
-					raceEvent:FireClient(other.player, "Mist", racer.name, now + PICKUPS.MIST_WARNING, now + PICKUPS.MIST_WARNING + PICKUPS.MIST_TIME)
+					raceEvent:FireClient(other.player, "Mist", other.mistBy, other.mistFrom, other.mistUntil)
 				elseif other.ai then
-					other.ai.mistFrom = os.clock() + PICKUPS.MIST_WARNING
-					other.ai.mistUntil = os.clock() + PICKUPS.MIST_WARNING + PICKUPS.MIST_TIME
+					other.ai.mistFrom = os.clock() + ((other.mistFrom :: number) - now)
+					other.ai.mistUntil = os.clock() + ((other.mistUntil :: number) - now)
 				end
 			end
 		end
@@ -13397,7 +13717,7 @@ local function useItem(racer: Racer)
 		itemNews(racer, "Stole", stolen, other.name)
 		itemNews(other, "Robbed", stolen, racer.name)
 	elseif item == "Taxman" then
-		-- up to TAX coins from everyone ahead; coins over MAX_COINS stay for TAX_TIME (as speed)
+		-- up to TAX coins from everyone ahead; for TAX_TIME they're a speed boost (and can go over MAX_COINS)
 		local taken = 0
 		for _, other in rivalsOf(racer) do
 			local tax = math.min(PICKUPS.TAX, other.coins)
@@ -13409,20 +13729,30 @@ local function useItem(racer: Racer)
 			end
 		end
 		racer.taxUntil = os.clock() + PICKUPS.TAX_TIME
+		racer.taxCoins = taken
 		setCoins(racer, racer.coins + taken)
 		itemNews(racer, "Taxed", taken)
 		task.delay(PICKUPS.TAX_TIME, function()
 			if os.clock() >= (racer.taxUntil or 0) and not racer.returned then
-				setCoins(racer, racer.coins) -- (back down to MAX_COINS)
+				setCoins(racer, racer.coins) -- (back down to MAX_COINS, boost over)
 			end
 		end)
 	elseif item == "Teleport" then
-		local others = rivalsOf(racer)
-		if #others > 0 then
-			local other = others[math.random(1, #others)]
-			swapPlaces(racer, other)
-			itemNews(racer, "Swapped", other.name)
-			itemNews(other, "SwappedBy", racer.name)
+		-- swap with whoever's in the place just ahead (5th swaps with 4th). If that racer
+		-- has already finished, the nearest one ahead who's still racing; 1st has nobody
+		local ahead = nil
+		for _, other in rivalsOf(racer) do
+			local place = other.livePlace or math.huge
+			if place < (racer.livePlace or 0) and (not ahead or place > (ahead.livePlace or 0)) then
+				ahead = other
+			end
+		end
+		if ahead then
+			swapPlaces(racer, ahead)
+			itemNews(racer, "Swapped", ahead.name)
+			itemNews(ahead, "SwappedBy", racer.name)
+		else
+			itemNews(racer, "NoOneAhead")
 		end
 	end
 end
@@ -13717,7 +14047,7 @@ local function scanForBots(track: Instance)
 			local radius = if column and column:IsA("BasePart") then column.Size.Y / 2 else 6
 			table.insert(botAvoid, { pos = origin.Position, radius = radius + 3 })
 			table.insert(botMovers, { kind = "Geyser", item = item, origin = origin, radius = radius })
-		elseif item:IsA("BasePart") and item:GetAttribute("From") then
+		elseif item:IsA("BasePart") and item:GetAttribute("From") and item:GetAttribute("Hazard") then -- (not a marble's swirl)
 			table.insert(botMovers, { kind = "Roller", item = item, radius = item.Size.X / 2 })
 		end
 	end
@@ -13892,6 +14222,9 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	local hit = if ai.pop > 0 then nil else workspace:Raycast(pos, -hitbox.CFrame.UpVector * (KART_RIDE_HEIGHT + 1.75 + falling * 0.05), botRayParams)
 	local ground = if hit and hit.Normal.Y > 0.3 then hit else nil
 	local surface = if ground then ground.Instance else nil
+	if ground then
+		ai.flying = false
+	end
 	if surface and surface:GetAttribute("BoostPad") then
 		ai.boost = math.max(ai.boost, tonumber(surface:GetAttribute("BoostTime")) or 1.2)
 	end
@@ -13900,7 +14233,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	if toTarget.Magnitude > 0.5 then
 		local want = math.atan2(-toTarget.X, -toTarget.Z)
 		local turn = (want - ai.heading + math.pi) % (2 * math.pi) - math.pi
-		local maxTurn = BOTS.TURN_RATE * dt * (if ground then 1 else 0.35)
+		local maxTurn = BOTS.TURN_RATE * kartStat(racer.kart, "handling") * dt * (if ground or ai.flying then 1 else 0.35)
 		ai.heading += math.clamp(turn, -maxTurn, maxTurn)
 	end
 	local clock = os.clock()
@@ -13909,7 +14242,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	end
 
 	-- How fast to go
-	local top = BOTS.MAX_SPEED * bot.skill
+	local top = BOTS.MAX_SPEED * kartStat(racer.kart, "speed") * bot.skill
 	if lead then -- catch up with the leading player, or ease off when far ahead
 		top *= 1 + math.clamp((lead - racer.progress) * 0.03, -BOTS.CATCH_UP, BOTS.CATCH_UP)
 	end
@@ -13919,15 +14252,15 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 			ai.boost = math.max(ai.boost, 0.3)
 		end
 	end
-	-- Speed boosts add up, like players': every coin is +1% (a Taxman's extra coins over
-	-- MAX_COINS +2% each), and boosting adds what BOOST_SPEED is over MAX_SPEED
-	local coinBonus = (math.min(racer.coins, PICKUPS.MAX_COINS) + math.max(0, racer.coins - PICKUPS.MAX_COINS) * PICKUPS.TAX_BOOST) * PICKUPS.COIN_SPEED
+	-- Speed boosts add up, like players': every coin is +COIN_SPEED (coins a Taxman just
+	-- took count TAX_BOOST times), and boosting adds what BOOST_SPEED is over MAX_SPEED
+	local coinBonus = (racer.coins + (racer.taxCoins or 0) * (PICKUPS.TAX_BOOST - 1)) * PICKUPS.COIN_SPEED
 	if ai.boost > 0 then
-		top = BOTS.MAX_SPEED * (1 + coinBonus + BOTS.BOOST_SPEED / BOTS.MAX_SPEED - 1)
+		top = BOTS.MAX_SPEED * kartStat(racer.kart, "speed") * (1 + coinBonus + BOTS.BOOST_SPEED / BOTS.MAX_SPEED - 1)
 	else
 		top *= 1 + coinBonus
 		if surface and surface:GetAttribute("OffRoad") then
-			top *= BOTS.OFFROAD_SPEED
+			top *= math.min(1, BOTS.OFFROAD_SPEED * kartStat(racer.kart, "offroad"))
 		end
 	end
 	top *= BOTS.SPEED_SCALE
@@ -13942,7 +14275,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 			tightest = math.min(tightest, 1 / bend)
 		end
 	end
-	top = math.min(top, tightest * BOTS.TURN_RATE * 0.9)
+	top = math.min(top, tightest * BOTS.TURN_RATE * kartStat(racer.kart, "handling") * 0.9)
 	-- Use its item (a Mega Jump only on a straight bit of road, and not just before a gap jump)
 	if racer.item and os.clock() >= ai.itemAt then
 		local gapAhead = false
@@ -13959,7 +14292,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 		top = 0
 	end
 	if ground then
-		ai.speed = if ai.speed < top then math.min(top, ai.speed + BOTS.ACCELERATION * dt) else math.max(top, ai.speed - 60 * dt)
+		ai.speed = if ai.speed < top then math.min(top, ai.speed + BOTS.ACCELERATION * kartStat(racer.kart, "acceleration") * dt) else math.max(top, ai.speed - 60 * dt)
 	end
 
 	-- Hazards and wind (fire bars, balls and geysers move on players' screens,
@@ -14047,7 +14380,8 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 				local mine, theirs = -velocity:Dot(away), otherVelocity:Dot(away)
 				local blame = (mine - theirs) / math.max(math.abs(mine) + math.abs(theirs), 10)
 				local scale = if blame > 0 then 1 + (BOTS.BUMP_RAMMER - 1) * blame else 1 - (BOTS.BUMP_RAMMED - 1) * blame
-				ai.push += away * math.min((BOTS.BUMP_SPEED + closing * BOTS.BUMP_TRANSFER) * power, BOTS.BUMP_MAX) * scale
+				local heavier = kartStat(other, "weight") / kartStat(racer.kart, "weight") -- (a heavier kart shoves you further)
+				ai.push += away * math.min((BOTS.BUMP_SPEED + closing * BOTS.BUMP_TRANSFER) * power, BOTS.BUMP_MAX) * scale * heavier
 				ai.slide = BOTS.BUMP_SLIDE -- slides away on slippery tyres for a moment
 				ai.heading += (math.random() - 0.5) * BOTS.BUMP_TWIST * scale
 				if ground then -- and hops
@@ -14064,7 +14398,7 @@ local function driveBot(racer: Racer, dt: number, now: number, lead: number?)
 	if ground then
 		upSpeed = math.clamp((KART_RIDE_HEIGHT - (pos - ground.Position):Dot(ground.Normal)) * BOTS.HOVER_STIFFNESS, -40, 40)
 	else
-		upSpeed = velocity.Y + workspace.Gravity * (1 - BOTS.AIR_GRAVITY) * dt
+		upSpeed = velocity.Y + workspace.Gravity * (1 - (if ai.flying then PICKUPS.MEGA_GRAVITY else BOTS.AIR_GRAVITY)) * dt
 	end
 	local grounded = ground ~= nil
 	if ai.lift > 0 then -- a geyser threw it up
@@ -14148,6 +14482,7 @@ local function addBot(bot: any, gridIndex: number, slot: BasePart): Racer
 			spin = 0,
 			pop = 0,
 			lift = 0,
+			flying = false, -- in a Mega Jump (steers fully and falls slower, until it lands)
 			grace = 0,
 			stuck = 0,
 			bumped = {},
@@ -14878,6 +15213,7 @@ end
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">RaceServer</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186c</UniqueId>
@@ -14919,7 +15255,8 @@ end
 	road and the walls, except where there are no walls.
 
 	COINS and ITEM BOXES are placed on every track automatically, clear of
-	jumps and hazards (see PICKUPS and buildPickups in RaceServer).
+	jumps and hazards (see PICKUPS and buildPickups in RaceServer). Item
+	boxes come in a row about every 10 seconds, on the main road and branches.
 
 	FEATURES are things placed on a road. Single spots use `point` (which POINT),
 	`ahead` (studs further along the road from that point; negative = before it)
@@ -14969,9 +15306,9 @@ end
 	              default 3), `active` (seconds a lash lasts). Keep `reach`
 	              short of the far side so there's always a way past
 	  "Coins"     an extra line of coins down the road here (`lane` optional)
-	  "Items"     an extra row of item boxes across the road here. Item boxes
-	              only go on the main road by themselves (and not where a
-	              branch skips it): use these to reward a longer branch
+	  "Items"     an extra row of item boxes across the road here (on top of
+	              the ones placed by themselves): use these to reward a longer
+	              branch
 	  "Respawn"   a respawn point right here. They're placed by themselves every
 	              so often, but never near hazards or obstacles: use this where
 	              that leaves a long stretch without one (a clearing in a forest)
@@ -14993,6 +15330,9 @@ end
 
 	TRACK settings can be changed per track too, e.g. PILLARS = false (no support
 	pillars under raised road) or MAX_BANK = 0 (roads don't lean into corners).
+	Every track sets its own starting grid: GRID_POLE ("Left"/"Right", the side
+	1st place starts on: the inside of the first corner) and GRID_LINE (karts in
+	each diagonal line: as many as fit across the road at the start).
 	A track with a MANSION table gets a whole house built round it (see the
 	Mansion module inside this one, and MansionBuilder in RaceServer).
 ]]
@@ -15034,6 +15374,9 @@ return {
 		color = Color3.fromRGB(80, 190, 255), -- colour of its card in the vote
 		ROAD_WIDTH = 54,
 		ARCH_SPACING = 170,
+		GRID_POLE = "Left", -- (the first corner is a long left)
+		GRID_LINE = 4, -- (the wide road fits four)
+		GRID_ROW = 20, -- (so the lines of four still look diagonal)
 		-- a giant rainbow over the road at the top of the first climb (`yaw` turns it to face the road)
 		RAINBOW_ARC = { center = Vector3.new(340, -20, 680), radius = 100, yaw = 90 },
 		POINTS = {
@@ -15155,6 +15498,8 @@ return {
 		blurb = "Race through a fire temple inside a volcano, and dare to drop through the lava river jump!",
 		theme = "Lava",
 		color = Color3.fromRGB(255, 120, 40),
+		GRID_POLE = "Right", -- (the first corner is a right)
+		GRID_LINE = 3,
 		-- The hollow volcano around Crater Hall: `radius` of its rim, `rim` = height
 		-- of its top edge, `lake` = height of the lava lake inside it
 		CRATER = { center = Vector3.new(230, 0, 1000), radius = 170, rim = 100, lake = 22 },
@@ -15360,6 +15705,8 @@ return {
 		blurb = "Brave Avalanche Pass, bump rivals off a frozen sky rink, then race the Ice Slide!",
 		theme = "Snow",
 		color = Color3.fromRGB(170, 230, 255),
+		GRID_POLE = "Left", -- (the first corner is a left)
+		GRID_LINE = 3,
 		POINTS = {
 			Vector3.new(0, 0, -80), --  1 back of the starting grid
 			Vector3.new(0, 0, 60), --  2 start straight
@@ -15564,6 +15911,8 @@ return {
 		blurb = "Cross rope bridges, dodge rolling boulders and find the secret path behind the waterfall!",
 		theme = "Jungle",
 		color = Color3.fromRGB(110, 200, 90),
+		GRID_POLE = "Left", -- (the first corner is a left)
+		GRID_LINE = 3,
 		-- The giant temple pyramid the road drives right through (`top` = its height)
 		TEMPLE = { center = Vector3.new(600, 0, 1600), size = 360, top = 140 },
 		POINTS = {
@@ -15728,6 +16077,8 @@ return {
 		blurb = "Splash through the bog, dodge the Frog King's tongues, then weave through the overgrown forest!",
 		theme = "Swamp",
 		color = Color3.fromRGB(120, 190, 70),
+		GRID_POLE = "Left", -- (the first corner is a left)
+		GRID_LINE = 3,
 		FALL_DEPTH = 8, -- the swamp water is just under the road: fall in and you're put back
 		-- The Frog King's step-temple, half sunk in the swamp. The road drives through its hall.
 		TEMPLE = { center = Vector3.new(1070, 0, 1830), size = 360, top = 120, walkable = true }, -- Feelsgood Fred sits on top. Walkable: fall off the High Passage onto its steps and drive around on them
@@ -15947,6 +16298,7 @@ return {
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">Tracks</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9f</UniqueId>
@@ -16556,6 +16908,8 @@ return {
 	PILLARS = false, -- the house holds the roads up
 	MAX_BANK = 0, -- roads don't lean into corners indoors (a leaning road dips under the floor on the inside of the bend)
 	SOLID_CAVES = true, -- the Mouse Hole, Heating Pipe and Under the Bed stand in open rooms: a Mega Jump can reach them
+	GRID_POLE = "Left", -- (the first corner is a left)
+	GRID_LINE = 3,
 	POINTS = M.POINTS,
 	FEATURES = FEATURES,
 	BRANCHES = BRANCHES,
@@ -16568,6 +16922,7 @@ return {
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 						<string name="Name">Mansion</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">-1</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85000dcf88</UniqueId>
@@ -17123,11 +17478,12 @@ function MansionBuilder.build(cfg, track: Instance, parent: Instance, samples: {
 			ball(cf * CFrame.new(s * 1.6, 45, -13), Vector3.new(1.4, 1.4, 0.6), C(200, 255, 120), Enum.Material.Neon)
 		end
 	end
-	function BUILD.Blocks(cf: CFrame, p) -- a heap of toy blocks
+	function BUILD.Blocks(cf: CFrame, p) -- a heap of wooden ABC blocks
 		local rng = Random.new(math.floor(cf.X * 7 + cf.Z))
 		for _ = 1, p.count or 6 do
 			local s = rng:NextNumber(8, 14)
-			solid({ Name = "ToyBlock", Size = Vector3.one * s, CFrame = cf * CFrame.new(rng:NextNumber(-25, 25), s / 2, rng:NextNumber(-25, 25)) * CFrame.Angles(0, rng:NextNumber(0, 6), 0), Color = hsv(rng:NextNumber(), 0.6, 0.95) })
+			local block = solid({ Name = "ToyBlock", Size = Vector3.one * s, CFrame = cf * CFrame.new(rng:NextNumber(-25, 25), s / 2, rng:NextNumber(-25, 25)) * CFrame.Angles(0, rng:NextNumber(0, 6), 0) })
+			h.toyBlock(block, rng:NextInteger(0, 999))
 		end
 	end
 	function BUILD.Dumbbell(cf: CFrame, p)
@@ -17483,6 +17839,7 @@ return MansionBuilder
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">MansionBuilder</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85000dcf8d</UniqueId>
@@ -17510,6 +17867,7 @@ return MansionBuilder
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">Item grab/equip 7</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">133331985238497</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ec</UniqueId>
@@ -17536,6 +17894,7 @@ return MansionBuilder
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 						<string name="Name">ice shattering</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">80067573243829</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ed</UniqueId>
@@ -17562,6 +17921,7 @@ return MansionBuilder
 							<bool name="DefinesCapabilities">false</bool>
 							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 							<string name="Name">glass_shatter_01</string>
+							<BinaryString name="SerializedOverrides"></BinaryString>
 							<int64 name="SourceAssetId">118987440163311</int64>
 							<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 							<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ee</UniqueId>
@@ -17588,6 +17948,7 @@ return MansionBuilder
 								<bool name="DefinesCapabilities">false</bool>
 								<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 								<string name="Name">glass_shatter_01</string>
+								<BinaryString name="SerializedOverrides"></BinaryString>
 								<int64 name="SourceAssetId">118987440163311</int64>
 								<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 								<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646ef</UniqueId>
@@ -17614,6 +17975,7 @@ return MansionBuilder
 									<bool name="DefinesCapabilities">false</bool>
 									<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 									<string name="Name">glass_shatter_01</string>
+									<BinaryString name="SerializedOverrides"></BinaryString>
 									<int64 name="SourceAssetId">118987440163311</int64>
 									<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 									<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f0</UniqueId>
@@ -17640,6 +18002,7 @@ return MansionBuilder
 										<bool name="DefinesCapabilities">false</bool>
 										<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 										<string name="Name">glass_shatter_01</string>
+										<BinaryString name="SerializedOverrides"></BinaryString>
 										<int64 name="SourceAssetId">118987440163311</int64>
 										<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 										<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f1</UniqueId>
@@ -17666,6 +18029,7 @@ return MansionBuilder
 											<bool name="DefinesCapabilities">false</bool>
 											<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 											<string name="Name">glass_shatter_01</string>
+											<BinaryString name="SerializedOverrides"></BinaryString>
 											<int64 name="SourceAssetId">118987440163311</int64>
 											<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 											<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f2</UniqueId>
@@ -17692,6 +18056,7 @@ return MansionBuilder
 												<bool name="DefinesCapabilities">false</bool>
 												<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 												<string name="Name">glass_shatter_01</string>
+												<BinaryString name="SerializedOverrides"></BinaryString>
 												<int64 name="SourceAssetId">118987440163311</int64>
 												<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 												<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f3</UniqueId>
@@ -17718,6 +18083,7 @@ return MansionBuilder
 													<bool name="DefinesCapabilities">false</bool>
 													<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 													<string name="Name">glass_shatter_01</string>
+													<BinaryString name="SerializedOverrides"></BinaryString>
 													<int64 name="SourceAssetId">118987440163311</int64>
 													<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 													<UniqueId name="UniqueId">1e6e087a0d7ad6870ad6ff85001646f4</UniqueId>
@@ -17740,6 +18106,7 @@ return MansionBuilder
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ServerStorage</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000184e</UniqueId>
@@ -17756,6 +18123,7 @@ return MansionBuilder
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">ScriptBackups</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700009033</UniqueId>
@@ -19824,6 +20192,7 @@ end
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186c</UniqueId>
 					<string name="Name">RaceServer_BeforeTrackVote</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700009034</UniqueId>
@@ -20857,6 +21226,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186f</UniqueId>
 					<string name="Name">RaceClient_BeforeTrackVote</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700009037</UniqueId>
@@ -23757,6 +24127,7 @@ end
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186c</UniqueId>
 					<string name="Name">RaceServer_BeforeGameWorlds</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad580580000e761</UniqueId>
@@ -24950,6 +25321,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186f</UniqueId>
 					<string name="Name">RaceClient_BeforeGameWorlds</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad580580000e764</UniqueId>
@@ -28769,6 +29141,7 @@ end
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186c</UniqueId>
 					<string name="Name">RaceServer_BeforeLongTracks</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9b</UniqueId>
@@ -30394,6 +30767,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186f</UniqueId>
 					<string name="Name">RaceClient_BeforeLongTracks</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040b9d</UniqueId>
@@ -34168,6 +34542,7 @@ end
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186c</UniqueId>
 					<string name="Name">RaceServer_BeforeBots</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">4c20f22b29233c1f0ad5add900005b39</UniqueId>
@@ -34916,6 +35291,7 @@ return {
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">7fc3f09d51bb6edd0ad5805800040b9f</UniqueId>
 						<string name="Name">Tracks</string>
+						<BinaryString name="SerializedOverrides"></BinaryString>
 						<int64 name="SourceAssetId">-1</int64>
 						<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 						<UniqueId name="UniqueId">4c20f22b29233c1f0ad5add900005b3a</UniqueId>
@@ -36577,6 +36953,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00539dfaaa2021f70ad4d4470000186f</UniqueId>
 					<string name="Name">RaceClient_BeforeBots</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">4c20f22b29233c1f0ad5add900005b3e</UniqueId>
@@ -40874,6 +41251,7 @@ end
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">RaceServer_BeforeCoins</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">28ac185ee58ec4a50ad5c68700000878</UniqueId>
@@ -42539,6 +42917,7 @@ end)
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">RaceClient_BeforeCoins</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">28ac185ee58ec4a50ad5c6870000087b</UniqueId>
@@ -43288,6 +43667,7 @@ return {
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 					<string name="Name">Tracks_BeforeCoins</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">28ac185ee58ec4a50ad5c6870000087d</UniqueId>
@@ -44039,6 +44419,7 @@ return {
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">7fc3f09d51bb6edd0ad5805800040b9f</UniqueId>
 					<string name="Name">Tracks_BeforeLedgeTurn</string>
+					<BinaryString name="SerializedOverrides"></BinaryString>
 					<int64 name="SourceAssetId">-1</int64>
 					<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 					<UniqueId name="UniqueId">4d646a3f854afaa10ad6155400009263</UniqueId>
@@ -44221,6 +44602,7 @@ end
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">TrackCheck</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">7fc3f09d51bb6edd0ad5805800040ba1</UniqueId>
@@ -44297,6 +44679,7 @@ end
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">GridCheck</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">38a87ad7161be5090ad5b95200022bbc</UniqueId>
@@ -44434,6 +44817,7 @@ end
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">BananaPeel</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">4321598fa75f2b860ad803d60005813d</UniqueId>
@@ -44674,11 +45058,27 @@ end
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">SceneCheck</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">4321598fa75f2b860ad803d600073f52</UniqueId>
 			</Properties>
 		</Item>
+	</Item>
+	<Item class="ServiceVisibilityService" referent="RBX6F4136687AD9445F880940A47387735A">
+		<Properties>
+			<BinaryString name="HiddenServices">AAAAAA==</BinaryString>
+			<BinaryString name="VisibleServices">AQAAAAIQAAAAVm9pY2VDaGF0U2VydmljZQ==</BinaryString>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+			<string name="Name">ServiceVisibilityService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
+			<int64 name="SourceAssetId">-1</int64>
+			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001863</UniqueId>
+		</Properties>
 	</Item>
 	<Item class="VideoService" referent="RBX1878A7D0FC1F49708B03394F0DFE7ADE">
 		<Properties>
@@ -44687,6 +45087,7 @@ end
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">VideoService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000188d</UniqueId>
@@ -44700,6 +45101,7 @@ end
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">HttpService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001867</UniqueId>
@@ -44755,6 +45157,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Lighting</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000186b</UniqueId>
@@ -44768,6 +45171,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">ColorGrading</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001882</UniqueId>
@@ -44784,6 +45188,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 				<bool name="DefinesCapabilities">false</bool>
 				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 				<string name="Name">Bloom</string>
+				<BinaryString name="SerializedOverrides"></BinaryString>
 				<int64 name="SourceAssetId">-1</int64>
 				<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001883</UniqueId>
@@ -44797,6 +45202,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">LodDataService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d4470000188e</UniqueId>
@@ -44812,6 +45218,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">ProximityPromptService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e60</UniqueId>
@@ -44824,6 +45231,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">SerializationService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d447000018e3</UniqueId>
@@ -44836,6 +45244,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">Teams</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e59</UniqueId>
@@ -44857,6 +45266,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">TestService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">00539dfaaa2021f70ad4d44700001a81</UniqueId>
@@ -44869,6 +45279,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">UGCAvatarService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e6f</UniqueId>
@@ -44885,6 +45296,7 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<bool name="DefinesCapabilities">false</bool>
 			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
 			<string name="Name">VoiceChatService</string>
+			<BinaryString name="SerializedOverrides"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<SharedString name="Tags">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<UniqueId name="UniqueId">270e170f9495eb620ad5624700000e56</UniqueId>
